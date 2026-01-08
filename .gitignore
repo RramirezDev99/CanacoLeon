@@ -1,0 +1,9 @@
+# Ignorar archivos de dependencias de Node
+node_modules/
+dist/
+
+# Ignorar archivos compilados de .NET
+bin/
+obj/
+.vs/
+*.user

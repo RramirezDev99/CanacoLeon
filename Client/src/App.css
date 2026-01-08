@@ -1,0 +1,40 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Altura completa de la pantalla */
+  width: 100vw;
+  background-color: #242424; /* Fondo oscuro moderno */
+  color: white;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  height: 150px; /* Ajusta este tamaño según prefieras */
+  width: auto;
+  transition: transform 0.3s;
+}
+
+.logo:hover {
+  transform: scale(1.1); /* Efecto pequeño al pasar el mouse */
+}
+
+h1 {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 3rem;
+  font-weight: 200;
+  letter-spacing: 2px;
+}
