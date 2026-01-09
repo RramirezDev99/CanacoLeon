@@ -1,0 +1,34 @@
+/* Definición de variables globales (Theme Tokens) */
+:root {
+  /* Paleta de Colores - Modo Claro (Default) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f4f4f4;
+  --text-primary: #333333;
+  --text-secondary: #555555;
+  
+  /* Colores de Marca (CANACO) */
+  --brand-blue-dark: #0f3057;
+  --brand-blue-light: #005b96;
+  --brand-white: #ffffff;
+  
+  /* UI Elements */
+  --navbar-bg: var(--brand-blue-dark);
+  --navbar-text: var(--brand-white);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Override para Modo Oscuro */
+body.dark-mode {
+  /* Paleta de Colores - Modo Oscuro */
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+
+  /* UI Elements - Adaptados */
+  --navbar-bg: #0a1f38; /* Azul más profundo para modo oscuro */
+  --navbar-text: #cccccc;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+}

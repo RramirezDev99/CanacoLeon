@@ -1,0 +1,267 @@
+/* --- Variables locales para facilitar cambios --- */
+.header-modern {
+  --nav-height: 80px;
+  --top-bar-bg: #0f3057; /* Azul oscuro Canaco */
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --nav-text: #333;
+  --accent-color: #005b96;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* Sombra moderna suave */
+  backdrop-filter: blur(10px); /* Efecto vidrio esmerilado */
+}
+
+/* Ajustes para el contenedor general */
+.container-xl {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+/* --- TOP BAR (Delgada) --- */
+.top-bar {
+  background-color: var(--top-bar-bg);
+  color: rgba(255,255,255,0.8);
+  font-size: 0.8rem;
+  padding: 8px 0;
+}
+
+.top-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.separator { margin: 0 10px; opacity: 0.5; }
+
+.social-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.social-icons { display: flex; gap: 10px; }
+.social-icons a { color: white; transition: opacity 0.2s; }
+.social-icons a:hover { opacity: 0.7; }
+
+/* Botón de tema circular y moderno */
+.theme-btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fbbf24; /* Color sol */
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.2); transform: rotate(15deg); }
+
+/* --- NAVEGACIÓN PRINCIPAL --- */
+.main-nav-wrapper {
+  background-color: var(--nav-bg);
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo */
+.brand-logo img {
+  height: 55px; /* Ajuste limpio */
+  width: auto;
+  transition: transform 0.3s;
+}
+.brand-logo:hover img { transform: scale(1.05); }
+
+/* Links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 25px; /* Espacio aireado en lugar de líneas */
+}
+
+.nav-item {
+  text-decoration: none;
+  color: var(--nav-text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding: 5px 0;
+}
+
+/* Animación de subrayado elegante */
+.nav-item::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--accent-color);
+  transition: width 0.3s;
+}
+
+.nav-item:hover::after, .nav-item.active::after {
+  width: 100%;
+}
+
+.nav-item.active { color: var(--accent-color); }
+
+/* Botones especiales */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-left: 20px;
+  padding-left: 20px;
+  border-left: 1px solid rgba(0,0,0,0.1); /* Separador sutil solo aquí */
+}
+
+.btn-outline, .btn-solid {
+  text-decoration: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: all 0.3s;
+}
+
+.btn-outline {
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+}
+.btn-outline:hover { background-color: rgba(0,91,150,0.05); }
+
+.btn-solid {
+  background-color: var(--accent-color);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,91,150,0.3);
+}
+.btn-solid:hover { background-color: #004a7c; transform: translateY(-1px); }
+
+/* --- AJUSTES PARA MODO OSCURO --- */
+body.dark-mode .header-modern {
+  --nav-bg: rgba(30, 30, 30, 0.95);
+  --nav-text: #e0e0e0;
+  --accent-color: #4da8da;
+}
+
+body.dark-mode .action-buttons { border-left-color: rgba(255,255,255,0.1); }
+
+
+.mobile-toggle {
+  display: none; /* Oculto en escritorio por defecto */
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--nav-text);
+  z-index: 1002;
+}
+
+.theme-btn-mobile {
+  display: none; /* Oculto en escritorio */
+}
+
+/* =========================================
+   MEDIA QUERIES (Aquí empieza la Responsividad)
+   ========================================= */
+
+@media (max-width: 992px) { /* Tablet y Móvil (menos de 992px) */
+  
+  .header-modern {
+    --nav-height: 70px; /* Un poco más compacto */
+  }
+
+  /* 1. Ocultar la barra superior en celulares para ahorrar espacio */
+  .top-bar {
+    display: none; 
+  }
+
+  /* 2. Mostrar el botón de hamburguesa */
+  .mobile-toggle {
+    display: block;
+  }
+
+  /* 3. Transformar el menú horizontal en un panel vertical */
+  .nav-links {
+    position: fixed;
+    top: var(--nav-height);
+    left: -100%; /* Escondido a la izquierda fuera de la pantalla */
+    width: 100%;
+    height: calc(100vh - var(--nav-height)); /* Altura completa menos el header */
+    background-color: var(--nav-bg);
+    flex-direction: column; /* Apilar elementos verticalmente */
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 40px;
+    gap: 30px;
+    transition: left 0.3s ease-in-out; /* Animación suave al entrar */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow-y: auto; /* Permitir scroll si el menú es muy alto */
+  }
+
+  /* Clase que activa React cuando abres el menú */
+  .nav-links.active {
+    left: 0; /* Lo trae a la vista */
+  }
+
+  /* Ajustes de los links en móvil */
+  .nav-item {
+    font-size: 1.2rem; /* Letra más grande para dedos táctiles */
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+  }
+
+  /* Ajuste de botones de acción en móvil */
+  .action-buttons {
+    flex-direction: column;
+    width: 80%;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+    gap: 15px;
+    margin-top: 20px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 30px;
+    align-items: center;
+  }
+
+  .btn-solid, .btn-outline {
+    width: 100%; 
+    text-align: center;
+    padding: 12px;
+  }
+
+/* Dentro de @media (max-width: 992px) ... */
+
+  .theme-btn-mobile {
+    display: flex; /* CAMBIO: Usar flex para centrar contenido */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    gap: 10px; /* Espacio entre texto e icono */
+    
+    background: none;
+    border: 1px solid var(--nav-text);
+    color: var(--nav-text);
+    padding: 12px; /* Un poco más de padding para que se vea igual a los otros */
+    border-radius: 6px; /* Igual que btn-solid */
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: bold; /* Para que resalte igual que los links */
+    font-size: 0.85rem;
+  }
+}

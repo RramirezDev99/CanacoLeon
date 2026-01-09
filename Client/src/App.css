@@ -1,7 +1,7 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   text-align: center;
 }
 
@@ -11,8 +11,6 @@
   align-items: center;
   height: 100vh; /* Altura completa de la pantalla */
   width: 100vw;
-  background-color: #242424; /* Fondo oscuro moderno */
-  color: white;
 }
 
 .content {
