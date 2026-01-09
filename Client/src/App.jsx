@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import logo from './assets/logo.png';
 import './App.css';
-import Navbar from './components/navbar';
+import Navbar from './components/Navbar';
 // 1. Creamos un pequeño componente para el contenido de "Inicio"
 // (Esto es lo que tenías antes, pero encapsulado)
 const Inicio = () => {
