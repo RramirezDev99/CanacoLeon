@@ -1,8 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/navbar';
 import logo from './assets/logo.png';
 import './App.css';
-
+import Navbar from './components/navbar';
 // 1. Creamos un pequeño componente para el contenido de "Inicio"
 // (Esto es lo que tenías antes, pero encapsulado)
 const Inicio = () => {
@@ -21,7 +20,7 @@ function App() {
   return (
     <BrowserRouter>
       {/* El Navbar va FUERA de Routes para que siempre se vea, no importa en qué página estés */}
-      {/* <Navbar /> */}
+      <Navbar />
 
       {/* Routes decide qué mostrar abajo según la URL */}
       <Routes>
