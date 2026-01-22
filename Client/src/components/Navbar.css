@@ -13,7 +13,7 @@
 
   /* --- AQUÍ ESTÁ EL FIX: VOLVEMOS A 0.1 --- */
   background: rgba(255, 255, 255, 0.1); /* Transparencia total original */
-  backdrop-filter: blur(15px);           /* Blur fuerte */
+  backdrop-filter: blur(100px);           /* Blur fuerte */
   -webkit-backdrop-filter: blur(15px);
   
   border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil original */
@@ -72,7 +72,7 @@ body.dark-mode .logo-area img { filter: brightness(0) invert(1); }
 /* Texto OSCURO sobre el cristal claro */
 .nav-link {
   text-decoration: none;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 500;
   /* Negro suave para buen contraste con el glass */
   color: #1a1a1a; 
@@ -173,4 +173,106 @@ body.dark-mode .switch-circle {
   transform: translateX(24px);
   background-color: #0f3057; 
   color: white;
+}
+
+
+
+/* ... MANTÉN TODO TU CSS ANTERIOR AQUÍ ... */
+
+
+/* =========================================
+   MEDIA QUERIES (RESPONSIVE)
+   ========================================= */
+
+/* 1. Elementos por defecto (Ocultos en escritorio/móvil según corresponda) */
+.hamburger-icon {
+    display: none; /* Oculto en PC */
+}
+.mobile-btn-container {
+    display: none; /* Oculto en PC */
+}
+
+/* 2. REGLAS PARA TABLET Y MÓVIL (Menor a 968px) */
+/* ... (Tu CSS anterior) ... */
+
+/* =========================================
+   MEDIA QUERIES (RESPONSIVE)
+   ========================================= */
+
+/* Por defecto ocultamos los elementos móviles en PC */
+.hamburger-icon, .mobile-btn {
+  display: none;
+}
+
+/* --- REGLAS PARA MÓVIL Y TABLET (< 968px) --- */
+@media screen and (max-width: 968px) {
+  
+  /* 1. Ajustamos el contenedor */
+  .navbar-container {
+    height: 70px;
+    padding: 0 15px;
+  }
+
+  /* 2. Cambiamos el Grid: Logo izquierda, Botones derecha */
+  .navbar-content {
+    grid-template-columns: 1fr auto; 
+    width: 100%;
+  }
+
+  /* Ajustes visuales */
+  .logo-container { padding-left: 0; }
+  .brand-text { display: none; } /* Ocultar texto largo en móvil si quieres */
+
+  /* 3. Ocultar el botón de afiliado de escritorio */
+  .desktop-btn {
+    display: none;
+  }
+
+  /* 4. Menú Desplegable (Cortina) */
+  .nav-links {
+    position: fixed;
+    top: 70px;
+    left: -100%; /* Oculto a la izquierda */
+    width: 100%;
+    height: calc(100vh - 70px);
+    
+    /* Fondo Glass Móvil */
+    background: rgba(255, 255, 255, 0.98); 
+    backdrop-filter: blur(20px);
+    
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    transition: left 0.4s ease-in-out;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  /* Cuando se activa el menú */
+  .nav-links.active-mobile {
+    left: 0;
+  }
+
+  /* Fondo oscuro en Dark Mode */
+  body.dark-mode .nav-links {
+    background: rgba(15, 23, 42, 0.98);
+  }
+
+  /* Texto más grande en móvil */
+  .nav-link { font-size: 22px; }
+
+  /* 5. Mostrar elementos móviles */
+  .mobile-btn { display: block; margin-top: 20px; }
+  
+  .hamburger-icon {
+    display: block;
+    font-size: 24px;
+    margin-left: 20px;
+    cursor: pointer;
+    color: #333; /* Color del icono en Light Mode */
+  }
+
+  body.dark-mode .hamburger-icon {
+    color: white; /* Color del icono en Dark Mode */
+  }
 }

@@ -1,13 +1,25 @@
 /* index.css */
-body {
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* EL CANDADO: Prohíbe scroll horizontal */
   margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Maneja mejor los paddings */
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
   font-family: 'Helvetica', 'Arial', sans-serif;
-  
-  /* Usamos las variables de theme.css */
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  
   transition: background-color 0.3s ease, color 0.3s ease;
+  
+  /* Fix para scroll suave en iOS */
+  -webkit-overflow-scrolling: touch; 
 }
 
 a {
