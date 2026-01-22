@@ -1,87 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaFacebookF, FaYoutube, FaInstagram, FaMoon, FaSun, FaBars, FaTimes } from 'react-icons/fa';
-import logo from '../assets/logo.png'; 
+import { FaSun, FaMoon } from 'react-icons/fa'; 
+import logoIcon from '../assets/logo.svg';     // Ajusta tus rutas
+import logoText from '../assets/textIcon.svg'; // Ajusta tus rutas
 import './Navbar.css';
 
 function Navbar() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
-    }
-  }, [isDarkMode]);
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    document.body.classList.toggle('dark-mode');
+  };
 
-  const closeMenu = () => setMenuOpen(false);
+  // Función auxiliar para mantener limpio el JSX de los links
+  const linkClass = ({ isActive }) => isActive ? "nav-link active" : "nav-link";
 
   return (
-    <header className="header-modern">
-      {/* --- BARRA SUPERIOR (DESKTOP) --- */}
-      <div className="top-bar">
-        <div className="container-xl top-bar-content">
-          <div className="contact-info">
-             <span>Blvd. Francisco Villa #1028</span>
-             <span className="separator">•</span>
-             <span>477 714 2800</span>
-          </div>
-          <div className="social-actions">
-            <div className="social-icons">
-              <a href="#"><FaFacebookF /></a>
-              <a href="#"><FaInstagram /></a>
-              <a href="#"><FaYoutube /></a>
-            </div>
-            
-            {/* AQUÍ FALTABA ESTE BOTÓN PARA DESKTOP */}
-            <button 
-              className="theme-btn" 
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              title="Cambiar tema"
-            >
-              {isDarkMode ? <FaSun /> : <FaMoon />}
-            </button>
-
-          </div>
+    <header className="navbar-container">
+      <div className="navbar-content">
+        
+        {/* 1. IZQUIERDA: Logo (Independiente) */}
+        <div className="logo-container">
+            <NavLink to="/" className="logo-area">
+                <img src={logoIcon} alt="Logo" className="brand-icon" />
+                <img src={logoText} alt="Canaco" className="brand-text" />
+            </NavLink>
         </div>
-      </div>
 
-      {/* --- NAVEGACIÓN --- */}
-      <div className="main-nav-wrapper">
-        <div className="container-xl nav-content">
-          
-          <NavLink to="/" className="brand-logo" onClick={closeMenu}>
-            <img src={logo} alt="Canaco León" />
-          </NavLink>
+        {/* 2. CENTRO: Links de Navegación */}
+        <nav className="nav-links">
+            <NavLink to="/" className={linkClass}>Inicio</NavLink>
+            <NavLink to="/nosotros" className={linkClass}>Nosotros</NavLink>
+            <NavLink to="/servicios" className={linkClass}>Servicios</NavLink>
+            <NavLink to="/afiliarme-info" className={linkClass}>Afiliarme</NavLink> 
+            <NavLink to="/contacto" className={linkClass}>Contacto</NavLink>
+            <NavLink to="/directorio" className={linkClass}>Directorio</NavLink>
+        </nav>
 
-          <div className="mobile-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <FaTimes /> : <FaBars />}
-          </div>
-
-          <nav className={`nav-links ${menuOpen ? 'active' : ''}`}>
-            <NavLink to="/" className="nav-item" onClick={closeMenu}>INICIO</NavLink>
-            <NavLink to="/nosotros" className="nav-item" onClick={closeMenu}>NOSOTROS</NavLink>
-            <NavLink to="/servicios" className="nav-item" onClick={closeMenu}>SERVICIOS</NavLink>
-            <NavLink to="/beneficios" className="nav-item" onClick={closeMenu}>BENEFICIOS</NavLink>
-            <NavLink to="/salas" className="nav-item" onClick={closeMenu}>SALAS</NavLink>
+        {/* 3. DERECHA: Botones de Acción */}
+        <div className="nav-actions">
+            <NavLink to="/afiliarme" className="btn-afiliarme">
+                Soy Afiliado
+            </NavLink>
             
-            <div className="action-buttons">
-              <NavLink to="/afiliarme" className="btn-outline" onClick={closeMenu}>AFILIARME</NavLink>
-              <NavLink to="/contacto" className="btn-solid" onClick={closeMenu}>CONTACTO</NavLink>
-              
-              {/* Botón Móvil */}
-              <button 
-                className="theme-btn-mobile" 
-                onClick={() => { setIsDarkMode(!isDarkMode); closeMenu(); }}
-              >
-                {/* Usamos Flexbox en CSS para centrar este contenido */}
-                {isDarkMode ? "Modo Claro" : "Modo Oscuro"}
-              </button>
+            <div className="theme-switch" onClick={toggleTheme}>
+                <div className="switch-circle">
+                    {isDarkMode ? <FaMoon /> : <FaSun />}
+                </div>
             </div>
-          </nav>
         </div>
+
       </div>
     </header>
   );

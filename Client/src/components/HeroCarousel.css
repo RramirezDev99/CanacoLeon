@@ -1,0 +1,109 @@
+/* src/components/HeroCarousel.css */
+
+/* 1. Contenedor Principal */
+/* src/components/HeroCarousel.css */
+.hero-slider-container {
+  position: relative;
+  width: 100%;
+  /* La altura exacta del Figma */
+  height: 653px; 
+  
+  /* Opcional: Para pantallas muy pequeñas donde 653px es demasiado */
+  @media (max-height: 700px) {
+      height: 100vh; 
+  }
+}
+/* 2. Ajuste del Swiper para que llene el contenedor */
+.mySwiper {
+  width: 100%;
+  height: 100%;
+}
+
+/* 3. La Imagen de Fondo */
+.slide-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* 4. Overlay Oscuro (Esencial para que se lea el texto) */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Gradiente profesional: Oscuro arriba (para el navbar), transparente medio, oscuro abajo */
+  background: linear-gradient(
+    to bottom, 
+    rgba(0,0,0,0.7) 0%, 
+    rgba(0,0,0,0.1) 40%, 
+    rgba(0,0,0,0.6) 100%
+  );
+}
+
+/* 5. Contenido (Texto y Botón) */
+/* Usamos pointer-events: none en el contenedor para que no bloquee el swipe,
+   y pointer-events: auto en el botón para que sí funcione el click */
+.hero-content {
+  position: absolute;
+  z-index: 10; /* Encima de las fotos */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  width: 90%;
+  max-width: 900px;
+  pointer-events: none; 
+}
+
+.hero-content h1 {
+  font-size: 3.5rem; /* Ajusta según Figma */
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.hero-content p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.hero-cta-btn {
+  pointer-events: auto; /* Reactivar clicks */
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px; /* Redondo como píldora */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hero-cta-btn:hover {
+  background: white;
+  color: #0f3057; /* Azul Canaco */
+}
+
+/* --- Personalización de los controles de Swiper (Opcional) --- */
+.swiper-button-next,
+.swiper-button-prev {
+  color: rgba(255, 255, 255, 0.5) !important;
+  transition: color 0.3s;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: white !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: white !important;
+}

@@ -1,12 +1,12 @@
+/* index.css */
 body {
   margin: 0;
   font-family: 'Helvetica', 'Arial', sans-serif;
   
-  /* APLICACIÓN DEL TEMA */
+  /* Usamos las variables de theme.css */
   background-color: var(--bg-primary);
   color: var(--text-primary);
   
-  /* Transición suave para todo el sitio al cambiar tema */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
