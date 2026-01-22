@@ -1,23 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HeroCarousel from './components/HeroCarousel';
+import NewsSection from './components/NewsSection';
 import './App.css';
-
-// 1. IMPORTA LA IMAGEN AQUÍ
-import imagenConstruccion from './assets/construccion.jpg'; 
 
 // Componente para la página de Inicio
 const Inicio = () => {
   return (
     <div className="page-home">
       <HeroCarousel />
-      <div className="container" style={{ padding: '60px 20px', textAlign: 'center' }}>
-        <img 
-            src={imagenConstruccion} 
-            alt="Sitio en construcción" 
-            style={{ maxWidth: '100%', height: 'auto' }} 
-        />
-      </div>
+      <NewsSection />
     </div>
   );
 };
