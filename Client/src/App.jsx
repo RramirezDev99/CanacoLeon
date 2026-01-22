@@ -3,32 +3,50 @@ import Navbar from './components/Navbar';
 import HeroCarousel from './components/HeroCarousel';
 import './App.css';
 
-// 1. IMPORTA LA IMAGEN AQUÍ (Asegúrate de que la ruta sea ./ si assets está junto a App.js)
+// 1. IMPORTA LA IMAGEN AQUÍ
 import imagenConstruccion from './assets/construccion.jpg'; 
 
+// Componente para la página de Inicio
 const Inicio = () => {
   return (
     <div className="page-home">
       <HeroCarousel />
       <div className="container" style={{ padding: '60px 20px', textAlign: 'center' }}>
-        {/* 2. USA LA VARIABLE IMPORTADA EN EL SRC */}
         <img 
             src={imagenConstruccion} 
             alt="Sitio en construcción" 
-            style={{ maxWidth: '100%', height: 'auto' }} /* Estilo recomendado para evitar desbordes */
+            style={{ maxWidth: '100%', height: 'auto' }} 
         />
       </div>
     </div>
   );
 };
 
+// Componente Placeholder (Para que las otras páginas no den error)
+const PaginaTemporal = ({ titulo }) => (
+  <div style={{ marginTop: '120px', textAlign: 'center', fontSize: '2rem', color: '#555' }}>
+    <h1>{titulo}</h1>
+    <p>Sección en construcción...</p>
+  </div>
+);
+
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
       <Routes>
+        {/* Ruta Principal */}
         <Route path="/" element={<Inicio />} />
-        {/* ... resto de rutas ... */}
+
+        {/* --- RUTAS AGREGADAS PARA CORREGIR ERRORES --- */}
+        <Route path="/nosotros" element={<PaginaTemporal titulo="Nosotros" />} />
+        <Route path="/servicios" element={<PaginaTemporal titulo="Servicios" />} />
+        <Route path="/afiliarme-info" element={<PaginaTemporal titulo="Información de Afiliación" />} />
+        <Route path="/contacto" element={<PaginaTemporal titulo="Contacto" />} />
+        <Route path="/directorio" element={<PaginaTemporal titulo="Directorio Comercial" />} />
+        
+        {/* Ruta para el botón "Soy Afiliado" */}
+        <Route path="/afiliarme" element={<PaginaTemporal titulo="Portal de Afiliados" />} />
       </Routes>
     </BrowserRouter>
   );
