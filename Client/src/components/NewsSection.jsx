@@ -7,13 +7,12 @@ const NewsSection = () => {
   const [noticias, setNoticias] = useState([]);
 
   useEffect(() => {
-    // Asegúrate de que el puerto 7234 es el correcto de tu backend
-    fetch('https://localhost:7234/api/noticias') 
+    // Usamos http (sin S) y el puerto 5286
+    fetch('http://localhost:5286/api/noticias') 
       .then(response => response.json())
       .then(data => setNoticias(data))
       .catch(error => console.error("Error conectando:", error));
   }, []);
-
   return (
     <section className="news-section">
       {/* Fondo de Blobs */}

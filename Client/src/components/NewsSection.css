@@ -4,27 +4,33 @@
 .news-section {
     position: relative;
     width: 100%;
-    /* Espacio abajo para el fondo de Eventos */
-    padding: 120px 0 400px 0; 
-    background-color: #E6E6E6; 
     
-    /* Mantenemos el clip horizontal pero visible vertical */
-    overflow-x: clip; 
-    overflow-y: visible;
+    /* LA CLAVE: Fondo transparente para ver los blobs de atrás */
+    background-color: transparent; 
     
-    transition: background-color 0.3s ease;
-    z-index: 1; 
+    /* Opcional: Si quieres que el texto sea más legible sobre los blobs,
+       puedes agregar un efecto de vidrio muy sutil */
+    backdrop-filter: blur(0px); /* O súbelo a 5px si quieres efecto vidrio */
+    
+    padding: 80px 0;
+    overflow: hidden;
+    z-index: 10; /* Encima del fondo global */
+}
+
+/* IMPORTANTE: Si tienes alguna clase .background-blobs antigua aquí dentro, BORRALA */
+.background-blobs {
+    display: none; 
 }
 
 body.dark-mode .news-section {
-    background-color: #0f172a; 
+    background-color: transparent; /* AHORA: Deja ver los blobs y el arco */
 }
 
 /* --- CONTAINER --- */
 .news-container {
     position: relative;
-    width: 95%; 
-    max-width: 1600px;
+    width: 85%; 
+    max-width: 1800px;
     margin: 0 auto;
 }
 

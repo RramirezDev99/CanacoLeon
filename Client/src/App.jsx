@@ -5,17 +5,36 @@ import NewsSection from './components/NewsSection';
 import './App.css';
 import EventsSection from './components/EventsSection';
 import Footer from './components/Footer';
+
+
 const Inicio = () => {
   return (
     <div className="page-home">
+      
+      {/* 1. TU FONDO DE BLOBS Y PUNTOS (Lo que ya tenías) */}
+      <div className="background-blobs-global">
+          {/* ... tus blobs y el svg de puntos ... */}
+           <div className="global-svg-pattern"></div>
+           <div className="blob blob-1"></div>
+           <div className="blob blob-2"></div>
+           <div className="blob blob-3"></div>
+           <div className="blob blob-4"></div>
+           <div className="blob blob-center"></div>
+           <div className="blob blob-mid-left"></div>
+           <div className="blob blob-mid-right"></div>
+           <div className="blob blob-bottom-fill"></div>
+      </div>
+
+      {/* 2. AQUÍ AGREGAMOS TU ARCO SVG */}
+      <div className="background-arc"></div>
+
       <HeroCarousel />
       <NewsSection />
-      <EventsSection/>
-      <Footer/>
+      <EventsSection />
+      <Footer />
     </div>
   );
 };
-
 // Componente Placeholder (Para que las otras páginas no den error)
 const PaginaTemporal = ({ titulo }) => (
   <div style={{ marginTop: '120px', textAlign: 'center', fontSize: '2rem', color: '#555' }}>
