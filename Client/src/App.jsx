@@ -3,6 +3,8 @@ import Navbar from './components/Navbar';
 import HeroCarousel from './components/HeroCarousel';
 import NewsSection from './components/NewsSection';
 import './App.css';
+import EventsSection from './components/EventsSection';
+import Footer from './components/footer';
 
 // Componente para la página de Inicio
 const Inicio = () => {
@@ -10,6 +12,8 @@ const Inicio = () => {
     <div className="page-home">
       <HeroCarousel />
       <NewsSection />
+      <EventsSection/>
+      <Footer/>
     </div>
   );
 };

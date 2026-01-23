@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+/* --- FONDO PRINCIPAL --- */
+.footer-section {
+    width: 100%;
+    background: linear-gradient(0deg,rgba(2, 0, 36, 1) 0%, rgba(33, 31, 63, 1) 0%, rgba(70, 68, 95, 1) 18%, rgba(255, 255, 255, 1) 80%);
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 20;
+}
+
+/* --- TARJETA FLOTANTE --- */
+.footer-card {
+    background-color: white;
+    width: 100%;
+    max-width: 1700px;
+    border-radius: 50px;
+    padding: 50px 60px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    font-family: 'Inter', sans-serif;
+    color: #64748b;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+/* --- COLUMNA 1: MARCA (CORREGIDO: ALINEADO A LA IZQUIERDA) --- */
+.brand-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* ESTO MUEVE EL LOGO A LA IZQUIERDA */
+    text-align: left;        /* ESTO MUEVE EL TEXTO A LA IZQUIERDA */
+}
+
+.footer-logo {
+    margin-top: 20px;
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+.brand-text {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    max-width: 250px;
+}
+
+/* --- COLUMNAS DE MENÚ Y DIRECCIÓN (CORREGIDO: ALINEADO A LA IZQUIERDA) --- */
+/* Agregamos estas reglas para forzar la izquierda en las otras columnas */
+.menu-col, 
+.address-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* FUERZA ALINEACIÓN IZQUIERDA */
+    text-align: left;        /* FUERZA TEXTO IZQUIERDA */
+}
+
+/* Títulos */
+.footer-col h3 {
+    color: #1e3a8a;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    width: 100%;
+    text-align: left; /* ASEGURA QUE EL TÍTULO NO SE CENTRE */
+}
+
+/* Listas y Links */
+.menu-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-col li {
+    margin-bottom: 12px;
+}
+
+.menu-col a {
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+    display: inline-block; /* Permite que el hover funcione mejor */
+}
+
+.menu-col a:hover {
+    color: #3b82f6;
+}
+
+/* Dirección */
+.address-col p {
+    margin: 0 0 12px 0;
+    font-size: 0.95rem;
+    color: #94a3b8;
+}
+
+.address-col .phone {
+    font-weight: 600;
+    color: #64748b;
+    margin-top: 15px;
+}
+
+/* --- BOTTOM --- */
+.footer-bottom {
+    width: 100%;
+    text-align: center;
+}
+
+.divider {
+    width: 100%;
+    height: 1px;
+    background-color: #cbd5e1;
+    margin-bottom: 25px;
+}
+
+.copyright {
+    font-size: 0.8rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- RESPONSIVE (Móvil) --- */
+@media (max-width: 900px) {
+    .footer-card {
+        padding: 30px;
+        border-radius: 30px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        /* En móvil sí solemos centrar, pero si lo quieres a la izquierda también aquí, borra 'text-align: center' */
+        text-align: center; 
+    }
+
+    .brand-col, .menu-col, .address-col {
+        align-items: center; /* Centrado en móvil */
+    }
+    
+    .brand-text, .footer-col h3 {
+        text-align: center;
+    }
+}
