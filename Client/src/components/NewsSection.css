@@ -29,7 +29,7 @@ body.dark-mode .news-section {
 /* --- CONTAINER --- */
 .news-container {
     position: relative;
-    width: 85%; 
+    width: 100%; 
     max-width: 1800px;
     margin: 0 auto;
 }
@@ -234,4 +234,65 @@ body.dark-mode .see-all-link { color: #ffffff; }
     .header-container { text-align: center; padding-left: 0; }
     .section-title { text-align: center; }
     .news-footer { justify-content: center; padding-right: 0; }
+}
+
+
+/* --- NewsSection.css (AGREGAR AL FINAL) --- */
+
+@media (max-width: 768px) {
+    /* 1. Ajustes del Contenedor General */
+    .news-section {
+        padding: 60px 0; /* Menos espacio vertical */
+    }
+
+    .news-container {
+        width: 90%; /* Un poco más ancho en móvil */
+        padding: 0;
+    }
+
+    /* 2. CENTRAR EL TÍTULO A LA FUERZA */
+    .header-container {
+        text-align: center !important;
+        padding-left: 0 !important;
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-size: 32px !important; /* Letra más chica */
+        text-align: center !important;
+        width: 100%;
+    }
+
+    /* 3. ARREGLAR LAS TARJETAS GIGANTES */
+    .glass-card {
+        min-height: auto !important; /* ADIÓS A LOS 700PX FORZADOS */
+        height: auto;
+        margin-bottom: 20px;
+    }
+
+    .card-image-wrapper {
+        height: 200px; /* Imagen más bajita */
+    }
+
+    .card-content h3 {
+        font-size: 1.3rem; /* Título de noticia más pequeño */
+        min-height: auto; /* Que ocupe lo que tenga que ocupar */
+        -webkit-line-clamp: 2; /* Máximo 2 líneas */
+    }
+
+    .card-content p {
+        font-size: 0.9rem;
+        max-height: 100px; /* Limitar el texto para que no sea eterno */
+        overflow: hidden;
+    }
+
+    /* 4. Centrar el link de "Ver todas" */
+    .news-footer {
+        justify-content: center !important;
+        padding-right: 0 !important;
+    }
+    
+    .see-all-link {
+        font-size: 1.2rem;
+    }
 }

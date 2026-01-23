@@ -230,3 +230,30 @@ h1 {
     pointer-events: none; /* Para que no bloquee clicks en el footer */
     opacity: 0.8; /* Ajusta esto si lo sientes muy fuerte */
 }
+
+/* SOLUCIÓN FINAL PARA MÓVIL: DESAPARECER LOS BLOBS */
+/* --- App.css (AL FINAL DEL ARCHIVO) --- */
+
+@media (max-width: 768px) {
+    
+    /* 1. Ocultar los blobs pesados */
+    .blob, .blob-1, .blob-2, .blob-3, .blob-4, 
+    .blob-center, .blob-mid-left, .blob-mid-right, .blob-bottom-fill {
+        display: none !important;
+    }
+
+    /* 2. Fondo Base para Móvil (Modo Claro) */
+    .page-home {
+        background-color: #f8fafc; /* Gris muy clarito */
+        transition: background-color 0.3s ease; /* Para que el cambio no sea de golpe */
+    }
+
+    /* 3. --- LA CORRECCIÓN MÁGICA --- */
+    /* Fondo para Móvil en Modo Oscuro */
+    body.dark-mode .page-home {
+        background-color: #0b1120 !important; /* Negro azulado profundo (casi negro) */
+    }
+
+    /* Opcional: Si quieres ocultar el arco también en dark mode móvil para que sea full negro */
+    /* body.dark-mode .background-arc { opacity: 0.2; } */
+}

@@ -192,3 +192,132 @@ body.dark-mode .events-vignette {
     .section-title { font-size: 42px;}
     .nav-btn { display: none; }
 }
+
+/* --- EventsSection.css --- */
+
+/* ... (Todo tu código anterior se queda igual) ... */
+
+/* AGREGA ESTO AL FINAL DEL ARCHIVO PARA MÓVIL */
+@media (max-width: 768px) {
+    
+    /* 1. Ajustar contenedor para aprovechar pantalla completa */
+    .events-section {
+        margin-top: -50px; /* Menos margen negativo */
+        padding: 80px 0 100px 0;
+    }
+
+    .events-container {
+        width: 100%; /* Usar todo el ancho */
+        padding: 0;
+    }
+
+    .header-container {
+        padding-left: 20px;
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-size: 32px; /* Título más pequeño */
+        text-align: left; /* Mantener a la izquierda o center según gusto */
+    }
+
+    /* 2. Arreglar el Slider para touch */
+    .events-slider {
+        /* IMPORTANTE: En móvil no centramos, alineamos al inicio para poder scrollear */
+        justify-content: flex-start; 
+        padding: 10px 20px; /* Espacio a los lados */
+        gap: 20px; /* Menos espacio entre tarjetas */
+        min-height: auto; /* Quitar altura forzada */
+    }
+
+    /* 3. Reducir drásticamente las tarjetas */
+    .event-card {
+        min-width: 260px; /* DE 400px A 260px (Para que quepa en cualquier cel) */
+        height: 400px;    /* DE 600px A 400px */
+        border-radius: 25px;
+    }
+
+    .event-overlay {
+        padding: 25px;
+    }
+
+    .event-title {
+        font-size: 1.5rem; /* Título de tarjeta más chico */
+    }
+
+    .event-date-badge {
+        font-size: 0.75rem;
+        padding: 8px 15px;
+    }
+
+    /* Ocultar botones de navegación (flechas) en móvil porque usan el dedo */
+    .nav-btn {
+        display: none;
+    }
+}
+
+
+
+
+/* --- EventsSection.css (REEMPLAZAR EL MEDIA QUERY DEL FINAL) --- */
+
+@media (max-width: 768px) {
+    
+    .events-section {
+        margin-top: -50px;
+        padding: 60px 0 80px 0;
+    }
+
+    .events-container {
+        width: 100%;
+        padding: 0;
+    }
+
+    /* 1. CENTRADO TOTAL DEL HEADER */
+    .header-container {
+        padding-left: 0 !important; /* Quitamos el padding lateral */
+        margin-bottom: 30px;
+        text-align: center !important; /* Centramos el contenedor */
+        display: flex;
+        justify-content: center;
+    }
+
+    .section-title {
+        font-size: 32px;
+        text-align: center !important; /* Centramos el texto */
+        width: 90%; /* Para que no pegue en los bordes */
+    }
+
+    /* 2. Slider */
+    .events-slider {
+        justify-content: flex-start; /* Necesario para scroll horizontal */
+        padding: 10px 20px; 
+        gap: 15px;
+        min-height: auto;
+    }
+    
+    /* Para que el primer elemento no quede pegado al borde izquierdo */
+    .events-slider::before, .events-slider::after {
+        content: '';
+        min-width: 10px; /* Espaciador invisible */
+    }
+
+    /* 3. Tarjetas Móviles */
+    .event-card {
+        min-width: 260px;
+        height: 380px; /* Un poco más bajitas */
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .event-overlay {
+        padding: 20px;
+    }
+
+    .event-title {
+        font-size: 1.4rem;
+        line-height: 1.2;
+    }
+
+    .nav-btn { display: none; }
+}
