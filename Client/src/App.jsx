@@ -4,8 +4,7 @@ import HeroCarousel from './components/HeroCarousel';
 import NewsSection from './components/NewsSection';
 import './App.css';
 import EventsSection from './components/EventsSection';
-import Footer from './components/footer';
-
+import Footer from './components/Footer';
 // Componente para la página de Inicio
 const Inicio = () => {
   return (
