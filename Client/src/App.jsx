@@ -4,12 +4,14 @@ import HeroCarousel from './components/HeroCarousel';
 import NewsSection from './components/NewsSection';
 import './App.css';
 import EventsSection from './components/EventsSection';
+import Footer from './components/Footer';
 const Inicio = () => {
   return (
     <div className="page-home">
       <HeroCarousel />
       <NewsSection />
       <EventsSection/>
+      <Footer/>
     </div>
   );
 };
