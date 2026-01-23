@@ -1,61 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import { FaArrowRight } from 'react-icons/fa';
-import './NewsSection.css'; // Importante: Aquí llamamos a los estilos
+import './NewsSection.css';
 
 const NewsSection = () => {
   const [noticias, setNoticias] = useState([]);
 
   useEffect(() => {
-    // Usamos http (sin S) y el puerto 5286
-    fetch('http://localhost:5286/api/noticias') 
-      .then(response => response.json())
+    // Usamos el puerto correcto 5286
+    fetch('http://localhost:5286/api/noticias')
+      .then(res => res.json())
       .then(data => setNoticias(data))
-      .catch(error => console.error("Error conectando:", error));
+      .catch(err => console.error("Error cargando noticias:", err));
   }, []);
+
   return (
     <section className="news-section">
-      {/* Fondo de Blobs */}
-      <div className="background-blobs">
-          <div className="blob blob-blue-left"></div>
-          <div className="blob blob-blue-right"></div>
-      </div>
-
       <div className="news-container">
         
-        {/* Header */}
         <div className="header-container">
-             <h2 className="section-title">
-                Noticias Recientes
-             </h2>
+            <h2 className="section-title">Noticias Recientes</h2>
         </div>
 
-        {/* Grid de Noticias */}
         <div className="news-grid">
-          {noticias.length === 0 && <p style={{textAlign:'center', width:'100%'}}>Cargando noticias...</p>}
-
-          {noticias.map((nota) => (
-             <article key={nota.id} className="glass-card">
-                <div className="card-image-wrapper">
-                    <img 
-                      src={nota.imagen} 
-                      alt={nota.titulo} 
-                      onError={(e) => {e.target.src = "https://via.placeholder.com/300x200?text=CANACO"}}
-                    />
-                </div>
-                <div className="card-content">
-                    <h3>{nota.titulo}</h3>
-                    <p>{nota.resumen}</p>
-                </div>
-             </article>
+          {noticias.map((noticia, index) => (
+            <div key={noticia.id || index} className="glass-card">
+              <div className="card-image-wrapper">
+                {/* --- CAMBIO AQUÍ --- */}
+                {/* Forzamos la imagen que subiste a la carpeta public.
+                    Nota: En tu captura el archivo dice 'default-new.png.png' (doble png) */}
+                <img 
+                  src="/default-new.png" 
+                  alt="Portada de noticia" 
+                />
+              </div>
+              
+              <div className="card-content">
+                <h3>{noticia.titulo || noticia.Titulo}</h3>
+                <p>{noticia.resumen || noticia.Resumen}</p>
+              </div>
+            </div>
           ))}
         </div>
 
-        {/* Footer Link */}
         <div className="news-footer">
-          <NavLink to="/noticias" className="see-all-link">
-            TODAS LAS NOTICIAS <FaArrowRight style={{ marginLeft: '8px' }}/>
-          </NavLink>
+            <a href="/noticias" className="see-all-link">
+                Todas las noticias &rarr;
+            </a>
         </div>
 
       </div>
