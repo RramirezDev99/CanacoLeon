@@ -4,7 +4,6 @@ import HeroCarousel from './components/HeroCarousel';
 import NewsSection from './components/NewsSection';
 import './App.css';
 import EventsSection from './components/EventsSection';
-import Footer from './components/Footer'; // ✅ Correcto: la 'F' mayúscula igual al archivo// Componente para la página de Inicio
 const Inicio = () => {
   return (
     <div className="page-home">
