@@ -5,7 +5,9 @@ import NewsSection from './components/NewsSection';
 import './App.css';
 import EventsSection from './components/EventsSection';
 import Footer from './components/Footer';
-
+import Login from './pages/admin/Login'; // Asegúrate que esta ruta coincida con tu carpeta real
+import Dashboard from './pages/dashboard/Dashboard';       // <--- NUEVO
+import ProtectedRoute from './components/ProtectedRoute';  // <--- NUEVO
 
 const Inicio = () => {
   return (
@@ -35,6 +37,7 @@ const Inicio = () => {
     </div>
   );
 };
+
 // Componente Placeholder (Para que las otras páginas no den error)
 const PaginaTemporal = ({ titulo }) => (
   <div style={{ marginTop: '120px', textAlign: 'center', fontSize: '2rem', color: '#555' }}>
@@ -60,6 +63,16 @@ function App() {
         
         {/* Ruta para el botón "Soy Afiliado" */}
         <Route path="/afiliarme" element={<PaginaTemporal titulo="Portal de Afiliados" />} />
+        
+        {/* Ruta para el Login */}
+        <Route path="/login" element={<Login />} />
+
+        {/* --- AQUÍ ESTÁ LO NUEVO: ZONA PRIVADA (ADMIN) --- */}
+        {/* El ProtectedRoute actúa como guardia de seguridad aquí */}
+        <Route element={<ProtectedRoute />}>
+            <Route path="/admin" element={<Dashboard />} />
+        </Route>
+
       </Routes>
     </BrowserRouter>
   );
