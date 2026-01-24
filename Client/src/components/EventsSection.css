@@ -41,16 +41,18 @@ body.dark-mode .events-vignette {
 .events-container {
     position: relative;
     z-index: 1;
-    width: 85%; /* CAMBIO: Antes 95%. Esto crea "carriles" laterales para los botones */
-    max-width: 1800px;
+    /* CAMBIO: Copia exacta de Noticias */
+    width: 100%; 
+    max-width: none;
+    padding: 0 50px; /* Mismo padding = Misma alineación */
     margin: 0 auto;
+    box-sizing: border-box;
 }
-
 /* --- HEADER --- */
 .header-container {
     width: 100%;
-    margin-bottom: 60px; /* CAMBIO: Más separación con las tarjetas */
-    padding-left: 10px;
+    margin-bottom: 60px;
+    padding-left: 0;
 }
 
 .section-title {
@@ -147,7 +149,7 @@ body.dark-mode .events-vignette {
 
 /* --- BOTONES --- */
 .nav-btn {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.9); /* Un poco más sólidos para que se vean */
     backdrop-filter: blur(5px);
     border: 1px solid white;
     width: 80px;
@@ -161,8 +163,8 @@ body.dark-mode .events-vignette {
     font-size: 2rem;
     transition: all 0.2s;
     flex-shrink: 0;
-    z-index: 10;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    z-index: 20;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 .nav-btn:hover {
@@ -173,11 +175,11 @@ body.dark-mode .events-vignette {
 
 .left-btn { 
     position: absolute; 
-    left: -100px; /* CAMBIO: Los sacamos completamente a la izquierda */
+    left: 10px; /* CAMBIO: En lugar de -100px, los metemos a la pantalla */
 }
 .right-btn { 
     position: absolute; 
-    right: -100px; /* CAMBIO: Los sacamos completamente a la derecha */
+    right: 10px; /* CAMBIO: En lugar de -100px, los metemos a la pantalla */
 }
 
 /* MEDIA QUERIES (Para que no se rompa en pantallas pequeñas) */

@@ -29,11 +29,17 @@ body.dark-mode .news-section {
 /* --- CONTAINER --- */
 .news-container {
     position: relative;
+    /* CAMBIO: Usamos todo el espacio */
     width: 100%; 
-    max-width: 1800px;
+    max-width: none; /* Quitamos límites */
+    
+    /* CAMBIO: Este padding es el que alineará el texto. 
+       50px es un buen margen para laptops. */
+    padding: 0 50px; 
+    
     margin: 0 auto;
+    box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
 }
-
 /* --- BLOBS CSS (EL FONDO) --- */
 .background-blobs {
     position: absolute;
@@ -75,9 +81,7 @@ body.dark-mode .blob { opacity: 0.3; }
 .header-container {
     width: 100%;
     margin-bottom: 50px;
-    padding-left: 10px;
-    
-    /* CORRECCIÓN: AL FRENTE */
+    padding-left: 0; /* Dejamos que el container maneje el margen */
     position: relative;
     z-index: 10; 
 }
