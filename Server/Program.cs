@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // <--- 1. IMPORTANTE: Agrega esto para usar SQLite
-using Server.Data; // <--- ¡AGREGA ESTO!
+using Microsoft.EntityFrameworkCore; 
+using Server.Data;
+using Server.Models; // <--- 2. AGREGADO: Para que reconozca la clase 'Usuario' abajo
+
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. AGREGAR SERVICIOS ---
 
-// A) CONEXIÓN A BASE DE DATOS (SQLITE) - ¡ESTO ES LO QUE FALTABA!
-// ----------------------------------------------------------------
+// A) CONEXIÓN A BASE DE DATOS (SQLITE)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite("Data Source=canaco.db")); 
-// ----------------------------------------------------------------
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer(); 
@@ -45,14 +45,13 @@ builder.Services.AddAuthentication(options =>
 });
 
 
-// --- AQUÍ SE CONSTRUYE LA APP (NO PONER SERVICIOS DESPUÉS DE ESTO) ---
+// --- AQUÍ SE CONSTRUYE LA APP ---
 var app = builder.Build();
 
 
 // --- 2. CONFIGURAR EL PIPELINE Y SEMILLA DE DATOS ---
 
-// D) SEMILLA DE DATOS (CREAR ADMIN AUTOMÁTICO) - ¡ESTO TAMBIÉN ES NUEVO!
-// ----------------------------------------------------------------
+// D) SEMILLA DE DATOS (CREAR ADMIN AUTOMÁTICO)
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -72,13 +71,18 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("--> ¡USUARIO ADMIN CREADO! (admin@canaco.com / admin123)");
     }
 }
-// ----------------------------------------------------------------
 
+// Configuración de entorno
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();           
     app.UseSwaggerUI();         
 }
+
+// --- IMPORTANTE: ACTIVAR ARCHIVOS ESTÁTICOS ---
+// Esto permite que la carpeta wwwroot (y uploads) sea pública
+app.UseStaticFiles(); 
+// ----------------------------------------------
 
 app.UseCors("PermitirReact");
 app.UseAuthentication(); 

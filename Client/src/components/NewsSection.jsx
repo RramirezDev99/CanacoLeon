@@ -1,49 +1,68 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'; // Si usas react-router
 import './NewsSection.css';
 
 const NewsSection = () => {
   const [noticias, setNoticias] = useState([]);
 
   useEffect(() => {
-    // Usamos el puerto correcto 5286
     fetch('http://localhost:5286/api/noticias')
       .then(res => res.json())
-      .then(data => setNoticias(data))
-      .catch(err => console.error("Error cargando noticias:", err));
+      .then(data => {
+        // Ordenar por fecha y tomar las 3 primeras
+        const ordenadas = data.sort((a, b) => new Date(b.fechaPublicacion) - new Date(a.fechaPublicacion));
+        setNoticias(ordenadas.slice(0, 3));
+      })
+      .catch(err => console.error(err));
   }, []);
 
   return (
     <section className="news-section">
+      {/* Fondo de Blobs (Si no usas el externo) */}
+      <div className="background-blobs-css">
+          <div className="blob blob-blue-left"></div>
+          <div className="blob blob-blue-right"></div>
+      </div>
+
       <div className="news-container">
         
         <div className="header-container">
-            <h2 className="section-title">Noticias Recientes</h2>
+            <h2 className="section-title">Últimas Noticias</h2>
         </div>
 
         <div className="news-grid">
-          {noticias.map((noticia, index) => (
-            <div key={noticia.id || index} className="glass-card">
-              <div className="card-image-wrapper">
-                {/* --- CAMBIO AQUÍ --- */}
-                {/* Forzamos la imagen que subiste a la carpeta public. */}
-                <img 
-                  src="/default-new.png" 
-                  alt="Portada de noticia" 
-                />
-              </div>
+          {noticias.map((item, index) => (
+            <div key={item.id || index} className="glass-card">
               
-              <div className="card-content">
-                <h3>{noticia.titulo || noticia.Titulo}</h3>
-                <p>{noticia.resumen || noticia.Resumen}</p>
+              <div className="card-image-wrapper">
+                 <img 
+                    src={item.imagenUrl ? `http://localhost:5286${item.imagenUrl}` : '/default-new.png'} 
+                    alt={item.titulo} 
+                 />
               </div>
+
+              <div className="card-content">
+                {/* FECHA FORMATEADA */}
+                <span className="news-date">
+                    {new Date(item.fechaPublicacion).toLocaleDateString('es-ES', { 
+                        year: 'numeric', month: 'long', day: 'numeric' 
+                    })}
+                </span>
+
+                <h3>{item.titulo}</h3>
+                
+                {/* TEXTO SCROLLEABLE SIN BOTÓN */}
+                <p>{item.resumen}</p>
+              </div>
+
             </div>
           ))}
         </div>
 
         <div className="news-footer">
-            <a href="/noticias" className="see-all-link">
-                Todas las noticias &rarr;
-            </a>
+            <Link to="/noticias" className="see-all-link">
+                TODAS LAS NOTICIAS &rarr;
+            </Link>
         </div>
 
       </div>

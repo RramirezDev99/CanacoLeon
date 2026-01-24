@@ -80,7 +80,7 @@ const EventsSection = () => {
             <div className="events-slider" ref={sliderRef}>
                 {eventos.map((evento, index) => (
                     <div key={evento.id || index} className="event-card" style={{ 
-                        backgroundImage: `url(${evento.imagenUrl || evento.ImagenUrl || '/default-event.png'})` 
+                        backgroundImage: `url(${evento.imagenUrl ? `http://localhost:5286${evento.imagenUrl}` : '/default-event.png'})`
                     }}>
                         <div className="event-overlay">
                             <span className="event-date-badge">{evento.fecha || evento.Fecha}</span>

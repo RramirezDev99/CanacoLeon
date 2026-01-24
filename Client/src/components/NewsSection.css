@@ -4,84 +4,62 @@
 .news-section {
     position: relative;
     width: 100%;
-    
-    /* LA CLAVE: Fondo transparente para ver los blobs de atrás */
     background-color: transparent; 
-    
-    /* Opcional: Si quieres que el texto sea más legible sobre los blobs,
-       puedes agregar un efecto de vidrio muy sutil */
-    backdrop-filter: blur(0px); /* O súbelo a 5px si quieres efecto vidrio */
-    
+    backdrop-filter: blur(0px);
     padding: 80px 0;
     overflow: hidden;
-    z-index: 10; /* Encima del fondo global */
+    z-index: 10;
 }
 
-/* IMPORTANTE: Si tienes alguna clase .background-blobs antigua aquí dentro, BORRALA */
 .background-blobs {
-    display: none; 
+    display: none; /* Si usas el componente de blobs externo, deja esto así */
 }
 
 body.dark-mode .news-section {
-    background-color: transparent; /* AHORA: Deja ver los blobs y el arco */
+    background-color: transparent;
 }
 
 /* --- CONTAINER --- */
 .news-container {
     position: relative;
-    /* CAMBIO: Usamos todo el espacio */
     width: 95%; 
-    max-width: none; /* Quitamos límites */
-    
-    /* CAMBIO: Este padding es el que alineará el texto. 
-       50px es un buen margen para laptops. */
+    max-width: none;
     padding: 0 50px; 
-    
     margin: 0 auto;
-    box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
+    box-sizing: border-box;
 }
+
 /* --- BLOBS CSS (EL FONDO) --- */
-.background-blobs {
+.background-blobs-css { /* Le cambié nombre para no chocar si usas otro */
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* NIVEL 0: Al fondo de todo */
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     z-index: 0; 
     pointer-events: none;
 }
-
 .blob {
     position: absolute;
     border-radius: 50%;
     filter: blur(150px);
     opacity: 0.6;
 }
-
 .blob-blue-left {
-    width: 900px;
-    height: 900px;
+    width: 900px; height: 900px;
     background: radial-gradient(circle, #3b82f6 0%, rgba(59, 130, 246, 0) 70%);
-    top: -300px;
-    left: -300px;
+    top: -300px; left: -300px;
 }
-
 .blob-blue-right {
-    width: 1000px;
-    height: 1000px;
+    width: 1000px; height: 1000px;
     background: radial-gradient(circle, #2563eb 0%, rgba(37, 99, 235, 0) 70%);
-    bottom: -400px;
-    right: -300px;
+    bottom: -400px; right: -300px;
 }
-
 body.dark-mode .blob { opacity: 0.3; }
 
 /* --- HEADER (TÍTULO) --- */
 .header-container {
     width: 100%;
     margin-bottom: 50px;
-    padding-left: 0; /* Dejamos que el container maneje el margen */
+    padding-left: 0;
     position: relative;
     z-index: 10; 
 }
@@ -95,44 +73,56 @@ body.dark-mode .blob { opacity: 0.3; }
     margin: 0;
     letter-spacing: -1px;
 }
-
 body.dark-mode .section-title { color: #ffffff; }
 
 /* --- GRID DE TARJETAS --- */
-
 .news-grid {
     display: flex;
-    justify-content: space-between;
     
-    /* OJO: Tenías 'stretch' y luego 'center'. 
-       'stretch' es mejor para que todas las tarjetas midan lo mismo de alto. */
+    /* CAMBIO 1: 'center' para que si hay 1 o 2, se queden en medio y no a la izquierda */
+    justify-content: center; 
+    
+    /* CAMBIO 2: 'wrap' por seguridad responsive */
+    flex-wrap: wrap;
+    
     align-items: stretch; 
-    
     gap: 40px; 
-    
-    /* --- AQUÍ ESTÁ LA CORRECCIÓN --- */
-    width: 100%;           /* Intenta llenar el espacio... */
-    max-width: 1650px;     /* ...pero detente en 1650px (Tu medida) */
-    margin: 0 auto;        /* ...y CÉNTRATE automáticamente si sobra espacio */
-    
+    width: 100%;
+    max-width: 1650px;
+    margin: 0 auto;
     position: relative;
     z-index: 10;
 }
 
 /* --- TARJETA GLASS --- */
 .glass-card {
-    flex: 1; 
-    min-width: 320px; 
-    min-height: 700px; 
+    /* ERROR ANTERIOR: "flex: 1" hacía que una sola tarjeta engordara al 100%.
+       SOLUCIÓN: "flex: 0 1 30%" significa:
+         0 = NO crezcas más de lo que te digo.
+         1 = SI encógete si la pantalla es muy chica.
+         30% = Tu ancho base es el 30% del contenedor (para que quepan 3).
+    */
+    flex: 0 1 calc(33.333% - 40px); /* Cálculo matemático para 3 columnas exactas restando el gap */
+    
+    /* O si prefieres un ancho fijo en pixeles (ej. 400px), usa esto:
+       flex: 0 1 400px; 
+    */
+
+    min-width: 320px; /* Que no se hagan más flacas que esto */
+    height: 600px;    /* Tu altura fija que ya arreglamos */
+    
+    /* Estilos Glass (igual que antes) */
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border-radius: 30px;
     border: 1px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+    
     display: flex;
     flex-direction: column;
-    padding: 16px; 
+    padding: 16px;
+    overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -140,7 +130,6 @@ body.dark-mode .glass-card {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.7) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 .glass-card:hover {
     transform: translateY(-12px);
     box-shadow: 0 30px 60px rgba(59, 130, 246, 0.2);
@@ -148,79 +137,100 @@ body.dark-mode .glass-card {
 
 .card-image-wrapper {
     width: 100%;
-    height: 300px; 
+    
+    /* IMPORTANTE: Altura fija de la foto. Ni un pixel más. */
+    height: 280px; 
+    
     border-radius: 20px;
     overflow: hidden;
     background-color: #ccc;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Esto evita que la foto se aplaste */
+    position: relative;
 }
-
 .card-image-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    
+    /* LA CLAVE: 'cover' recorta la imagen para que llene el hueco sin deformarse */
+    object-fit: cover; 
+    object-position: center;
 }
 
+/* --- CONTENIDO DE TEXTO (AJUSTADO) --- */
 .card-content {
-    padding: 24px 10px 10px 10px;
+    padding: 20px 10px 10px 10px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    flex: 1;
-    overflow: hidden; 
+    gap: 10px;
+    
+    /* Ocupa todo el espacio que sobra (650px - 250px de foto - padding) */
+    flex: 1;       
+    
+    overflow: hidden; /* Evita que el texto empuje la tarjeta */
 }
 
+/* FECHA: Ahora más grande y visible */
+.news-date {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem; /* Más grande (antes era minúscula) */
+    font-weight: 700;
+    color: #555;
+    text-align: center; /* Centrada se ve mejor en este diseño */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+/* TÍTULO: Mucho más grande */
 .card-content h3 {
     font-family: 'Raleway', sans-serif;
-    font-weight: 700;
-    font-size: 29px; 
-    line-height: 1.3;
+    font-weight: 800;
+    font-size: 2.2rem; /* ~35px, mucho más impacto */
+    line-height: 1.1;
     color: #1a1a1a;
     margin: 0;
-    min-height: 95px; 
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    text-align: center; /* Títulos centrados lucen mejor en cards grandes */
+    
+    /* Si el título es muy largo, no lo cortamos todavía, dejamos que empuje */
 }
-
 body.dark-mode .card-content h3 { color: #ffffff; }
 
+/* PÁRRAFO: Texto grande y SCROLL si es necesario */
 .card-content p {
     font-family: 'Inter', sans-serif;
-    font-size: 25px; 
-    line-height: 1.6;
-    color: #555;
-    flex: 1; 
-    overflow-y: auto; 
-    padding-right: 8px;
+    font-size: 1.25rem; /* ~20px, letra de buen tamaño para leer */
+    line-height: 1.5;
+    color: #4b5563;
+    
+    margin-top: 10px;
+    flex: 1;             /* Crece hasta llenar la tarjeta */
+    overflow-y: auto;    /* Scroll solo aquí si sobra texto */
+    padding-right: 10px; /* Espacio para el scroll */
+    text-align: center;  /* Opcional: 'justify' o 'left' si prefieres */
 }
 
-.card-content p::-webkit-scrollbar { width: 4px; }
+/* Scrollbar bonita para el texto */
+.card-content p::-webkit-scrollbar { width: 6px; }
 .card-content p::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(0,0,0,0.2);
     border-radius: 4px;
 }
-
 body.dark-mode .card-content p { color: #cbd5e1; }
+body.dark-mode .card-content p::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); }
+
 
 /* --- FOOTER (LINK) --- */
 .news-footer {
     display: flex;
     justify-content: flex-end;
     margin-top: 40px; 
-    
-    /* CAMBIO: Le ponemos el mismo límite que al grid */
     width: 100%;
-    max-width: 1650px;      /* <-- EL FRENO */
-    margin-left: auto;      /* <-- CENTRADO IZQ */
-    margin-right: auto;     /* <-- CENTRADO DER */
-    
+    max-width: 1650px;
+    margin-left: auto; margin-right: auto;
     padding-right: 10px;
     position: relative;
     z-index: 10;
 }
-
 .see-all-link {
     font-family: 'Raleway', sans-serif;
     font-weight: 800;
@@ -233,82 +243,35 @@ body.dark-mode .card-content p { color: #cbd5e1; }
     transition: color 0.3s;
     letter-spacing: 1px;
 }
-
 body.dark-mode .see-all-link { color: #ffffff; }
 .see-all-link:hover { text-decoration:underline }
 
+/* --- MEDIA QUERIES --- */
 @media (max-width: 1200px) {
     .section-title { font-size: 42px; }
     .glass-card { min-height: 600px; }
-    .card-image-wrapper { height: 250px; }
+    .card-content h3 { font-size: 1.8rem; }
 }
 
 @media (max-width: 900px) {
     .news-grid { flex-direction: column; align-items: center; }
     .glass-card { width: 100%; max-width: 500px; min-height: auto; }
-    .card-image-wrapper { height: 250px; }
     .header-container { text-align: center; padding-left: 0; }
-    .section-title { text-align: center; }
     .news-footer { justify-content: center; padding-right: 0; }
 }
 
-
-/* --- NewsSection.css (AGREGAR AL FINAL) --- */
-
 @media (max-width: 768px) {
-    /* 1. Ajustes del Contenedor General */
-    .news-section {
-        padding: 60px 0; /* Menos espacio vertical */
-    }
-
-    .news-container {
-        width: 90%; /* Un poco más ancho en móvil */
-        padding: 0;
-    }
-
-    /* 2. CENTRAR EL TÍTULO A LA FUERZA */
-    .header-container {
-        text-align: center !important;
-        padding-left: 0 !important;
-        margin-bottom: 30px;
-    }
-
-    .section-title {
-        font-size: 32px !important; /* Letra más chica */
-        text-align: center !important;
-        width: 100%;
-    }
-
-    /* 3. ARREGLAR LAS TARJETAS GIGANTES */
-    .glass-card {
-        min-height: auto !important; /* ADIÓS A LOS 700PX FORZADOS */
-        height: auto;
-        margin-bottom: 20px;
-    }
-
-    .card-image-wrapper {
-        height: 200px; /* Imagen más bajita */
-    }
-
-    .card-content h3 {
-        font-size: 1.3rem; /* Título de noticia más pequeño */
-        min-height: auto; /* Que ocupe lo que tenga que ocupar */
-        -webkit-line-clamp: 2; /* Máximo 2 líneas */
-    }
-
-    .card-content p {
-        font-size: 0.9rem;
-        max-height: 100px; /* Limitar el texto para que no sea eterno */
-        overflow: hidden;
-    }
-
-    /* 4. Centrar el link de "Ver todas" */
-    .news-footer {
-        justify-content: center !important;
-        padding-right: 0 !important;
-    }
+    .news-section { padding: 60px 0; }
+    .news-container { width: 90%; padding: 0; }
+    .header-container { margin-bottom: 30px; }
+    .section-title { font-size: 32px; width: 100%; }
     
-    .see-all-link {
-        font-size: 1.2rem;
+    .glass-card { 
+        min-height: auto; 
+        height: auto; 
+        margin-bottom: 20px; 
     }
+    .card-image-wrapper { height: 250px; }
+    .card-content h3 { font-size: 1.5rem; }
+    .card-content p { font-size: 1rem; max-height: 150px; }
 }
