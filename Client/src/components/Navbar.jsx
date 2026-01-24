@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa'; // 1. Importamos iconos extra
+import { NavLink, Link } from 'react-router-dom'; // <--- OJO: Agregamos Link
+import { FaSun, FaMoon, FaBars, FaTimes, FaChevronDown } from 'react-icons/fa'; // <--- 1. Agregamos la flecha
 import logoIcon from '../assets/logo.svg';
 import logoText from '../assets/textIcon.svg';
 import './Navbar.css';
 
 function Navbar() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // 2. Estado del menú
+  const [menuOpen, setMenuOpen] = useState(false);
+  
+  // 2. ESTADO PARA EL MENÚ SECRETO
+  const [showAdmin, setShowAdmin] = useState(false); 
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -24,7 +27,7 @@ function Navbar() {
     <header className="navbar-container">
       <div className="navbar-content">
         
-        {/* 1. IZQUIERDA: Logo */}
+        {/* LOGO (Igual que antes) */}
         <div className="logo-container">
             <NavLink to="/" className="logo-area" onClick={() => setMenuOpen(false)}>
                 <img src={logoIcon} alt="Logo" className="brand-icon" />
@@ -32,7 +35,7 @@ function Navbar() {
             </NavLink>
         </div>
 
-        {/* 2. CENTRO: Links (Ahora con clase condicional para móvil) */}
+        {/* NAV LINKS (Igual que antes) */}
         <nav className={`nav-links ${menuOpen ? 'active-mobile' : ''}`}>
             <NavLink to="/" className={linkClass} onClick={toggleMenu}>Inicio</NavLink>
             <NavLink to="/nosotros" className={linkClass} onClick={toggleMenu}>Nosotros</NavLink>
@@ -41,7 +44,6 @@ function Navbar() {
             <NavLink to="/contacto" className={linkClass} onClick={toggleMenu}>Contacto</NavLink>
             <NavLink to="/directorio" className={linkClass} onClick={toggleMenu}>Directorio</NavLink>
             
-            {/* Botón extra SOLO para el menú móvil */}
             <div className="mobile-btn">
                 <NavLink to="/afiliarme" className="btn-afiliarme" onClick={toggleMenu}>
                     Soy Afiliado
@@ -49,22 +51,42 @@ function Navbar() {
             </div>
         </nav>
 
-        {/* 3. DERECHA: Botones de Acción */}
+        {/* ACCIONES (AQUÍ ESTÁ LA MAGIA) */}
         <div className="nav-actions">
-            {/* Botón de escritorio (se oculta en móvil con CSS) */}
-            <div className="desktop-btn">
+            
+            {/* 3. MODIFICAMOS EL CONTENEDOR DEL BOTÓN DE ESCRITORIO */}
+            <div className="desktop-btn admin-wrapper">
+                
+                {/* El Botón Azul Normal */}
                 <NavLink to="/afiliarme" className="btn-afiliarme">
                     Soy Afiliado
                 </NavLink>
+
+                {/* La Flechita Discreta */}
+                <button 
+                    className="admin-arrow-btn" 
+                    onClick={() => setShowAdmin(!showAdmin)}
+                >
+                    <FaChevronDown />
+                </button>
+
+                {/* El Menú Desplegable (Solo aparece si showAdmin es true) */}
+                {showAdmin && (
+                    <div className="admin-dropdown">
+                        <Link to="/login" onClick={() => setShowAdmin(false)}>
+                             Acceso Admin
+                        </Link>
+                    </div>
+                )}
             </div>
             
+            {/* TUS OTROS BOTONES (Tema y Hamburguesa) */}
             <div className="theme-switch" onClick={toggleTheme}>
                 <div className="switch-circle">
                     {isDarkMode ? <FaMoon /> : <FaSun />}
                 </div>
             </div>
 
-            {/* Icono Hamburguesa (Nuevo) */}
             <div className="hamburger-icon" onClick={toggleMenu}>
                 {menuOpen ? <FaTimes /> : <FaBars />}
             </div>

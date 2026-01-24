@@ -5,7 +5,6 @@
     position: relative;
     width: 100%;
     background-color: transparent;
-    /* CAMBIO 1: Bajé de -400px a -100px para que no se coma la sección anterior */
     margin-top: -100px; 
     padding: 150px 0 180px 0;
     overflow: hidden;
@@ -17,14 +16,11 @@
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    
-    /* CAMBIO: El degradado ahora es sutil en medio pero transparente arriba Y abajo */
     background: linear-gradient(to bottom, 
-        rgba(243, 244, 246, 0) 0%,     /* Transparente arriba */
-        rgba(243, 244, 246, 0.3) 50%,  /* Una neblina muy suave en el medio (opcional) */
-        rgba(243, 244, 246, 0) 100%    /* ¡TRANSPARENTE ABAJO! Aquí estaba el muro */
+        rgba(243, 244, 246, 0) 0%, 
+        rgba(243, 244, 246, 0.3) 50%, 
+        rgba(243, 244, 246, 0) 100% 
     );
-    
     pointer-events: none;
     z-index: -1;
 }
@@ -33,7 +29,7 @@ body.dark-mode .events-vignette {
     background: linear-gradient(to bottom, 
         rgba(15, 23, 42, 0) 0%, 
         rgba(15, 23, 42, 0.3) 50%,
-        rgba(15, 23, 42, 0) 100% /* Transparente abajo también */
+        rgba(15, 23, 42, 0) 100% 
     );
 }
 
@@ -41,18 +37,26 @@ body.dark-mode .events-vignette {
 .events-container {
     position: relative;
     z-index: 1;
-    /* CAMBIO: Copia exacta de Noticias */
-    width: 100%; 
+    width: 95%; 
     max-width: none;
-    padding: 0 50px; /* Mismo padding = Misma alineación */
+    padding: 0 50px; 
     margin: 0 auto;
     box-sizing: border-box;
 }
-/* --- HEADER --- */
+
+/* --- HEADER (Título + Botones) --- */
 .header-container {
     width: 100%;
-    margin-bottom: 60px;
-    padding-left: 0;
+    max-width: 1650px; /* Alineado con el grid */
+    margin: 0 auto 40px auto;
+    padding-left: 0; 
+    position: relative;
+    z-index: 10;
+    
+    /* FLEXBOX: Título izquierda, Botones derecha */
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
 }
 
 .section-title {
@@ -65,12 +69,41 @@ body.dark-mode .events-vignette {
     letter-spacing: -1px;
 }
 
+/* --- NUEVOS BOTONES (En el Header) --- */
+.nav-buttons-group {
+    display: flex;
+    gap: 15px; /* Separación entre flechas */
+}
+
+.nav-btn-small {
+    background-color: transparent;
+    border: 2px solid #252432; /* Borde oscuro elegante */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #252432;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.nav-btn-small:hover {
+    background-color: #252432;
+    color: white;
+    transform: scale(1.1);
+}
+
 /* --- SLIDER --- */
 .slider-wrapper {
     position: relative;
     display: flex;
     align-items: center;
     width: 100%; 
+    max-width: 2000px;
+    margin: 0 auto; 
 }
 
 .events-slider {
@@ -82,24 +115,24 @@ body.dark-mode .events-vignette {
     scrollbar-width: none;
     width: 100%;
     min-height: 620px;
-    /* ESTA ES LA LÍNEA MÁGICA PARA CENTRAR: */
-    justify-content: center;
+    justify-content: center; /* Centrado en Desktop */
 }
 .events-slider::-webkit-scrollbar { display: none; }
 
 /* --- TARJETAS --- */
 .event-card {
-    /* CAMBIO: Tarjetas más anchas y altas */
-    min-width: 400px; 
-    height: 600px;    
+    /* FÓRMULA: 4 Tarjetas exactas restando los huecos (3 huecos de 40px = 120px) */
+    min-width: calc((100% - 120px) / 4); 
+    width: calc((100% - 120px) / 4);
     
-    border-radius: 40px; /* Bordes más redondeados acorde al tamaño */
+    height: 600px;    
+    border-radius: 40px;
     background-color: #d1d5db; 
     background-size: cover;
     background-position: center;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15); /* Sombra más pronunciada */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
     transition: transform 0.3s ease;
     cursor: pointer;
     flex-shrink: 0;
@@ -109,10 +142,8 @@ body.dark-mode .events-vignette {
 
 .event-overlay {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    bottom: 0; left: 0;
+    width: 100%; height: 100%;
     background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.8) 100%);
     display: flex;
     flex-direction: column;
@@ -125,7 +156,7 @@ body.dark-mode .events-vignette {
 .event-date-badge {
     background-color: #0056b3;
     color: white;
-    padding: 10px 20px; /* Badge un poco más grande */
+    padding: 10px 20px;
     border-radius: 50px;
     font-family: 'Inter', sans-serif;
     font-size: 0.85rem;
@@ -139,7 +170,6 @@ body.dark-mode .events-vignette {
 .event-title {
     font-family: 'Raleway', sans-serif;
     color: white;
-    /* CAMBIO: Texto del evento más grande */
     font-size: 2.2rem; 
     font-weight: 700;
     line-height: 1.1;
@@ -147,124 +177,25 @@ body.dark-mode .events-vignette {
     text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
-/* --- BOTONES --- */
-.nav-btn {
-    background-color: rgba(255, 255, 255, 0.9); /* Un poco más sólidos para que se vean */
-    backdrop-filter: blur(5px);
-    border: 1px solid white;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #333;
-    font-size: 2rem;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    z-index: 20;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-
-.nav-btn:hover {
-    background-color: #0056b3;
-    color: white;
-    border-color: #0056b3;
-}
-
-.left-btn { 
-    position: absolute; 
-    left: 10px; /* CAMBIO: En lugar de -100px, los metemos a la pantalla */
-}
-.right-btn { 
-    position: absolute; 
-    right: 10px; /* CAMBIO: En lugar de -100px, los metemos a la pantalla */
-}
-
-/* MEDIA QUERIES (Para que no se rompa en pantallas pequeñas) */
+/* --- MEDIA QUERIES (Laptop) --- */
 @media (max-width: 1200px) {
     .section-title { font-size: 50px; }
-    .event-card { min-width: 320px; height: 500px; } /* Se encogen un poco en laptops */
-    .nav-btn { width: 50px; height: 50px; font-size: 1.2rem; }
+    .event-card { 
+        /* En pantallas medianas mostramos 3 en vez de 4 */
+        min-width: calc((100% - 80px) / 3);
+        width: calc((100% - 80px) / 3);
+        height: 500px; 
+    }
 }
 
 @media (max-width: 900px) {
-    .header-container { text-align: center; padding-left: 0; }
     .section-title { font-size: 42px;}
-    .nav-btn { display: none; }
+    .nav-buttons-group { display: none; } /* Ocultamos botones, usan touch */
+    .header-container { justify-content: center; } /* Centramos título */
 }
 
-/* --- EventsSection.css --- */
-
-/* ... (Todo tu código anterior se queda igual) ... */
-
-/* AGREGA ESTO AL FINAL DEL ARCHIVO PARA MÓVIL */
+/* --- MEDIA QUERIES (Móvil) --- */
 @media (max-width: 768px) {
-    
-    /* 1. Ajustar contenedor para aprovechar pantalla completa */
-    .events-section {
-        margin-top: -50px; /* Menos margen negativo */
-        padding: 80px 0 100px 0;
-    }
-
-    .events-container {
-        width: 100%; /* Usar todo el ancho */
-        padding: 0;
-    }
-
-    .header-container {
-        padding-left: 20px;
-        margin-bottom: 30px;
-    }
-
-    .section-title {
-        font-size: 32px; /* Título más pequeño */
-        text-align: left; /* Mantener a la izquierda o center según gusto */
-    }
-
-    /* 2. Arreglar el Slider para touch */
-    .events-slider {
-        /* IMPORTANTE: En móvil no centramos, alineamos al inicio para poder scrollear */
-        justify-content: flex-start; 
-        padding: 10px 20px; /* Espacio a los lados */
-        gap: 20px; /* Menos espacio entre tarjetas */
-        min-height: auto; /* Quitar altura forzada */
-    }
-
-    /* 3. Reducir drásticamente las tarjetas */
-    .event-card {
-        min-width: 260px; /* DE 400px A 260px (Para que quepa en cualquier cel) */
-        height: 400px;    /* DE 600px A 400px */
-        border-radius: 25px;
-    }
-
-    .event-overlay {
-        padding: 25px;
-    }
-
-    .event-title {
-        font-size: 1.5rem; /* Título de tarjeta más chico */
-    }
-
-    .event-date-badge {
-        font-size: 0.75rem;
-        padding: 8px 15px;
-    }
-
-    /* Ocultar botones de navegación (flechas) en móvil porque usan el dedo */
-    .nav-btn {
-        display: none;
-    }
-}
-
-
-
-
-/* --- EventsSection.css (REEMPLAZAR EL MEDIA QUERY DEL FINAL) --- */
-
-@media (max-width: 768px) {
-    
     .events-section {
         margin-top: -50px;
         padding: 60px 0 80px 0;
@@ -275,51 +206,49 @@ body.dark-mode .events-vignette {
         padding: 0;
     }
 
-    /* 1. CENTRADO TOTAL DEL HEADER */
+    /* Header centrado */
     .header-container {
-        padding-left: 0 !important; /* Quitamos el padding lateral */
+        padding-left: 0 !important;
         margin-bottom: 30px;
-        text-align: center !important; /* Centramos el contenedor */
+        text-align: center !important;
         display: flex;
         justify-content: center;
+        flex-direction: column; /* Pone título y botones en columna (aunque botones se ocultan) */
     }
 
     .section-title {
         font-size: 32px;
-        text-align: center !important; /* Centramos el texto */
-        width: 90%; /* Para que no pegue en los bordes */
+        text-align: center !important;
+        width: 90%;
+    }
+    
+    .nav-buttons-group {
+        display: none; /* Aseguramos que no salgan en móvil */
     }
 
-    /* 2. Slider */
+    /* Slider Ajustado */
     .events-slider {
-        justify-content: flex-start; /* Necesario para scroll horizontal */
+        justify-content: flex-start; /* Alineado al inicio para hacer scroll */
         padding: 10px 20px; 
         gap: 15px;
         min-height: auto;
     }
     
-    /* Para que el primer elemento no quede pegado al borde izquierdo */
+    /* Espaciador invisible para que no se pegue al borde izq */
     .events-slider::before, .events-slider::after {
         content: '';
-        min-width: 10px; /* Espaciador invisible */
+        min-width: 10px; 
     }
 
-    /* 3. Tarjetas Móviles */
+    /* Tarjetas Móviles */
     .event-card {
-        min-width: 260px;
-        height: 380px; /* Un poco más bajitas */
+        min-width: 260px; /* Tamaño fijo para móvil */
+        width: 260px;
+        height: 380px;
         border-radius: 25px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
-    .event-overlay {
-        padding: 20px;
-    }
-
-    .event-title {
-        font-size: 1.4rem;
-        line-height: 1.2;
-    }
-
-    .nav-btn { display: none; }
+    .event-overlay { padding: 20px; }
+    .event-title { font-size: 1.4rem; line-height: 1.2; }
 }

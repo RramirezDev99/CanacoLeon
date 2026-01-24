@@ -276,3 +276,86 @@ body.dark-mode .switch-circle {
     color: white; /* Color del icono en Dark Mode */
   }
 }
+
+/* --- ZONA DE ACCESO ADMIN --- */
+
+/* Convertimos el contenedor en Flex para que la flecha quede pegadita */
+.desktop-btn.admin-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px; /* Espacio chiquito entre botón y flecha */
+    position: relative; /* Clave para que el menú flote respecto a esto */
+}
+
+/* El botón de la flechita (Sutil) */
+.admin-arrow-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8; /* Gris suave */
+    font-size: 12px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s, transform 0.3s;
+    border-radius: 50%;
+}
+
+.admin-arrow-btn:hover {
+    color: #3b82f6; /* Se pone azulito al pasar el mouse */
+    background-color: rgba(59, 130, 246, 0.1);
+    transform: translateY(1px);
+}
+
+/* El Menú Flotante */
+.admin-dropdown {
+    position: absolute;
+    top: 110%; /* Justo debajo del botón */
+    right: 0;
+    background-color: white;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+    min-width: 150px;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+/* Enlace dentro del menú */
+.admin-dropdown a {
+    display: block;
+    text-decoration: none;
+    color: #334155;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.admin-dropdown a:hover {
+    background-color: #f1f5f9;
+    color: #1e3a8a;
+}
+
+/* Pequeña animación de entrada */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* MODO OSCURO */
+body.dark-mode .admin-dropdown {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+
+body.dark-mode .admin-dropdown a {
+    color: #e2e8f0;
+}
+
+body.dark-mode .admin-dropdown a:hover {
+    background-color: #334155;
+}

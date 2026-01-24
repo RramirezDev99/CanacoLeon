@@ -30,7 +30,7 @@ body.dark-mode .news-section {
 .news-container {
     position: relative;
     /* CAMBIO: Usamos todo el espacio */
-    width: 100%; 
+    width: 95%; 
     max-width: none; /* Quitamos límites */
     
     /* CAMBIO: Este padding es el que alineará el texto. 
@@ -209,10 +209,14 @@ body.dark-mode .card-content p { color: #cbd5e1; }
     display: flex;
     justify-content: flex-end;
     margin-top: 40px; 
-    width: 100%;
-    padding-right: 10px;
     
-    /* CORRECCIÓN: AL FRENTE */
+    /* CAMBIO: Le ponemos el mismo límite que al grid */
+    width: 100%;
+    max-width: 1650px;      /* <-- EL FRENO */
+    margin-left: auto;      /* <-- CENTRADO IZQ */
+    margin-right: auto;     /* <-- CENTRADO DER */
+    
+    padding-right: 10px;
     position: relative;
     z-index: 10;
 }
@@ -220,7 +224,7 @@ body.dark-mode .card-content p { color: #cbd5e1; }
 .see-all-link {
     font-family: 'Raleway', sans-serif;
     font-weight: 800;
-    font-size: 27px;
+    font-size: 35px;
     color: #333;
     text-decoration: none;
     text-transform: uppercase;

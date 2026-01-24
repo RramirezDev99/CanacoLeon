@@ -1,65 +1,88 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; // <--- 1. IMPORTANTE: Agrega esto para usar SQLite
+using Server.Data; // <--- ¡AGREGA ESTO!
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. AGREGAR SERVICIOS ---
 
-// A) Habilitamos los Controladores (para que lea tu archivo NoticiasController.cs)
-builder.Services.AddControllers();
+// A) CONEXIÓN A BASE DE DATOS (SQLITE) - ¡ESTO ES LO QUE FALTABA!
+// ----------------------------------------------------------------
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite("Data Source=canaco.db")); 
+// ----------------------------------------------------------------
 
-// B) Habilitamos CORS (para que React pueda pedir datos)
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer(); 
+builder.Services.AddSwaggerGen();           
+
+// B) Configuración CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirReact",
-        policy => policy.WithOrigins("http://localhost:5173") // Asegúrate que este sea el puerto de tu React
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
 });
 
-// Lo que ya tenías (OpenAPI)
-builder.Services.AddOpenApi();
+// C) Configuración JWT
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? ""))
+    };
+});
 
+
+// --- AQUÍ SE CONSTRUYE LA APP (NO PONER SERVICIOS DESPUÉS DE ESTO) ---
 var app = builder.Build();
 
-// --- 2. CONFIGURAR EL PIPELINE ---
+
+// --- 2. CONFIGURAR EL PIPELINE Y SEMILLA DE DATOS ---
+
+// D) SEMILLA DE DATOS (CREAR ADMIN AUTOMÁTICO) - ¡ESTO TAMBIÉN ES NUEVO!
+// ----------------------------------------------------------------
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    // Esto crea el archivo canaco.db si no existe
+    context.Database.EnsureCreated();
+
+    // Si la tabla usuarios está vacía, creamos al Admin
+    if (!context.Usuarios.Any())
+    {
+        context.Usuarios.Add(new Usuario
+        {
+            Nombre = "Admin Principal",
+            Email = "admin@canaco.com",
+            PasswordHash = "admin123" 
+        });
+        context.SaveChanges();
+        Console.WriteLine("--> ¡USUARIO ADMIN CREADO! (admin@canaco.com / admin123)");
+    }
+}
+// ----------------------------------------------------------------
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();           
+    app.UseSwaggerUI();         
 }
 
-app.UseHttpsRedirection();
-
-// C) Usamos la política CORS (IMPORTANTE: Ponerlo antes de los Maps)
 app.UseCors("PermitirReact");
-
-// D) Mapeamos los controladores (Esto activa la ruta /api/noticias)
+app.UseAuthentication(); 
+app.UseAuthorization();  
 app.MapControllers();
 
-
-// --- 3. TU CÓDIGO ORIGINAL (NO SE TOCA) ---
-// Dejamos esto aquí para que tu ejemplo de clima siga funcionando si lo necesitas
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

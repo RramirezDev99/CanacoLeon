@@ -1,25 +1,29 @@
-// Server/Controllers/NoticiasController.cs
 using Microsoft.AspNetCore.Mvc;
-using Server.Models; // Asegúrate de que coincida con tu namespace
+using Microsoft.EntityFrameworkCore; // Necesario para .ToListAsync()
+using Server.Data;   // Necesario para conectar la BD
+using Server.Models;
 
 namespace Server.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")] // La ruta será: /api/noticias
+    [Route("api/[controller]")]
     public class NoticiasController : ControllerBase
     {
-        // Simulamos la base de datos con esta lista estática
-        private static readonly List<Noticia> NoticiasMock = new List<Noticia>
-        {
-            new Noticia { Id = 1, Titulo = "Comercio se suma a Marca Gto", Resumen = "Resumen de prueba 1...", Imagen = "/assets/default-new.png" },
-            new Noticia { Id = 2, Titulo = "Expo Provee", Resumen = "Resumen de prueba 2...", Imagen = "/assets/default-new.png" },
-            new Noticia { Id = 3, Titulo = "Feria Regreso a Clases", Resumen = "Resumen de prueba 3...", Imagen = "/assets/default-new.png" }
-        };
+        // 1. Preparamos la conexión
+        private readonly ApplicationDbContext _context;
 
-        [HttpGet]
-        public IEnumerable<Noticia> Get()
+        // 2. Recibimos la conexión en el constructor
+        public NoticiasController(ApplicationDbContext context)
         {
-            return NoticiasMock;
+            _context = context;
+        }
+
+        // 3. Método GET real (Asíncrono y directo a la BD)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Noticia>>> Get()
+        {
+            // Busca en la tabla 'Noticias' y regrésalas todas
+            return await _context.Noticias.ToListAsync();
         }
     }
 }

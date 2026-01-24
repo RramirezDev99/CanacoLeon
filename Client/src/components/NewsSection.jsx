@@ -25,8 +25,7 @@ const NewsSection = () => {
             <div key={noticia.id || index} className="glass-card">
               <div className="card-image-wrapper">
                 {/* --- CAMBIO AQUÍ --- */}
-                {/* Forzamos la imagen que subiste a la carpeta public.
-                    Nota: En tu captura el archivo dice 'default-new.png.png' (doble png) */}
+                {/* Forzamos la imagen que subiste a la carpeta public. */}
                 <img 
                   src="/default-new.png" 
                   alt="Portada de noticia" 
