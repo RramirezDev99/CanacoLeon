@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './dashboard.css';
+import './Dashboard.css';
 
 const API_URL = 'http://localhost:5286/api';
 
