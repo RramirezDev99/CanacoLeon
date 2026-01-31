@@ -3,8 +3,7 @@ import "./AboutBanner.css";
 
 // 1. IMPORTA LA IMAGEN AQUÍ
 // (Asegúrate que la ruta coincida con donde la pusiste)
-import bannerImg from "../../assets/blue-banner.jpg";
-
+import bannerImg from "../assets/blue-banner.jpg";
 const AboutBanner = () => {
   return (
     <section className="about-banner-container">
