@@ -1,0 +1,154 @@
+.president-section {
+    background-color: transparent; 
+    /* Quitamos padding vertical excesivo para que se sienta como un bloque sólido */
+    padding: 0; 
+    width: 100%;
+    position: relative;
+    z-index: 1;
+
+
+    /* --- AQUÍ ESTÁ EL CAMBIO --- */
+    margin-top: 100px;    /* Separa del banner de arriba */
+    margin-bottom: 100px; /* Separa del siguiente contenido (Misión/Visión) */
+}
+
+.president-container {
+    /* CAMBIO: Ancho total sin restricciones */
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    
+    background-color: #ffffff;
+    /* CAMBIO: Quitamos bordes redondeados para que sea una franja completa */
+    border-radius: 0; 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* Sombra sutil abajo */
+    overflow: hidden; 
+    
+    display: flex;
+    align-items: stretch; 
+    gap: 0; 
+    
+    /* Aseguramos una altura mínima para que imponga presencia */
+    min-height: 600px; 
+}
+
+/* --- FOTO (Izquierda) --- */
+.president-photo-col {
+    /* Ajusta este porcentaje si quieres más o menos foto. 40% suele verse bien */
+    flex: 0 0 40%; 
+    position: relative;
+}
+
+.photo-frame {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: #eee;
+}
+
+.photo-frame img {
+    width: 100%;
+    height: 100%;
+    /* 'cover' asegura que la foto llene el espacio sin deformarse */
+    object-fit: cover; 
+    object-position: top center; 
+    display: block; 
+}
+
+/* --- TEXTO (Derecha) --- */
+.president-text-col {
+    flex: 1; /* Toma el resto del espacio (60%) */
+    text-align: left;
+    
+    /* Padding generoso para que el texto respire */
+    padding: 60px 80px; 
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrado verticalmente */
+}
+
+/* Títulos y textos (Se mantienen igual, solo ajustamos tamaños si es necesario) */
+.president-name {
+    font-family: 'Raleway', sans-serif;
+    font-size: 3rem; /* Un poco más grande para pantalla completa */
+    color: #1e3a8a; 
+    text-transform: uppercase;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: 1px;
+}
+
+.president-role {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.3rem;
+    color: #1e3a8a;
+    font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 25px;
+    opacity: 0.9;
+}
+
+.blue-zigzag {
+    width: 80px;
+    height: 6px;
+    background: repeating-linear-gradient(
+      45deg,
+      #2563eb,
+      #2563eb 10px,
+      transparent 10px,
+      transparent 18px
+    );
+    margin-bottom: 30px;
+}
+
+.president-message p {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.15rem; /* Texto un poco más legible */
+    color: #4b5563; 
+    line-height: 1.8; 
+    margin-bottom: 20px;
+    max-width: 800px; /* Evita que las líneas de texto sean eternas en pantallas muy anchas */
+}
+
+.president-message p:first-child {
+    font-weight: 600; 
+    color: #1e3a8a;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .president-container {
+        flex-direction: column; 
+        height: auto; /* Altura automática en móvil */
+        min-height: auto;
+    }
+
+    .president-photo-col {
+        flex: none;
+        width: 100%;
+        height: 400px; /* Altura fija para la foto en móvil */
+    }
+    
+    .president-text-col {
+        padding: 40px 20px;
+        align-items: center; 
+        text-align: center;
+    }
+    
+    .president-name { font-size: 2.2rem; }
+    
+    .blue-zigzag { align-self: center; }
+}
+
+/* MODO OSCURO */
+body.dark-mode .president-container {
+    background-color: #1e293b; 
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+body.dark-mode .president-name { color: #fff; }
+body.dark-mode .president-role { color: #93c5fd; }
+body.dark-mode .president-message p { color: #cbd5e1; }
+body.dark-mode .president-message p:first-child { color: #fff; }

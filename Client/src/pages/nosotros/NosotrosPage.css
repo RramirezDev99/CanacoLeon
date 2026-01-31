@@ -1,0 +1,14 @@
+/* src/pages/nosotros/NosotrosPage.css */
+
+.nosotros-page-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    background-color: transparent; 
+    padding-top: 0px; 
+}
+
+/* Solo para que veas que hay espacio abajo */
+.nosotros-content-placeholder {
+    padding: 50px;
+    text-align: center;
+}

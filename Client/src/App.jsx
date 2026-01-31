@@ -1,46 +1,45 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import HeroCarousel from './components/HeroCarousel';
-import NewsSection from './components/NewsSection';
-import './App.css';
-import EventsSection from './components/EventsSection';
-import Footer from './components/Footer';
-import Login from './pages/admin/Login'; // Asegúrate que esta ruta coincida con tu carpeta real
-import Dashboard from './pages/dashboard/Dashboard';       // <--- NUEVO
-import ProtectedRoute from './components/ProtectedRoute';  // <--- NUEVO
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// --- COMPONENTES ---
+import Navbar from "./components/Navbar";
+import HeroCarousel from "./components/HeroCarousel";
+import NewsSection from "./components/NewsSection";
+import EventsSection from "./components/EventsSection";
+import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+// --- PÁGINAS ---
+import Login from "./pages/admin/Login";
+import Dashboard from "./pages/dashboard/Dashboard";
+import NoticiasPage from "./pages/noticias/NoticiasPage";
+import NosotrosPage from "./pages/nosotros/NosotrosPage"; // <--- 1. IMPORT AGREGADO
+
+// --- ESTILOS ---
+import "./App.css";
 
 const Inicio = () => {
   return (
     <div className="page-home">
-      
-      {/* 1. TU FONDO DE BLOBS Y PUNTOS (Lo que ya tenías) */}
-      <div className="background-blobs-global">
-          {/* ... tus blobs y el svg de puntos ... */}
-           <div className="global-svg-pattern"></div>
-           <div className="blob blob-1"></div>
-           <div className="blob blob-2"></div>
-           <div className="blob blob-3"></div>
-           <div className="blob blob-4"></div>
-           <div className="blob blob-center"></div>
-           <div className="blob blob-mid-left"></div>
-           <div className="blob blob-mid-right"></div>
-           <div className="blob blob-bottom-fill"></div>
-      </div>
-
-      {/* 2. AQUÍ AGREGAMOS TU ARCO SVG */}
-      <div className="background-arc"></div>
-
+      {/* AQUÍ YA NO VAN LOS BLOBS, SOLO EL CONTENIDO EXCLUSIVO DE INICIO */}
       <HeroCarousel />
       <NewsSection />
       <EventsSection />
-      <Footer />
     </div>
   );
 };
 
-// Componente Placeholder (Para que las otras páginas no den error)
+// Componente Placeholder (Para páginas que aún no haces)
 const PaginaTemporal = ({ titulo }) => (
-  <div style={{ marginTop: '120px', textAlign: 'center', fontSize: '2rem', color: '#555' }}>
+  <div
+    style={{
+      marginTop: "120px",
+      textAlign: "center",
+      fontSize: "2rem",
+      color: "#555",
+      minHeight: "50vh",
+    }}
+  >
     <h1>{titulo}</h1>
     <p>Sección en construcción...</p>
   </div>
@@ -49,31 +48,63 @@ const PaginaTemporal = ({ titulo }) => (
 function App() {
   return (
     <BrowserRouter>
+      {/* --- FONDO GLOBAL (VISIBLE EN TODAS LAS PÁGINAS) --- */}
+      <div className="background-blobs-global">
+        <div className="global-svg-pattern"></div>
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
+        <div className="blob blob-3"></div>
+        <div className="blob blob-4"></div>
+        <div className="blob blob-center"></div>
+        <div className="blob blob-mid-left"></div>
+        <div className="blob blob-mid-right"></div>
+        <div className="blob blob-bottom-fill"></div>
+      </div>
+
+      <div className="background-arc"></div>
+
+      {/* --- NAVBAR SIEMPRE VISIBLE --- */}
       <Navbar />
+
       <Routes>
-        {/* Ruta Principal */}
+        {/* Rutas Principales */}
         <Route path="/" element={<Inicio />} />
+        <Route path="/noticias" element={<NoticiasPage />} />
 
-        {/* --- RUTAS AGREGADAS PARA CORREGIR ERRORES --- */}
-        <Route path="/nosotros" element={<PaginaTemporal titulo="Nosotros" />} />
-        <Route path="/servicios" element={<PaginaTemporal titulo="Servicios" />} />
-        <Route path="/afiliarme-info" element={<PaginaTemporal titulo="Información de Afiliación" />} />
-        <Route path="/contacto" element={<PaginaTemporal titulo="Contacto" />} />
-        <Route path="/directorio" element={<PaginaTemporal titulo="Directorio Comercial" />} />
-        
-        {/* Ruta para el botón "Soy Afiliado" */}
-        <Route path="/afiliarme" element={<PaginaTemporal titulo="Portal de Afiliados" />} />
-        
-        {/* Ruta para el Login */}
+        {/* <--- 2. RUTA CORREGIDA: AHORA LLEVA A TU PÁGINA REAL */}
+        <Route path="/nosotros" element={<NosotrosPage />} />
+
+        {/* Rutas Temporales (Placeholders) */}
+        <Route
+          path="/servicios"
+          element={<PaginaTemporal titulo="Servicios" />}
+        />
+        <Route
+          path="/afiliarme-info"
+          element={<PaginaTemporal titulo="Información de Afiliación" />}
+        />
+        <Route
+          path="/contacto"
+          element={<PaginaTemporal titulo="Contacto" />}
+        />
+        <Route
+          path="/directorio"
+          element={<PaginaTemporal titulo="Directorio Comercial" />}
+        />
+        <Route
+          path="/afiliarme"
+          element={<PaginaTemporal titulo="Portal de Afiliados" />}
+        />
+
+        {/* Rutas Admin */}
         <Route path="/login" element={<Login />} />
-
-        {/* --- AQUÍ ESTÁ LO NUEVO: ZONA PRIVADA (ADMIN) --- */}
-        {/* El ProtectedRoute actúa como guardia de seguridad aquí */}
         <Route element={<ProtectedRoute />}>
-            <Route path="/admin" element={<Dashboard />} />
+          <Route path="/admin" element={<Dashboard />} />
         </Route>
-
       </Routes>
+
+      {/* --- FOOTER SIEMPRE VISIBLE --- */}
+      <Footer />
     </BrowserRouter>
   );
 }
