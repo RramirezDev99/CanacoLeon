@@ -1,0 +1,157 @@
+/* src/components/ServiciosSection.css */
+
+/* Contenedor General */
+.servicios-section-container {
+    width: 100%;
+    padding-bottom: 80px;
+    position: relative;
+    z-index: 10;
+}
+
+/* --- CAMBIO AQUÍ: ANCHO AL 95% --- */
+.servicios-wrapper {
+    width: 95%;          /* Ocupa casi toda la pantalla */
+    max-width: 1900px;   /* Un límite solo para pantallas gigantes 4K */
+    margin: 50px auto 0; /* Centrado */
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 40px; 
+}
+
+/* --- TARJETA (El Marco General) --- */
+.servicio-card {
+    display: flex;
+    align-items: center; 
+    justify-content: space-between;
+    gap: 50px; /* Más espacio entre foto y texto porque ahora es más ancha */
+    
+    /* Degradado Blanco -> Azulito suave */
+    background: linear-gradient(
+        180deg, 
+        rgba(255, 255, 255, 0.9) 0%, 
+        rgba(215, 235, 255, 0.85) 100%
+    );
+    
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    /* Borde blanco brillante */
+    border: 2px solid rgba(255, 255, 255, 1);
+    
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
+    border-radius: 20px; 
+    
+    /* Padding interno (marco) */
+    padding: 25px; 
+    
+    width: 100%;
+    min-height: 280px; 
+    
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.servicio-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(59, 130, 246, 0.25);
+}
+
+/* --- MODO REVERSE --- */
+.servicio-card.reverse {
+    flex-direction: row-reverse;
+}
+
+/* --- CONTENEDOR DE LA FOTO --- */
+.servicio-img-container {
+    /* La foto ocupa un tamaño fijo pero generoso */
+    flex: 0 0 450px; 
+    height: 300px; /* Un poco más alta para aprovechar el ancho */
+    
+    border-radius: 15px; 
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.servicio-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* --- TEXTOS --- */
+.servicio-info {
+    flex: 1; 
+    text-align: left; /* Alineado a la izquierda */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 20px; /* Un poco de aire extra a los lados del texto */
+}
+
+.servicio-info h2 {
+    font-family: 'Raleway', sans-serif;
+    font-size: 2.5rem; /* Título más grande para llenar el espacio */
+    color: #000000;
+    font-weight: 800;
+    margin-bottom: 20px;
+    line-height: 1.1;
+}
+
+.servicio-info p {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem; /* Texto un poco más legible */
+    color: #555555;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 90%; /* Para que las líneas no sean eternas de leer */
+}
+
+/* --- MODO OSCURO --- */
+body.dark-mode .servicio-card {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+    border-color: rgba(255,255,255,0.1);
+}
+body.dark-mode .servicio-info h2 { color: #ffffff; }
+body.dark-mode .servicio-info p { color: #cbd5e1; }
+
+/* --- RESPONSIVE (Laptop pequeña / Tablet) --- */
+@media (max-width: 1200px) {
+    .servicio-img-container {
+        flex: 0 0 350px; /* Reducimos la imagen en pantallas medianas */
+        height: 250px;
+    }
+}
+
+/* --- RESPONSIVE (Celular) --- */
+@media (max-width: 900px) {
+    .servicios-wrapper {
+        width: 95%; 
+    }
+
+    .servicio-card {
+        flex-direction: column-reverse; 
+        text-align: left;
+        padding: 20px;
+        gap: 20px;
+        height: auto; /* Altura libre en celular */
+    }
+    
+    .servicio-card.reverse {
+        flex-direction: column-reverse;
+    }
+
+    .servicio-img-container {
+        flex: none;
+        width: 100%;
+        height: 220px;
+    }
+    
+    .servicio-info h2 {
+        font-size: 1.8rem;
+    }
+    
+    .servicio-info p {
+        max-width: 100%;
+    }
+}

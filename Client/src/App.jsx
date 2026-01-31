@@ -13,7 +13,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/admin/Login";
 import Dashboard from "./pages/dashboard/Dashboard";
 import NoticiasPage from "./pages/noticias/NoticiasPage";
-import NosotrosPage from "./pages/nosotros/NosotrosPage"; // <--- 1. IMPORT AGREGADO
+import NosotrosPage from "./pages/nosotros/NosotrosPage";
+import Servicios from "./pages/servicios/servicios"; // <--- 1. ¡IMPORTA ESTO!
 
 // --- ESTILOS ---
 import "./App.css";
@@ -21,7 +22,6 @@ import "./App.css";
 const Inicio = () => {
   return (
     <div className="page-home">
-      {/* AQUÍ YA NO VAN LOS BLOBS, SOLO EL CONTENIDO EXCLUSIVO DE INICIO */}
       <HeroCarousel />
       <NewsSection />
       <EventsSection />
@@ -29,7 +29,7 @@ const Inicio = () => {
   );
 };
 
-// Componente Placeholder (Para páginas que aún no haces)
+// Componente Placeholder
 const PaginaTemporal = ({ titulo }) => (
   <div
     style={{
@@ -48,7 +48,7 @@ const PaginaTemporal = ({ titulo }) => (
 function App() {
   return (
     <BrowserRouter>
-      {/* --- FONDO GLOBAL (VISIBLE EN TODAS LAS PÁGINAS) --- */}
+      {/* --- FONDO GLOBAL --- */}
       <div className="background-blobs-global">
         <div className="global-svg-pattern"></div>
         <div className="blob blob-1"></div>
@@ -63,22 +63,17 @@ function App() {
 
       <div className="background-arc"></div>
 
-      {/* --- NAVBAR SIEMPRE VISIBLE --- */}
       <Navbar />
 
       <Routes>
-        {/* Rutas Principales */}
         <Route path="/" element={<Inicio />} />
         <Route path="/noticias" element={<NoticiasPage />} />
-
-        {/* <--- 2. RUTA CORREGIDA: AHORA LLEVA A TU PÁGINA REAL */}
         <Route path="/nosotros" element={<NosotrosPage />} />
 
-        {/* Rutas Temporales (Placeholders) */}
-        <Route
-          path="/servicios"
-          element={<PaginaTemporal titulo="Servicios" />}
-        />
+        {/* 2. ¡CAMBIA ESTA LÍNEA! Antes decía PaginaTemporal, ahora dice <Servicios /> */}
+        <Route path="/servicios" element={<Servicios />} />
+
+        {/* Rutas Temporales */}
         <Route
           path="/afiliarme-info"
           element={<PaginaTemporal titulo="Información de Afiliación" />}
@@ -103,7 +98,6 @@ function App() {
         </Route>
       </Routes>
 
-      {/* --- FOOTER SIEMPRE VISIBLE --- */}
       <Footer />
     </BrowserRouter>
   );

@@ -13,5 +13,10 @@ namespace Server.Data  // <--- ¡ESTO ES LO QUE FALTABA!
         // ¡DESCOMENTA ESTAS LÍNEAS! Las necesitas para que funcione lo que acabamos de hacer
         public DbSet<Noticia> Noticias { get; set; }
         public DbSet<Evento> Eventos { get; set; }
+        
+        public DbSet<Presidente> Presidentes { get; set; }
+
+        public DbSet<MiembroDirectorio> Directorio { get; set; } // <--- Agrega esto
+        
     }
 }

@@ -1,0 +1,135 @@
+/* Contenedor General */
+.directory-section {
+    width: 100%;
+    padding: 40px 0;
+    position: relative;
+    z-index: 5;
+    background-color: transparent;
+}
+
+.directory-wrapper {
+    max-width: 1300px;
+    margin: 0 auto;
+    width: 95%;
+}
+
+/* --- FILA DE CATEGORÍA --- */
+.directory-category-row {
+    margin-bottom: 80px; /* Más espacio entre categorías */
+}
+
+.category-title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 2rem;
+    color: #111827; 
+    font-weight: 800;
+    margin-bottom: 30px;
+    padding-left: 10px;
+    border-left: 5px solid #2563eb; /* Un pequeño detalle visual azul */
+}
+
+/* --- GRID (CUADRÍCULA DE 4) --- */
+.directory-grid {
+    display: grid;
+    /* Esto crea columnas automáticas. Intentará meter 4 si caben (aprox 280px cada una) */
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+    gap: 30px; /* Espacio entre tarjetas */
+    padding: 10px;
+}
+
+/* --- TARJETA GLASS --- */
+.glass-card {
+    width: 100%;
+    height: 420px; 
+    
+    /* GLASSMORPHISM */
+    background: rgba(255, 255, 255, 0.45); 
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6); 
+    
+    border-radius: 20px;
+    padding: 30px 20px;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(31, 38, 135, 0.2);
+    background: rgba(255, 255, 255, 0.65);
+}
+
+/* --- AVATAR CIRCULAR --- */
+.card-avatar-container {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    background-color: #e2e8f0;
+}
+
+.card-avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- TEXTOS --- */
+.card-content {
+    width: 100%;
+    overflow: hidden;
+}
+
+.member-name {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 5px;
+}
+
+.member-role {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+}
+
+.member-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.5;
+    
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* MODO OSCURO */
+body.dark-mode .category-title { color: #f1f5f9; border-color: #60a5fa; }
+
+body.dark-mode .glass-card {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+body.dark-mode .glass-card:hover {
+    background: rgba(30, 41, 59, 0.8);
+}
+body.dark-mode .member-name { color: #fff; }
+body.dark-mode .member-role { color: #94a3b8; }
+body.dark-mode .member-desc { color: #cbd5e1; }

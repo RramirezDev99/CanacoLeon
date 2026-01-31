@@ -1,0 +1,19 @@
+/* ARCHIVO: src/pages/servicios/servicios.css */
+
+.servicios-page-wrapper {
+    width: 100%;
+    min-height: 100vh; /* Asegura que ocupe al menos toda la pantalla */
+    
+    /* Configuración Flex para que los componentes se apilen verticalmente bien */
+    display: flex;
+    flex-direction: column;
+    
+    /* Fondo transparente para ver el background global de la app (los blobs/degradados) */
+    background-color: transparent; 
+    
+    /* Evita scroll horizontal indeseado */
+    overflow-x: hidden;
+    
+    /* Un poco de espacio al final antes del footer */
+    padding-bottom: 0px; 
+}
