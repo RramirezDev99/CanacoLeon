@@ -1,0 +1,102 @@
+/* Contenedor General */
+.afiliarme-video-section {
+  width: 100%;
+  /* Reduje el padding superior/inferior para que se acerque más al banner */
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 5;
+}
+
+/* --- TARJETA GLASS GIGANTE --- */
+.video-glass-card {
+  width: 100%;
+  /* CAMBIO CLAVE: Mucho más ancho */
+  max-width: 1400px;
+
+  /* Efecto Vidrio Blanco */
+  background: rgba(255, 255, 255, 0.5); /* Un poco más transparente */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 20px 50px rgba(31, 38, 135, 0.2); /* Sombra más grande */
+
+  border-radius: 30px;
+  /* CAMBIO CLAVE: Menos padding interno para que el video sea más grande */
+  padding: 15px;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.video-glass-card:hover {
+  box-shadow: 0 25px 60px rgba(31, 38, 135, 0.25);
+}
+
+/* --- WRAPPER DEL VIDEO (16:9) --- */
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* Relación de aspecto 16:9 */
+  height: 0;
+  border-radius: 20px; /* Redondeamos también el video */
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: #000;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- NUEVO: Texto superpuesto (Overlay) --- */
+.video-overlay-text {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  z-index: 10; /* Encima del iframe */
+  pointer-events: none; /* Para que no interfiera con los clicks del video */
+}
+
+.video-overlay-text h3 {
+  font-family: "Raleway", sans-serif;
+  font-size: 1.8rem;
+  color: white;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7); /* Sombra para que se lea bien */
+}
+
+/* =========================================
+   MODO OSCURO
+   ========================================= */
+body.dark-mode .video-glass-card {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* =========================================
+   RESPONSIVE (Móvil)
+   ========================================= */
+@media (max-width: 768px) {
+  .afiliarme-video-section {
+    padding: 30px 15px;
+  }
+  .video-glass-card {
+    padding: 10px;
+    border-radius: 20px;
+  }
+  .video-overlay-text h3 {
+    font-size: 1.2rem;
+    bottom: 20px;
+    left: 20px;
+  }
+}

@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// --- COMPONENTES ---
+// --- COMPONENTES GLOBALES ---
 import Navbar from "./components/Navbar";
 import HeroCarousel from "./components/HeroCarousel";
 import NewsSection from "./components/NewsSection";
@@ -14,7 +14,11 @@ import Login from "./pages/admin/Login";
 import Dashboard from "./pages/dashboard/Dashboard";
 import NoticiasPage from "./pages/noticias/NoticiasPage";
 import NosotrosPage from "./pages/nosotros/NosotrosPage";
-import Servicios from "./pages/servicios/servicios"; // <--- 1. ¡IMPORTA ESTO!
+import Servicios from "./pages/servicios/servicios";
+import Afiliarme from "./pages/afiliarme/Afiliarme";
+
+// 1. IMPORTA LA PÁGINA DE CONTACTO AQUÍ
+import Contacto from "./pages/contacto/Contacto";
 
 // --- ESTILOS ---
 import "./App.css";
@@ -69,27 +73,20 @@ function App() {
         <Route path="/" element={<Inicio />} />
         <Route path="/noticias" element={<NoticiasPage />} />
         <Route path="/nosotros" element={<NosotrosPage />} />
-
-        {/* 2. ¡CAMBIA ESTA LÍNEA! Antes decía PaginaTemporal, ahora dice <Servicios /> */}
         <Route path="/servicios" element={<Servicios />} />
+        <Route path="/afiliarme" element={<Afiliarme />} />
+
+        {/* 2. RUTA CORREGIDA: Ahora carga la página real */}
+        <Route path="/contacto" element={<Contacto />} />
 
         {/* Rutas Temporales */}
-        <Route
-          path="/afiliarme-info"
-          element={<PaginaTemporal titulo="Información de Afiliación" />}
-        />
-        <Route
-          path="/contacto"
-          element={<PaginaTemporal titulo="Contacto" />}
-        />
         <Route
           path="/directorio"
           element={<PaginaTemporal titulo="Directorio Comercial" />}
         />
-        <Route
-          path="/afiliarme"
-          element={<PaginaTemporal titulo="Portal de Afiliados" />}
-        />
+
+        {/* Rutas duplicadas (Legacy) */}
+        <Route path="/afiliarme-info" element={<Afiliarme />} />
 
         {/* Rutas Admin */}
         <Route path="/login" element={<Login />} />

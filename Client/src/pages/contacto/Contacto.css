@@ -1,0 +1,14 @@
+.contacto-page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  /* Transparente para que se vean los blobs globales del fondo */
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.footer-spacer {
+  height: 50px;
+  width: 100%;
+}

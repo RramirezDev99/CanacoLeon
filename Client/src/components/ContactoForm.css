@@ -13,9 +13,8 @@
   gap: 40px;
   max-width: 1200px;
   width: 100%;
-
-  /* TRUCO MAESTRO: 'stretch' obliga a ambos hijos a tener la misma altura */
-  align-items: stretch;
+  /* Alineación vertical superior para que no se estiren raro si uno es más corto */
+  align-items: flex-start;
 }
 
 /* --- TARJETA DEL FORMULARIO (GLASSMORPHISM) --- */
@@ -31,9 +30,10 @@
   padding: 40px;
   border-radius: 24px;
 
+  /* CENTRADO MAESTRO */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* Centra horizontalmente a los hijos directos (h2 y form) */
 }
 
 /* Título */
@@ -47,18 +47,16 @@
   width: 100%;
 }
 
-/* El formulario llena la tarjeta */
+/* CORRECCIÓN PRINCIPAL: El formulario debe llenar la tarjeta */
 .form-card form {
   width: 100%;
   display: flex;
   flex-direction: column;
-  /* Esto asegura que el form ocupe el espacio disponible si sobra altura */
-  flex-grow: 1;
 }
 
 .form-group {
   margin-bottom: 15px;
-  width: 100%;
+  width: 100%; /* Asegura que ocupe todo el ancho del form */
 }
 
 .form-group label {
@@ -68,13 +66,13 @@
   font-size: 0.95rem;
   color: #334155;
   margin-bottom: 8px;
-  text-align: left;
+  text-align: left; /* Label a la izquierda */
 }
 
 /* Inputs */
 .form-group input,
 .form-group textarea {
-  width: 100%;
+  width: 100%; /* Llenar el contenedor padre (.form-group) */
   padding: 12px 15px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -84,6 +82,8 @@
   color: #333;
   outline: none;
   transition: all 0.3s;
+
+  /* IMPORTANTE: Para que el padding no sume al ancho y se salga */
   box-sizing: border-box;
 }
 
@@ -94,7 +94,7 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Botón Enviar (ahora se pega al fondo si sobra espacio) */
+/* Botón Enviar */
 .btn-enviar {
   width: 100%;
   padding: 15px;
@@ -106,7 +106,7 @@
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  margin-top: auto; /* Empuja el botón hacia abajo si el form crece */
+  margin-top: 15px;
   transition:
     background 0.3s,
     transform 0.2s;
@@ -120,38 +120,24 @@
 /* --- TARJETA DEL MAPA --- */
 .map-card {
   flex: 1;
-  /* IMPORTANTE: Sin altura fija, llenará el padre gracias al 'stretch' */
-  height: auto;
-  min-height: 100%; /* Asegura el llenado */
-
+  height: 600px; /* Altura ajustada para que cuadre con el form */
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.8);
   background: white;
-
-  display: flex; /* Para que el iframe se comporte bien */
-}
-
-/* El iframe también debe estirarse al 100% */
-.map-card iframe {
-  width: 100%;
-  height: 100%;
-  min-height: 400px; /* Altura mínima por seguridad en móviles */
-  display: block;
 }
 
 /* --- RESPONSIVE --- */
 @media (max-width: 900px) {
   .contacto-wrapper {
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* Centrar en móvil */
   }
 
   .map-card {
     width: 100%;
-    height: 350px; /* En móvil sí le damos altura fija */
-    min-height: 350px;
+    height: 350px;
   }
 
   .form-card {

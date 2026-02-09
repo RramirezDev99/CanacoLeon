@@ -1,0 +1,14 @@
+.afiliarme-page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  /* Transparente para que se vean los blobs globales */
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.footer-spacer {
+  height: 100px;
+  width: 100%;
+}
