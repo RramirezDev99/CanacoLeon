@@ -1,67 +1,151 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ContactoForm.css";
 
 const ContactoForm = () => {
+  const [formData, setFormData] = useState({
+    nombre: "",
+    email: "",
+    telefono: "",
+    empresa: "",
+    asunto: "",
+    mensaje: "",
+  });
+
+  const [status, setStatus] = useState({
+    loading: false,
+    error: null,
+    success: false,
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus({ loading: true, error: null, success: false });
+
+    try {
+      const response = await fetch("http://localhost:5286/api/contacto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setStatus({ loading: false, error: null, success: true });
+        setFormData({
+          nombre: "",
+          email: "",
+          telefono: "",
+          empresa: "",
+          asunto: "",
+          mensaje: "",
+        });
+      } else {
+        setStatus({
+          loading: false,
+          error: "Error en el servidor",
+          success: false,
+        });
+      }
+    } catch (error) {
+      setStatus({ loading: false, error: "Error de conexión", success: false });
+    }
+  };
+
   return (
     <section className="contacto-section">
       <div className="contacto-wrapper">
-        {/* COLUMNA IZQUIERDA: FORMULARIO */}
         <div className="contacto-card form-card">
           <h2>Contáctanos</h2>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Nombre</label>
-              <input type="text" placeholder="Tu nombre completo" />
+              <input
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleChange}
+                type="text"
+                required
+              />
             </div>
-
             <div className="form-group">
               <label>Email</label>
-              <input type="email" placeholder="ejemplo@organizacion.com" />
+              <input
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                type="email"
+                required
+              />
             </div>
-
             <div className="form-group">
               <label>Teléfono</label>
-              <input type="tel" placeholder="477 123 4567" />
+              <input
+                name="telefono"
+                value={formData.telefono}
+                onChange={handleChange}
+                type="tel"
+              />
             </div>
-
             <div className="form-group">
               <label>Empresa</label>
-              <input type="text" placeholder="Nombre de tu negocio" />
+              <input
+                name="empresa"
+                value={formData.empresa}
+                onChange={handleChange}
+                type="text"
+              />
             </div>
-
             <div className="form-group">
               <label>Asunto</label>
               <input
+                name="asunto"
+                value={formData.asunto}
+                onChange={handleChange}
                 type="text"
-                placeholder="Información, Afiliación, Dudas..."
               />
             </div>
-
             <div className="form-group">
-              <label>Escriba su mensaje</label>
+              <label>Mensaje</label>
               <textarea
+                name="mensaje"
+                value={formData.mensaje}
+                onChange={handleChange}
                 rows="4"
-                placeholder="Hola, me gustaría recibir más información sobre..."
+                required
               ></textarea>
             </div>
 
-            <button type="button" className="btn-enviar">
-              Enviar
+            <button
+              type="submit"
+              className="btn-enviar"
+              disabled={status.loading}
+            >
+              {status.loading ? "Enviando..." : "Enviar"}
             </button>
+
+            {status.success && (
+              <p style={{ color: "#10b981", marginTop: "10px" }}>¡Enviado!</p>
+            )}
+            {status.error && (
+              <p style={{ color: "#ef4444", marginTop: "10px" }}>
+                {status.error}
+              </p>
+            )}
           </form>
         </div>
 
-        {/* COLUMNA DERECHA: MAPA */}
         <div className="contacto-card map-card">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3721.408734685374!2d-101.66699392496556!3d21.13612888053995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842bdb796472496d%3A0x60064f27110e54d6!2sC%C3%A1mara%20Nacional%20de%20Comercio%20Servicios%20y%20Turismo%20de%20Le%C3%B3n!5e0!3m2!1ses-419!2smx!4v1707500000000!5m2!1ses-419!2smx"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3721.464654516757!2d-101.6853234!3d21.1339176!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842bc02e47640001%3A0x77d7f2122394c498!2sCANACO%20SERVYTUR%20Le%C3%B3n!5e0!3m2!1ses-419!2smx!4v1700000000000"
             width="100%"
             height="100%"
             style={{ border: 0 }}
             allowFullScreen=""
             loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Mapa Canaco León"
           ></iframe>
         </div>
       </div>

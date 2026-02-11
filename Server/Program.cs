@@ -1,92 +1,113 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Server.Data;
-using Server.Models; // <--- 2. AGREGADO: Para que reconozca la clase 'Usuario' abajo
+using Server.Models;
+using Server.Services; // <--- 1. AGREGADO: Necesario para reconocer el servicio
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- 1. AGREGAR SERVICIOS ---
+// ==========================================
+// 1. CONFIGURACIÓN DE SERVICIOS
+// ==========================================
 
 // A) CONEXIÓN A BASE DE DATOS (SQLITE)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite("Data Source=canaco.db")); 
+    options.UseSqlite("Data Source=canaco.db"));
+
+// B) REGISTRO DEL SERVICIO DE EMAIL (¡ESTO FALTABA!)
+builder.Services.AddScoped<IEmailService, EmailService>(); // <--- 2. AGREGADO: Esto conecta la interfaz con el código
 
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer(); 
-builder.Services.AddSwaggerGen();           
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// B) Configuración CORS
+// C) CONFIGURACIÓN CORS (Para React)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("PermitirReact",
-        policy => policy.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+    options.AddPolicy("PermitirReact", policy =>
+    {
+        policy.AllowAnyOrigin() // Ojo: En producción es mejor poner la URL específica
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
 });
 
-// C) Configuración JWT
+// D) CONFIGURACIÓN JWT
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "ClaveSecretaSuperSeguraParaDesarrollo12345";
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "CanacoServer";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "CanacoClient";
+
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? ""))
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
 });
 
-
-// --- AQUÍ SE CONSTRUYE LA APP ---
+// ==========================================
+// 2. CONSTRUCCIÓN DE LA APP
+// ==========================================
 var app = builder.Build();
 
-
-// --- 2. CONFIGURAR EL PIPELINE Y SEMILLA DE DATOS ---
-
-// D) SEMILLA DE DATOS (CREAR ADMIN AUTOMÁTICO)
+// E) SEMILLA DE DATOS (Crear Admin si no existe)
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    // Esto crea el archivo canaco.db si no existe
-    context.Database.EnsureCreated();
-
-    // Si la tabla usuarios está vacía, creamos al Admin
-    if (!context.Usuarios.Any())
+    var services = scope.ServiceProvider;
+    try
     {
-        context.Usuarios.Add(new Usuario
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.EnsureCreated();
+
+        if (!context.Usuarios.Any())
         {
-            Nombre = "Admin Principal",
-            Email = "admin@canaco.com",
-            PasswordHash = "admin123" 
-        });
-        context.SaveChanges();
-        Console.WriteLine("--> ¡USUARIO ADMIN CREADO! (admin@canaco.com / admin123)");
+            context.Usuarios.Add(new Usuario
+            {
+                Nombre = "Admin Principal",
+                Email = "admin@canaco.com",
+                PasswordHash = "admin123" 
+                // Sin Rol, como pediste
+            });
+            context.SaveChanges();
+            Console.WriteLine("--> BASE DE DATOS: Usuario Admin creado (admin@canaco.com / admin123)");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("--> ERROR al inicializar BD: " + ex.Message);
     }
 }
 
-// Configuración de entorno
+// ==========================================
+// 3. PIPELINE DE PETICIONES
+// ==========================================
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();           
-    app.UseSwaggerUI();         
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-// --- IMPORTANTE: ACTIVAR ARCHIVOS ESTÁTICOS ---
-// Esto permite que la carpeta wwwroot (y uploads) sea pública
-app.UseStaticFiles(); 
-// ----------------------------------------------
+app.UseStaticFiles(); // Importante para las imágenes/PDFs
 
 app.UseCors("PermitirReact");
-app.UseAuthentication(); 
-app.UseAuthorization();  
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

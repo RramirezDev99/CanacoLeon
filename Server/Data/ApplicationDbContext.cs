@@ -1,22 +1,20 @@
 using Microsoft.EntityFrameworkCore;
-using Server.Models; // <--- Importante para que reconozca Usuario, Noticia y Evento
+using Server.Models;
 
-namespace Server.Data  // <--- ¡ESTO ES LO QUE FALTABA!
+namespace Server.Data
 {
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        // Tablas de la base de datos
         public DbSet<Usuario> Usuarios { get; set; }
-        
-        // ¡DESCOMENTA ESTAS LÍNEAS! Las necesitas para que funcione lo que acabamos de hacer
+        public DbSet<ContactoMensaje> MensajesContacto { get; set; }
         public DbSet<Noticia> Noticias { get; set; }
         public DbSet<Evento> Eventos { get; set; }
-        
         public DbSet<Presidente> Presidentes { get; set; }
-
-        public DbSet<MiembroDirectorio> Directorio { get; set; } // <--- Agrega esto
+        public DbSet<MiembroDirectorio> Directorio { get; set; }
         
+        // Tabla para las afiliaciones
+        public DbSet<AfiliadoSolicitud> AfiliadosSolicitudes { get; set; }
     }
 }

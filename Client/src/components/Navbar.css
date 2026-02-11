@@ -1,8 +1,8 @@
 /* =========================================
-   NAVBAR.CSS - GLASS ORIGINAL + COLORES INVERTIDOS
+   NAVBAR.CSS - GLASS FINAL (Letras Blancas)
    ========================================= */
 
-/* --- 1. CONTENEDOR PRINCIPAL (Glass Effect RESTAURADO) --- */
+/* --- 1. CONTENEDOR PRINCIPAL (Glass Effect Real) --- */
 .navbar-container {
   width: 100%;
   height: 80px;
@@ -11,19 +11,19 @@
   left: 0;
   z-index: 9999;
 
-  /* --- AQUÍ ESTÁ EL FIX: VOLVEMOS A 0.1 --- */
-  background: rgba(255, 255, 255, 0.1); /* Transparencia total original */
-  backdrop-filter: blur(100px);           /* Blur fuerte */
+  /* VOLVEMOS AL CRISTAL TRANSPARENTE */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil original */
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
-/* Glass en Modo Oscuro (Mantenemos el ajuste para que no brille tanto en la noche) */
+/* Glass en Modo Oscuro */
 body.dark-mode .navbar-container {
-  background: rgba(0, 0, 0, 0.4); 
+  background: rgba(0, 0, 0, 0.4);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -38,10 +38,10 @@ body.dark-mode .navbar-container {
   margin: 0 auto;
 }
 
-/* --- 3. ZONA IZQUIERDA (Logo) --- */
+/* --- 3. LOGO --- */
 .logo-container {
   justify-self: start;
-  padding-left: 40px; 
+  padding-left: 40px;
 }
 
 .logo-area {
@@ -51,65 +51,132 @@ body.dark-mode .navbar-container {
   gap: 12px;
 }
 
-.brand-icon { height: 45px; width: auto; }
-.brand-text { height: 35px; width: auto; }
+.brand-icon {
+  height: 45px;
+  width: auto;
+}
+.brand-text {
+  height: 35px;
+  width: auto;
+}
 
-/* Invertir logo en Dark Mode */
-.logo-area img { transition: filter 0.3s; }
-body.dark-mode .logo-area img { filter: brightness(0) invert(1); }
+/* En modo claro: Logo normal. En oscuro: Invertido */
+.logo-area img {
+  transition: filter 0.3s;
+}
+body.dark-mode .logo-area img {
+  filter: brightness(0) invert(1);
+}
 
-
-/* --- 4. ZONA CENTRAL (Links) --- */
+/* --- 4. LINKS + REDES SOCIALES (Centro) --- */
 .nav-links {
   justify-self: center;
   display: flex;
-  gap: 40px;
+  align-items: center;
+  gap: 30px;
 }
 
-/* === LÓGICA DE COLORES (INVERSIÓN) === */
-
-/* -- MODO CLARO (LIGHT MODE) -- */
-/* Texto OSCURO sobre el cristal claro */
+/* ESTILO DE LOS ENLACES (CORREGIDO PARA FONDO AZUL) */
 .nav-link {
   text-decoration: none;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
-  /* Negro suave para buen contraste con el glass */
-  color: #c9c9c9; 
-  transition: color 0.3s ease;
+
+  /* CAMBIO CLAVE: Blanco suave para que se vea sobre el banner azul */
+  color: #f1f5f9;
+
+  /* Sombra para asegurar lectura si el fondo cambia */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+  transition: all 0.3s ease;
+  position: relative;
 }
 
+/* Hover: Blanco brillante */
 .nav-link:hover {
-  color: #004aad; 
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
-/* Activo en Claro: Azul Institucional */
+/* Activo: Blanco puro y negrita */
 .nav-link.active {
-  color: #004aad; 
+  color: #ffffff;
   font-weight: 700;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Brillito */
 }
 
-/* -- MODO OSCURO (DARK MODE) -- */
-/* Texto BLANCO PURO (Tu corrección) */
+/* MODO OSCURO (Mismo estilo blanco) */
 body.dark-mode .nav-link {
-  color: #ffffff; 
-  font-weight: 400;
-  opacity: 1;
+  color: #cbd5e1;
 }
-
-/* Activo en Oscuro: Azul Neón */
+body.dark-mode .nav-link:hover,
 body.dark-mode .nav-link.active {
-  color: #60a5fa; 
-  font-weight: 700;
-  text-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+  color: #ffffff;
 }
 
-body.dark-mode .nav-link:hover {
-  color: #93c5fd; 
+/* --- 5. REDES SOCIALES --- */
+.social-icons-desktop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 15px;
+  padding-left: 20px;
+  /* Línea separadora blanca semitransparente */
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+.social-link {
+  font-size: 1.1rem;
+  color: #e2e8f0; /* Blanco suave */
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
 
-/* --- 5. ZONA DERECHA (Botones) --- */
+/* Colores originales al Hover */
+.social-link:hover {
+  transform: translateY(-2px);
+  color: white;
+}
+.social-link.facebook:hover {
+  color: #1877f2;
+}
+.social-link.linkedin:hover {
+  color: #0a66c2;
+}
+.social-link.x-twitter:hover {
+  color: #ffffff;
+} /* X es negro, mejor blanco en dark bg */
+.social-link.youtube:hover {
+  color: #ff0000;
+}
+
+/* Separador (|) */
+.separator {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  margin-left: 10px;
+  font-weight: 300;
+}
+
+/* Estilo para que el pajarito se vea más como la X */
+.social-link.x-twitter svg {
+  /* Esto lo hace ver más estilizado y minimalista */
+  stroke-width: 1px;
+  transform: scale(0.9);
+}
+
+.social-link.x-twitter:hover {
+  color: #ffffff; /* El color oficial de X en fondos oscuros */
+}
+
+.social-link.instagram:hover {
+  color: #e1306c;
+}
+
+/* --- 6. ACCIONES DERECHA --- */
 .nav-actions {
   justify-self: end;
   display: flex;
@@ -126,8 +193,10 @@ body.dark-mode .nav-link:hover {
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0, 74, 173, 0.3);
-  transition: transform 0.2s, background 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Sombra más fuerte para resaltar */
+  transition:
+    transform 0.2s,
+    background 0.3s;
 }
 
 .btn-afiliarme:hover {
@@ -139,13 +208,13 @@ body.dark-mode .nav-link:hover {
 .theme-switch {
   width: 50px;
   height: 26px;
-  background-color: rgba(0,0,0,0.1);
+  background-color: rgba(255, 255, 255, 0.2); /* Más visible */
   border-radius: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   padding: 2px;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   transition: background-color 0.3s;
 }
 
@@ -154,208 +223,145 @@ body.dark-mode .nav-link:hover {
   height: 20px;
   background-color: white;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 12px;
   color: #555;
-  transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Switch en Dark Mode */
-body.dark-mode .theme-switch { 
-  background-color: #444; 
-  border-color: #666; 
+body.dark-mode .theme-switch {
+  background-color: #334155;
+  border-color: #475569;
 }
-
 body.dark-mode .switch-circle {
   transform: translateX(24px);
-  background-color: #0f3057; 
-  color: white;
+  background-color: #0f172a;
+  color: #f1f5f9;
 }
 
+/* --- MENÚ ADMIN (Dropdown) --- */
+.desktop-btn.admin-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
 
+.admin-arrow-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #e2e8f0; /* Flecha blanca */
+  font-size: 12px;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+}
 
-/* ... MANTÉN TODO TU CSS ANTERIOR AQUÍ ... */
+.admin-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background-color: white;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  min-width: 150px;
+  z-index: 1000;
+}
 
+.admin-dropdown a {
+  display: block;
+  text-decoration: none;
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.admin-dropdown a:hover {
+  background-color: #f1f5f9;
+  color: #004aad;
+}
 
 /* =========================================
    MEDIA QUERIES (RESPONSIVE)
    ========================================= */
 
-/* 1. Elementos por defecto (Ocultos en escritorio/móvil según corresponda) */
-.hamburger-icon {
-    display: none; /* Oculto en PC */
-}
-.mobile-btn-container {
-    display: none; /* Oculto en PC */
-}
-
-/* 2. REGLAS PARA TABLET Y MÓVIL (Menor a 968px) */
-/* ... (Tu CSS anterior) ... */
-
-/* =========================================
-   MEDIA QUERIES (RESPONSIVE)
-   ========================================= */
-
-/* Por defecto ocultamos los elementos móviles en PC */
-.hamburger-icon, .mobile-btn {
+.hamburger-icon,
+.mobile-btn {
   display: none;
 }
 
-/* --- REGLAS PARA MÓVIL Y TABLET (< 968px) --- */
 @media screen and (max-width: 968px) {
-  
-  /* 1. Ajustamos el contenedor */
   .navbar-container {
     height: 70px;
     padding: 0 15px;
+    /* En móvil quizás prefieras fondo sólido o más opaco */
+    background: rgba(255, 255, 255, 0.95);
   }
 
-  /* 2. Cambiamos el Grid: Logo izquierda, Botones derecha */
+  /* Si el fondo móvil es blanco, necesitamos letras oscuras */
+  .nav-link {
+    color: #334155;
+    text-shadow: none;
+  }
+
   .navbar-content {
-    grid-template-columns: 1fr auto; 
+    grid-template-columns: 1fr auto;
     width: 100%;
   }
-
-  /* Ajustes visuales */
-  .logo-container { padding-left: 0; }
-  .brand-text { display: none; } /* Ocultar texto largo en móvil si quieres */
-
-  /* 3. Ocultar el botón de afiliado de escritorio */
-  .desktop-btn {
+  .logo-container {
+    padding-left: 0;
+  }
+  .brand-text {
     display: none;
   }
 
-  /* 4. Menú Desplegable (Cortina) */
+  .desktop-btn,
+  .social-icons-desktop {
+    display: none;
+  }
+
   .nav-links {
     position: fixed;
     top: 70px;
-    left: -100%; /* Oculto a la izquierda */
+    left: -100%;
     width: 100%;
     height: calc(100vh - 70px);
-    
-    /* Fondo Glass Móvil */
-    background: rgba(255, 255, 255, 0.98); 
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(20px);
-    
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    padding-top: 60px;
     gap: 30px;
     transition: left 0.4s ease-in-out;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   }
 
-  /* Cuando se activa el menú */
   .nav-links.active-mobile {
     left: 0;
   }
 
-  /* Fondo oscuro en Dark Mode */
-  body.dark-mode .nav-links {
-    background: rgba(15, 23, 42, 0.98);
+  .mobile-btn {
+    display: block;
+    margin-top: 20px;
   }
 
-  /* Texto más grande en móvil */
-  .nav-link { font-size: 22px; }
-
-  /* 5. Mostrar elementos móviles */
-  .mobile-btn { display: block; margin-top: 20px; }
-  
   .hamburger-icon {
     display: block;
     font-size: 24px;
     margin-left: 20px;
     cursor: pointer;
-    color: #333; /* Color del icono en Light Mode */
+    color: #ffffff; /* Hamburguesa blanca por el banner */
   }
 
-  body.dark-mode .hamburger-icon {
-    color: white; /* Color del icono en Dark Mode */
-  }
-}
-
-/* --- ZONA DE ACCESO ADMIN --- */
-
-/* Convertimos el contenedor en Flex para que la flecha quede pegadita */
-.desktop-btn.admin-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 4px; /* Espacio chiquito entre botón y flecha */
-    position: relative; /* Clave para que el menú flote respecto a esto */
-}
-
-/* El botón de la flechita (Sutil) */
-.admin-arrow-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #94a3b8; /* Gris suave */
-    font-size: 12px;
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    transition: color 0.3s, transform 0.3s;
-    border-radius: 50%;
-}
-
-.admin-arrow-btn:hover {
-    color: #3b82f6; /* Se pone azulito al pasar el mouse */
-    background-color: rgba(59, 130, 246, 0.1);
-    transform: translateY(1px);
-}
-
-/* El Menú Flotante */
-.admin-dropdown {
-    position: absolute;
-    top: 110%; /* Justo debajo del botón */
-    right: 0;
-    background-color: white;
-    padding: 8px;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    border: 1px solid #e2e8f0;
-    min-width: 150px;
-    z-index: 1000;
-    animation: fadeIn 0.2s ease;
-}
-
-/* Enlace dentro del menú */
-.admin-dropdown a {
-    display: block;
-    text-decoration: none;
-    color: #334155;
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: background 0.2s;
-    font-family: 'Inter', sans-serif;
-}
-
-.admin-dropdown a:hover {
-    background-color: #f1f5f9;
-    color: #1e3a8a;
-}
-
-/* Pequeña animación de entrada */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* MODO OSCURO */
-body.dark-mode .admin-dropdown {
-    background-color: #1e293b;
-    border-color: #334155;
-}
-
-body.dark-mode .admin-dropdown a {
-    color: #e2e8f0;
-}
-
-body.dark-mode .admin-dropdown a:hover {
-    background-color: #334155;
+  /* Ajuste si el navbar móvil se vuelve blanco al scrollear (opcional) */
+  /* Por ahora asumo que el header móvil también es transparente al inicio */
 }

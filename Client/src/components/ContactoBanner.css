@@ -1,7 +1,15 @@
 .contacto-banner-container {
   position: relative;
   width: 100%;
-  height: 400px; /* Altura ajustada para ser un encabezado elegante */
+  /* Altura EXACTA igual a Afiliarme/Servicios/Nosotros */
+  height: 653px;
+}
+
+/* Ajuste para pantallas con poca altura (laptops pequeñas) */
+@media (max-height: 700px) {
+  .contacto-banner-container {
+    height: 100vh;
+  }
 }
 
 .contacto-banner-image {
@@ -10,8 +18,13 @@
   left: 0;
   width: 100%;
   height: 100%;
+
   background-size: cover;
   background-position: center top;
+
+  /* EFECTO PARALLAX (El fondo se queda quieto al scrollear) */
+  background-attachment: fixed;
+
   z-index: 1;
 }
 
@@ -23,12 +36,12 @@
   height: 100%;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.3) 0%,
-    rgba(0, 50, 100, 0.4) 100%
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.1) 40%,
+    rgba(0, 0, 0, 0.6) 100%
   );
   z-index: 2;
 }
-
 .contacto-banner-content {
   position: absolute;
   z-index: 10;
@@ -37,13 +50,17 @@
   transform: translate(-50%, -50%);
   text-align: center;
   color: white;
+  width: 90%;
+  max-width: 900px;
 }
 
 .contacto-banner-content h1 {
   font-family: "Raleway", sans-serif;
   font-size: 3.5rem;
   font-weight: 800;
-  text-transform: uppercase;
+  margin-bottom: 1rem;
+  line-height: 1.2;
   text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  text-transform: uppercase;
   margin: 0;
 }
