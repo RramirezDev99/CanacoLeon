@@ -29,9 +29,11 @@
 /* --- 1. TARJETA DE DESCARGA --- */
 .download-card {
   display: flex;
+  flex-direction: row; /* Fuerza la fila */
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 30px;
+  padding: 40px;
   background: linear-gradient(
     90deg,
     rgba(235, 245, 255, 0.8) 0%,
@@ -39,9 +41,20 @@
   );
 }
 
+/* Forzamos a que este contenedor alinee todo a la izquierda */
+.download-info {
+  margin-left: 27px;
+  padding-bottom: 27px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  flex: 1; /* Toma el espacio disponible y empuja el logo */
+}
+
 .download-info h3 {
   font-family: "Raleway", sans-serif;
-  font-size: 1.8rem;
+  font-size: 2rem;
   color: #0f172a;
   margin-bottom: 10px;
   font-weight: 800;
@@ -50,23 +63,71 @@
 .download-info p {
   font-family: "Inter", sans-serif;
   color: #64748b;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  font-size: 1.1rem;
   max-width: 500px;
 }
 
 .btn-download {
-  background: #0f3460; /* Azul oscuro elegante */
+  background: #0f3460;
   color: white;
   border: none;
   padding: 12px 25px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.3s;
 }
 
 .btn-download:hover {
   background: #16213e;
+}
+
+/* Evitamos que el flexbox apachurre el icono */
+.download-image-container {
+  flex-shrink: 0; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- LOGO EXCEL GLASS --- */
+.glass-excel-wrapper {
+  width: 280px;
+  height: 140px;
+  background: linear-gradient(135deg, rgba(16, 124, 65, 0.25) 0%, rgba(255, 255, 255, 0.4) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(16, 124, 65, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-right: 100px;
+}
+
+.glass-excel-wrapper:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(16, 124, 65, 0.25);
+}
+
+.excel-icon-svg {
+  width: 65px;
+  height: 65px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+}
+
+.excel-glass-text {
+  font-family: "Raleway", sans-serif;
+  font-weight: 800;
+  color: #0f3460;
+  font-size: 1rem;
+  letter-spacing: 1.5px;
 }
 
 /* --- 2. GRID DE DOCUMENTOS (DRAG & DROP) --- */
@@ -80,8 +141,9 @@
 
 .documents-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
+  width: 100%;
 }
 
 .drop-zone-card {
@@ -89,7 +151,7 @@
   backdrop-filter: blur(10px);
   border: 2px dashed #cbd5e1; /* Borde punteado */
   border-radius: 16px;
-  padding: 40px 20px;
+  padding: 30px 15px; 
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -98,7 +160,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 250px;
+  min-height: 220px; /* Reducido un poco para equilibrar */
 }
 
 .drop-zone-card:hover {
@@ -123,6 +185,7 @@
   justify-content: center;
   margin-bottom: 20px;
   color: white;
+  font-size: 1.5rem; /* Ajuste para el signo + o check */
 }
 
 .icon-circle.default {
@@ -135,16 +198,19 @@
 
 .drop-zone-card h4 {
   font-family: "Raleway", sans-serif;
-  font-size: 1.1rem;
+  font-size: 1rem; /* Ligeramente más pequeño para que quepa bien en 4 columnas */
   color: #1e293b;
   margin-bottom: 8px;
   font-weight: 700;
+  line-height: 1.3; /* Mejor lectura si ocupa dos líneas */
 }
 
 .file-name {
   font-family: "Inter", sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #64748b;
+  word-break: break-all; /* Evita que nombres de archivo largos rompan el grid */
+  padding: 0 10px;
 }
 
 /* --- 3. FORMULARIO FINAL --- */
@@ -153,6 +219,12 @@
   gap: 30px;
   flex-wrap: wrap;
   align-items: flex-end;
+}
+
+/* El grid de los inputs ya lo habías puesto inline en React, 
+   pero aquí aseguramos que tomen el 100% del espacio del padre */
+.form-grid-layout {
+  width: 100%; 
 }
 
 .form-group {
@@ -178,6 +250,11 @@
   font-size: 1rem;
   outline: none;
   background: white;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #0f3460;
 }
 
 .select-wrapper {
@@ -208,13 +285,21 @@
   box-shadow: 0 4px 15px rgba(15, 52, 96, 0.3);
   transition:
     transform 0.2s,
-    box-shadow 0.2s;
+    box-shadow 0.2s,
+    background-color 0.3s;
 }
 
-.btn-submit:hover {
+.btn-submit:hover:not(:disabled) {
   transform: scale(1.01);
   box-shadow: 0 6px 20px rgba(15, 52, 96, 0.4);
   background: #16213e;
+}
+
+.btn-submit:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* --- MODO OSCURO --- */
@@ -258,12 +343,48 @@ body.dark-mode select {
 }
 
 /* Responsive */
+@media (max-width: 900px) {
+  /* En tablets, mejor mostramos 2 columnas */
+  .documents-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .download-card {
     flex-direction: column;
     text-align: center;
+    padding: 30px 20px;
   }
+  
+  .download-info {
+    align-items: center;
+    text-align: center;
+  }
+
+  /* AJUSTE PARA EL LOGO EXCEL EN MÓVILES */
+  .glass-excel-wrapper {
+    width: 120px;
+    height: 120px;
+    margin-top: 15px;
+  }
+  .excel-icon-svg {
+    width: 50px;
+    height: 50px;
+  }
+
   .form-card {
     flex-direction: column;
+  }
+  /* En móviles, 1 sola columna para los inputs */
+  .form-grid-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 600px) {
+  /* En móviles pequeños, mostramos 1 sola columna para documentos */
+  .documents-grid {
+    grid-template-columns: 1fr;
   }
 }
