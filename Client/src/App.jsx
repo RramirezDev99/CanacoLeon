@@ -16,9 +16,8 @@ import NoticiasPage from "./pages/noticias/NoticiasPage";
 import NosotrosPage from "./pages/nosotros/NosotrosPage";
 import Servicios from "./pages/servicios/servicios";
 import Afiliarme from "./pages/afiliarme/Afiliarme";
-
-// 1. IMPORTA LA PÁGINA DE CONTACTO AQUÍ
 import Contacto from "./pages/contacto/Contacto";
+import DirectorioComercial from "./pages/directorio-comercial/directorio-comercial";
 
 // --- ESTILOS ---
 import "./App.css";
@@ -80,10 +79,7 @@ function App() {
         <Route path="/contacto" element={<Contacto />} />
 
         {/* Rutas Temporales */}
-        <Route
-          path="/directorio"
-          element={<PaginaTemporal titulo="Directorio Comercial" />}
-        />
+        <Route path="/directorio" element={<DirectorioComercial />} />
 
         {/* Rutas duplicadas (Legacy) */}
         <Route path="/afiliarme-info" element={<Afiliarme />} />

@@ -1,0 +1,61 @@
+/* =========================================
+   BANNER PRINCIPAL
+   ========================================= */
+.directorio-banner-container {
+  position: relative;
+  width: 100%;
+  height: 400px; /* Ajusta la altura a tu gusto */
+}
+
+.directorio-banner-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed; /* Parallax */
+  z-index: 1;
+}
+
+.directorio-banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 32, 75, 0.6) 0%,
+    rgba(15, 32, 75, 0.2) 50%,
+    rgba(15, 32, 75, 0.7) 100%
+  );
+  z-index: 2;
+}
+
+.directorio-banner-content {
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  width: 90%;
+}
+
+.directorio-banner-content h1 {
+  font-family: "Raleway", sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin: 0;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* RESPONSIVE BANNER */
+@media (max-width: 768px) {
+  .directorio-banner-content h1 {
+    font-size: 2.5rem;
+  }
+}

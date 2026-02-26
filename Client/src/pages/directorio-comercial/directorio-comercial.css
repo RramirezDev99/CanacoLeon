@@ -1,0 +1,8 @@
+/* =========================================
+   CONTENEDOR PRINCIPAL DE LA PÁGINA
+   ========================================= */
+.directorio-page-wrapper {
+  background-color: transparent; /* Fondo general azul clarito */
+  min-height: 100vh;
+  padding-bottom: 50px;
+}

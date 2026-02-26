@@ -195,3 +195,54 @@
     color: #666;
     font-size: 1.2rem;
 }
+
+/* --- ESTILOS DE CARGA (AGREGAR AL FINAL) --- */
+.skeleton-card {
+  background-color: #e5e7eb !important;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  height: 400px;
+}
+
+.skeleton-row {
+  position: relative;
+  overflow: hidden;
+  height: 250px;
+}
+
+.skeleton-img {
+  background-color: #e5e7eb;
+  width: 350px;
+  height: 250px;
+  border-radius: 15px;
+}
+
+.skeleton-line {
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+.skeleton-line.title { width: 60%; height: 30px; }
+.skeleton-line.date { width: 30%; height: 15px; }
+.skeleton-line.body { width: 100%; height: 15px; }
+
+/* ANIMACIÓN SHIMMER */
+.skeleton-shimmer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer-news 1.5s infinite;
+}
+
+@keyframes shimmer-news {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+body.dark-mode .skeleton-card, 
+body.dark-mode .skeleton-img, 
+body.dark-mode .skeleton-line {
+  background-color: #1e293b;
+}

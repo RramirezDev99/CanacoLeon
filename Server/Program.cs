@@ -4,7 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Server.Data;
 using Server.Models;
-using Server.Services; // <--- 1. AGREGADO: Necesario para reconocer el servicio
+using Server.Services;
+using Microsoft.Extensions.FileProviders; // <--- 1. AGREGADO: Para manejar archivos físicos
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,29 +13,25 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. CONFIGURACIÓN DE SERVICIOS
 // ==========================================
 
-// A) CONEXIÓN A BASE DE DATOS (SQLITE)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite("Data Source=canaco.db"));
 
-// B) REGISTRO DEL SERVICIO DE EMAIL (¡ESTO FALTABA!)
-builder.Services.AddScoped<IEmailService, EmailService>(); // <--- 2. AGREGADO: Esto conecta la interfaz con el código
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// C) CONFIGURACIÓN CORS (Para React)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirReact", policy =>
     {
-        policy.AllowAnyOrigin() // Ojo: En producción es mejor poner la URL específica
+        policy.AllowAnyOrigin()
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
 });
 
-// D) CONFIGURACIÓN JWT
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "ClaveSecretaSuperSeguraParaDesarrollo12345";
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "CanacoServer";
 var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "CanacoClient";
@@ -63,7 +60,6 @@ builder.Services.AddAuthentication(options =>
 // ==========================================
 var app = builder.Build();
 
-// E) SEMILLA DE DATOS (Crear Admin si no existe)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -79,7 +75,6 @@ using (var scope = app.Services.CreateScope())
                 Nombre = "Admin Principal",
                 Email = "admin@canaco.com",
                 PasswordHash = "admin123" 
-                // Sin Rol, como pediste
             });
             context.SaveChanges();
             Console.WriteLine("--> BASE DE DATOS: Usuario Admin creado (admin@canaco.com / admin123)");
@@ -92,7 +87,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // ==========================================
-// 3. PIPELINE DE PETICIONES
+// 3. PIPELINE DE PETICIONES (EL ORDEN IMPORTA)
 // ==========================================
 
 if (app.Environment.IsDevelopment())
@@ -101,7 +96,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseStaticFiles(); // Importante para las imágenes/PDFs
+// --- 2. AGREGADO: CONFIGURACIÓN PARA SERVIR LA CARPETA UPLOADS ---
+// Esto permite que http://localhost:5286/uploads/empresas/archivo.jpg funcione
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "uploads")),
+    RequestPath = "/uploads"
+});
+
+app.UseStaticFiles(); // Sigue sirviendo wwwroot por si acaso
 
 app.UseCors("PermitirReact");
 

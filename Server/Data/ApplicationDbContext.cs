@@ -16,5 +16,8 @@ namespace Server.Data
         
         // Tabla para las afiliaciones
         public DbSet<AfiliadoSolicitud> AfiliadosSolicitudes { get; set; }
+
+        // --- LA LÍNEA NUEVA PARA EL DIRECTORIO COMERCIAL ---
+        public DbSet<EmpresaDirectorio> EmpresasDirectorio { get; set; }
     }
 }

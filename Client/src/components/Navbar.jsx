@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
-// Usamos la versión estable que no rompe tu página en León
 import {
   FaSun,
   FaMoon,
@@ -10,8 +9,12 @@ import {
   FaFacebook,
   FaLinkedin,
   FaInstagram,
-  FaTwitter, // Lo usaremos como base
+  FaTwitter, // Mantenemos este por si acaso
 } from "react-icons/fa";
+
+// Importamos el logo de X de la carpeta de la versión 6
+import { FaXTwitter } from "react-icons/fa6"; 
+
 import logoIcon from "../assets/logo.svg";
 import logoText from "../assets/textIcon.svg";
 import "./Navbar.css";
@@ -86,15 +89,17 @@ function Navbar() {
             >
               <FaLinkedin />
             </a>
-            {/* Aquí aplicamos la clase x-twitter para el cambio visual */}
+            
             <a
               href="https://x.com/canacoleon"
               target="_blank"
               rel="noreferrer"
               className="social-link x-twitter"
             >
-              <FaTwitter />
+              {/* Intentamos usar X, si no existe usamos Twitter normal para que no truene */}
+              {FaXTwitter ? <FaXTwitter /> : <FaTwitter />}
             </a>
+
             <a
               href="https://www.instagram.com/canacoleon/"
               target="_blank"
@@ -118,7 +123,6 @@ function Navbar() {
         </nav>
 
         <div className="nav-actions">
-          {/* ... resto de tus acciones (admin, switch tema, etc) ... */}
           <div className="desktop-btn admin-wrapper">
             <NavLink to="/afiliarme" className="btn-afiliarme">
               Soy Afiliado
