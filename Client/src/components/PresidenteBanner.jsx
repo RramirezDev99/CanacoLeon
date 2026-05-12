@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./PresidenteBanner.css";
+import { API_URL, FILES_BASE } from "../lib/api";
 
 const PresidenteBanner = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5286/api/presidente")
+    fetch(`${API_URL}/presidente`)
       .then((res) => res.json())
       .then((result) => {
         setData(result);
@@ -28,7 +29,7 @@ const PresidenteBanner = () => {
 
   const getImg = (url) => {
     if (!url) return "https://via.placeholder.com/600x600?text=Foto+Presidente";
-    return `http://localhost:5286${url}`;
+    return `${FILES_BASE}${url}`;
   };
 
   return (

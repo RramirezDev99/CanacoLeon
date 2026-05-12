@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import NewsBanner from "../../components/NewsBanner";
 import "./NoticiasPage.css";
+import { API_URL, FILES_BASE } from "../../lib/api";
 
 const NoticiasPage = () => {
   const [noticias, setNoticias] = useState([]);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5286/api/noticias")
+    fetch(`${API_URL}/noticias`)
       .then((res) => res.json())
       .then((data) => {
         // Ordenar por fecha (más nuevas primero)
@@ -33,7 +34,7 @@ const NoticiasPage = () => {
     if (!item) return "/default-new.png";
     const raw = item.imagenUrl || item.ImagenUrl;
     return raw
-      ? `http://localhost:5286${raw.replace(/\\/g, "/")}`
+      ? `${FILES_BASE}${raw.replace(/\\/g, "/")}`
       : "/default-new.png";
   };
 

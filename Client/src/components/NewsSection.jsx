@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./NewsSection.css";
+import { API_URL, FILES_BASE } from "../lib/api";
 
 const NewsSection = () => {
   const [noticias, setNoticias] = useState([]);
@@ -8,7 +9,7 @@ const NewsSection = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:5286/api/noticias")
+    fetch(`${API_URL}/noticias`)
       .then((res) => res.json())
       .then((data) => {
         const ordenadas = data.sort(
@@ -50,7 +51,7 @@ const NewsSection = () => {
                   <img
                     src={
                       item.imagenUrl
-                        ? `http://localhost:5286${item.imagenUrl}`
+                        ? `${FILES_BASE}${item.imagenUrl}`
                         : "/default-new.png"
                     }
                     alt={item.titulo}

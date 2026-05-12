@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
-import "./DirectorioSection.css"; // Confirma que el nombre coincida
-
-const API_URL = "http://localhost:5286/api/directorio";
-const IMG_URL = "http://localhost:5286";
+import "./DirectorioSection.css";
+import { API_URL, FILES_BASE } from "../lib/api";
 
 const DirectorySection = () => {
   const [miembros, setMiembros] = useState([]);
 
   useEffect(() => {
-    fetch(API_URL)
+    fetch(`${API_URL}/directorio`)
       .then((res) => res.json())
       .then((data) => setMiembros(data))
       .catch((err) => console.error("Error cargando directorio", err));
@@ -33,7 +31,7 @@ const DirectorySection = () => {
                 <img
                   src={
                     miembro.imagenUrl
-                      ? `${IMG_URL}${miembro.imagenUrl}`
+                      ? `${FILES_BASE}${miembro.imagenUrl}`
                       : "https://via.placeholder.com/150"
                   }
                   alt={miembro.nombre}

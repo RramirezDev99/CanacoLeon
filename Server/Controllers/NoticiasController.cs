@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Server.Models;
 using Server.DTOs;
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -19,16 +21,26 @@ namespace Server.Controllers
             _env = env;
         }
 
+        // PÚBLICO: cualquiera puede ver la lista de noticias
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Noticia>>> Get()
         {
-            // Ordenamos por ID descendente para ver las nuevas primero en el panel
+            // Ordenamos por ID descendente para ver las nuevas primero
             return await _context.Noticias.OrderByDescending(n => n.Id).ToListAsync();
         }
 
+        // CREAR — solo admin autenticado (token JWT)
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Noticia>> Post([FromForm] CrearNoticiaDto dto)
         {
+            // Si mandan imagen, la validamos antes de tocar la BD
+            if (dto.Imagen != null)
+            {
+                var error = UploadHelper.ValidarImagen(dto.Imagen);
+                if (error != null) return BadRequest(new { error });
+            }
+
             var nuevaNoticia = new Noticia
             {
                 Titulo = dto.Titulo,
@@ -47,14 +59,20 @@ namespace Server.Controllers
             return Ok(nuevaNoticia);
         }
 
-        // --- EDITAR (PUT) ---
+        // EDITAR — solo admin
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Put(int id, [FromForm] CrearNoticiaDto dto)
         {
             var noticia = await _context.Noticias.FindAsync(id);
             if (noticia == null) return NotFound("Noticia no encontrada");
 
-            // Actualizamos datos
+            if (dto.Imagen != null)
+            {
+                var error = UploadHelper.ValidarImagen(dto.Imagen);
+                if (error != null) return BadRequest(new { error });
+            }
+
             noticia.Titulo = dto.Titulo;
             noticia.Resumen = dto.Resumen;
             noticia.FechaPublicacion = dto.FechaPublicacion;
@@ -69,8 +87,9 @@ namespace Server.Controllers
             return Ok(noticia);
         }
 
-        // --- BORRAR (DELETE) ---
+        // BORRAR — solo admin
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var noticia = await _context.Noticias.FindAsync(id);
@@ -81,13 +100,13 @@ namespace Server.Controllers
             return Ok("Eliminado");
         }
 
-        // Método auxiliar para no repetir código de imagen
+        // Guarda la imagen en wwwroot/uploads con un nombre seguro (no usa el del usuario).
         private async Task<string> GuardarImagen(IFormFile imagen)
         {
             string folderPath = Path.Combine(_env.WebRootPath, "uploads");
             if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
 
-            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imagen.FileName);
+            string fileName = UploadHelper.NombreSeguro(imagen);
             string filePath = Path.Combine(folderPath, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))

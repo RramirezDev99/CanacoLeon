@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
+import { API_URL, apiFetch } from "../../lib/api";
 
-const API_URL = "http://localhost:5286/api";
+// Base del servidor (sin "/api") — la usamos para mostrar imágenes que vienen
+// como rutas relativas: ej. "/uploads/empresas/logo.jpg"
+const FILES_BASE = API_URL.replace(/\/api\/?$/, "");
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("noticias");
@@ -11,8 +14,8 @@ const Dashboard = () => {
   // --- ESTADOS DE DATOS ---
   const [listaNoticias, setListaNoticias] = useState([]);
   const [listaEventos, setListaEventos] = useState([]);
-  const [listaDirectorio, setListaDirectorio] = useState([]); 
-  const [listaComercial, setListaComercial] = useState([]);   
+  const [listaDirectorio, setListaDirectorio] = useState([]);
+  const [listaComercial, setListaComercial] = useState([]);
 
   // --- FORMULARIOS ---
   const [newsForm, setNewsForm] = useState({ titulo: "", resumen: "", fechaPublicacion: "", imagen: null });
@@ -23,6 +26,7 @@ const Dashboard = () => {
     nombre: "", giro: "", descripcion: "", telefono: "", email: "", sitioWeb: "", facebookUrl: "", instagramUrl: "", imagen: null
   });
 
+  // Carga las listas para todas las tabs. Los GET son públicos, así que no hace falta token.
   const cargarDatos = () => {
     fetch(`${API_URL}/noticias`).then(res => res.json()).then(data => setListaNoticias(data));
     fetch(`${API_URL}/eventos`).then(res => res.json()).then(data => setListaEventos(data));
@@ -56,10 +60,12 @@ const Dashboard = () => {
     return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
   };
 
+  // DELETE — usa apiFetch para mandar el token JWT en el header Authorization.
+  // Sin token el servidor responde 401 y apiFetch nos manda al login.
   const handleDelete = async (id, endpoint) => {
     if (!window.confirm("¿Eliminar este elemento permanentemente?")) return;
     try {
-      const response = await fetch(`${API_URL}/${endpoint}/${id}`, { method: "DELETE" });
+      const response = await apiFetch(`/${endpoint}/${id}`, { method: "DELETE" });
       if (response.ok) {
         setMensaje({ type: "success", text: "Eliminado de la base de datos" });
         cargarDatos();
@@ -67,7 +73,7 @@ const Dashboard = () => {
     } catch (error) { console.error(error); }
   };
 
-  // --- SUBMITS ---
+  // --- SUBMITS (todos usan apiFetch para incluir el token) ---
   const submitNoticia = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -75,8 +81,8 @@ const Dashboard = () => {
     formData.append("resumen", newsForm.resumen);
     formData.append("fechaPublicacion", newsForm.fechaPublicacion);
     if (newsForm.imagen) formData.append("imagen", newsForm.imagen);
-    const url = editId ? `${API_URL}/noticias/${editId}` : `${API_URL}/noticias`;
-    await fetch(url, { method: editId ? "PUT" : "POST", body: formData });
+    const path = editId ? `/noticias/${editId}` : `/noticias`;
+    await apiFetch(path, { method: editId ? "PUT" : "POST", body: formData });
     resetAll(); cargarDatos();
     setMensaje({ type: "success", text: "Noticia guardada" });
   };
@@ -89,8 +95,8 @@ const Dashboard = () => {
     formData.append("fecha", eventForm.fecha);
     formData.append("lugar", eventForm.lugar);
     if (eventForm.imagen) formData.append("imagen", eventForm.imagen);
-    const url = editId ? `${API_URL}/eventos/${editId}` : `${API_URL}/eventos`;
-    await fetch(url, { method: editId ? "PUT" : "POST", body: formData });
+    const path = editId ? `/eventos/${editId}` : `/eventos`;
+    await apiFetch(path, { method: editId ? "PUT" : "POST", body: formData });
     resetAll(); cargarDatos();
     setMensaje({ type: "success", text: "Evento guardado" });
   };
@@ -102,7 +108,7 @@ const Dashboard = () => {
     formData.append("cargo", presidentForm.cargo);
     formData.append("mensaje", presidentForm.mensaje);
     if (presidentForm.imagen) formData.append("imagen", presidentForm.imagen);
-    await fetch(`${API_URL}/presidente`, { method: "POST", body: formData });
+    await apiFetch(`/presidente`, { method: "POST", body: formData });
     cargarDatos();
     setMensaje({ type: "success", text: "Presidente actualizado" });
   };
@@ -110,8 +116,8 @@ const Dashboard = () => {
   const submitDirectorio = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    Object.keys(dirForm).forEach(key => { if(dirForm[key]) formData.append(key, dirForm[key]); });
-    await fetch(`${API_URL}/directorio`, { method: "POST", body: formData });
+    Object.keys(dirForm).forEach(key => { if (dirForm[key]) formData.append(key, dirForm[key]); });
+    await apiFetch(`/directorio`, { method: "POST", body: formData });
     resetAll(); cargarDatos();
     setMensaje({ type: "success", text: "Miembro guardado" });
   };
@@ -119,7 +125,7 @@ const Dashboard = () => {
   const submitComercial = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    
+
     // Mapeo exacto a CrearEmpresaDto.cs
     formData.append("Nombre", comercialForm.nombre);
     formData.append("Giro", comercialForm.giro);
@@ -131,14 +137,14 @@ const Dashboard = () => {
     formData.append("InstagramUrl", formatURL(comercialForm.instagramUrl));
 
     if (comercialForm.imagen) {
-      formData.append("Logo", comercialForm.imagen); 
+      formData.append("Logo", comercialForm.imagen);
     }
 
-    const url = editId ? `${API_URL}/EmpresaDirectorio/${editId}` : `${API_URL}/EmpresaDirectorio`;
+    const path = editId ? `/EmpresaDirectorio/${editId}` : `/EmpresaDirectorio`;
     const method = editId ? "PUT" : "POST";
 
     try {
-      const response = await fetch(url, { method, body: formData });
+      const response = await apiFetch(path, { method, body: formData });
       if (response.ok) {
         setMensaje({ type: "success", text: editId ? "Empresa actualizada" : "Empresa guardada con éxito" });
         resetAll();
@@ -280,11 +286,11 @@ const Dashboard = () => {
           <div className="items-list">
             {listaComercial.map(c => (
               <div key={c.id} className="list-item">
-                <img 
-                  src={`http://localhost:5286${c.rutaLogo}`} 
-                  alt="Logo" 
+                <img
+                  src={`${FILES_BASE}${c.rutaLogo}`}
+                  alt="Logo"
                   style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', marginRight: '10px' }}
-                  onError={(e) => { e.target.src = "/default-new.png"; }} 
+                  onError={(e) => { e.target.src = "/default-new.png"; }}
                 />
                 <span><strong>{c.nombre}</strong> - {c.giro}</span>
                 <div className="actions">

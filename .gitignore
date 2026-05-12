@@ -7,3 +7,15 @@ bin/
 obj/
 .vs/
 *.user
+
+# --- SECRETOS Y CONFIGURACIÓN LOCAL ---
+# NO subir archivos con credenciales reales a Git.
+# El archivo .example sí se sube (es la plantilla).
+Server/appsettings.Development.json
+Server/appsettings.Production.json
+Server/appsettings.Local.json
+
+# Variables de entorno del cliente (Vite)
+Client/.env
+Client/.env.local
+Client/.env.*.local

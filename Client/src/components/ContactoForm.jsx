@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./ContactoForm.css";
+import { API_URL } from "../lib/api";
 
 const ContactoForm = () => {
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ const ContactoForm = () => {
     setStatus({ loading: true, error: null, success: false });
 
     try {
-      const response = await fetch("http://localhost:5286/api/contacto", {
+      const response = await fetch(`${API_URL}/contacto`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

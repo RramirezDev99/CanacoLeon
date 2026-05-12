@@ -1,8 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Server.Data; 
+using Server.Data;
 using Server.Models;
-using Server.Services; // <--- 1. IMPORTANTE: Usar el servicio de email
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -88,7 +89,9 @@ namespace Server.Controllers
         }
 
         // GET: api/contacto
+        // ADMIN — listar todos los mensajes recibidos (solo con token JWT)
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ContactoMensaje>>> GetMensajes()
         {
             return await _context.MensajesContacto

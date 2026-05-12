@@ -21,11 +21,27 @@ namespace Server.Controllers
             _env = env;
         }
 
+        // PÚBLICO: cualquier empresa puede enviar su solicitud de afiliación.
+        // No requiere login, pero SÍ validamos los archivos para evitar abusos.
         [HttpPost("solicitar")]
         public async Task<IActionResult> Solicitar([FromForm] AfiliadoDto dto)
         {
             try
             {
+                // Validamos cada documento antes de guardar nada en disco o BD
+                foreach (var (archivo, nombre) in new[]
+                {
+                    (dto.Constancia, "Constancia"),
+                    (dto.Ine, "INE"),
+                    (dto.Comprobante, "Comprobante"),
+                    (dto.FormatoExcel, "Formato Excel"),
+                })
+                {
+                    if (archivo == null) continue; // Si es opcional, lo dejamos pasar
+                    var error = UploadHelper.ValidarDocumento(archivo);
+                    if (error != null) return BadRequest(new { error = $"{nombre}: {error}" });
+                }
+
                 var solicitud = new AfiliadoSolicitud
                 {
                     NombreCompleto = dto.NombreCompleto,
@@ -40,7 +56,7 @@ namespace Server.Controllers
                 string folderPath = Path.Combine(_env.ContentRootPath, "uploads", "afiliados");
                 if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
 
-                // Guardamos los 4 archivos (incluyendo el nuevo Excel)
+                // Guardamos los 4 archivos (incluyendo el Excel de registro)
                 string? rutaConstancia = await GuardarArchivo(dto.Constancia, folderPath);
                 string? rutaIne = await GuardarArchivo(dto.Ine, folderPath);
                 string? rutaComprobante = await GuardarArchivo(dto.Comprobante, folderPath);
@@ -54,17 +70,13 @@ namespace Server.Controllers
                 _context.AfiliadosSolicitudes.Add(solicitud);
                 await _context.SaveChangesAsync();
 
-                // --- PREPARAR ADJUNTOS PARA EL CORREO ---
+                // Preparamos la lista de adjuntos para el correo (rutas absolutas en disco)
                 var listaAdjuntos = new List<string>();
-                
-                if (!string.IsNullOrEmpty(rutaConstancia)) 
-                    listaAdjuntos.Add(Path.Combine(_env.ContentRootPath, rutaConstancia.TrimStart('/')));
-                if (!string.IsNullOrEmpty(rutaIne)) 
-                    listaAdjuntos.Add(Path.Combine(_env.ContentRootPath, rutaIne.TrimStart('/')));
-                if (!string.IsNullOrEmpty(rutaComprobante)) 
-                    listaAdjuntos.Add(Path.Combine(_env.ContentRootPath, rutaComprobante.TrimStart('/')));
-                if (!string.IsNullOrEmpty(rutaFormatoExcel)) // <--- Adjuntamos el Excel al correo
-                    listaAdjuntos.Add(Path.Combine(_env.ContentRootPath, rutaFormatoExcel.TrimStart('/')));
+                foreach (var ruta in new[] { rutaConstancia, rutaIne, rutaComprobante, rutaFormatoExcel })
+                {
+                    if (!string.IsNullOrEmpty(ruta))
+                        listaAdjuntos.Add(Path.Combine(_env.ContentRootPath, ruta.TrimStart('/')));
+                }
 
                 string cuerpo = $@"
                     <h2>Nueva Solicitud de Afiliación</h2>
@@ -83,10 +95,11 @@ namespace Server.Controllers
             }
         }
 
+        // Guarda el archivo en disco con un nombre seguro y devuelve la ruta lógica.
         private async Task<string?> GuardarArchivo(IFormFile? file, string folder)
         {
             if (file == null || file.Length == 0) return null;
-            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            string fileName = UploadHelper.NombreSeguro(file);
             string filePath = Path.Combine(folder, fileName);
             using (var stream = new FileStream(filePath, FileMode.Create))
             {

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import "./AfiliarmeRegistro.css";
+import { API_URL } from "../lib/api";
 
 const AfiliarmeRegistro = () => {
   const [formData, setFormData] = useState({
@@ -58,7 +59,7 @@ const AfiliarmeRegistro = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5286/api/afiliado/solicitar",
+        `${API_URL}/afiliado/solicitar`,
         {
           method: "POST",
           body: data,

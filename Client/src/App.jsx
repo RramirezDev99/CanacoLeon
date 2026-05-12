@@ -78,11 +78,7 @@ function App() {
         {/* 2. RUTA CORREGIDA: Ahora carga la página real */}
         <Route path="/contacto" element={<Contacto />} />
 
-        {/* Rutas Temporales */}
         <Route path="/directorio" element={<DirectorioComercial />} />
-
-        {/* Rutas duplicadas (Legacy) */}
-        <Route path="/afiliarme-info" element={<Afiliarme />} />
 
         {/* Rutas Admin */}
         <Route path="/login" element={<Login />} />
