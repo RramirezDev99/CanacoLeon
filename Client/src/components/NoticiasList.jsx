@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./NoticiasList.css";
+import { API_URL, FILES_BASE } from "../lib/api";
 
 const NoticiasList = () => {
   const [noticias, setNoticias] = useState([]);
@@ -7,7 +8,7 @@ const NoticiasList = () => {
 
   useEffect(() => {
     setCargando(true);
-    fetch("http://localhost:5286/api/noticias")
+    fetch(`${API_URL}/noticias`)
       .then((res) => res.json())
       .then((data) => {
         const ordenadas = data.sort((a, b) => {
@@ -26,7 +27,7 @@ const NoticiasList = () => {
 
   const getImgUrl = (item) => {
     const raw = item.imagenUrl || item.ImagenUrl;
-    return raw ? `http://localhost:5286${raw.replace(/\\/g, "/")}` : "/default-new.png";
+    return raw ? `${FILES_BASE}${raw.replace(/\\/g, "/")}` : "/default-new.png";
   };
 
   const noticiasPrincipales = noticias.slice(0, 6);

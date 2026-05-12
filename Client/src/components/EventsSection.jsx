@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "./EventsSection.css";
+import { API_URL, FILES_BASE } from "../lib/api";
 
 const EventsSection = () => {
   const [eventos, setEventos] = useState([]);
@@ -9,7 +10,7 @@ const EventsSection = () => {
 
   useEffect(() => {
     setLoading(true); // Iniciamos carga
-    fetch("http://localhost:5286/api/eventos")
+    fetch(`${API_URL}/eventos`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Eventos cargados:", data);
@@ -83,7 +84,7 @@ const EventsSection = () => {
               eventos.map((evento, index) => {
                 const rawImg = evento.imagenUrl || evento.ImagenUrl;
                 const bgImage = rawImg
-                  ? `http://localhost:5286${rawImg.replace(/\\/g, "/")}`
+                  ? `${FILES_BASE}${rawImg.replace(/\\/g, "/")}`
                   : "/default-event.png";
 
                 return (

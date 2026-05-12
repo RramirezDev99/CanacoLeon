@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Server.Models;
 using Server.DTOs;
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -19,15 +21,24 @@ namespace Server.Controllers
             _env = env;
         }
 
+        // PÚBLICO
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Evento>>> Get()
         {
             return await _context.Eventos.OrderByDescending(e => e.Id).ToListAsync();
         }
 
+        // ADMIN
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Evento>> Post([FromForm] CrearEventoDto dto)
         {
+            if (dto.Imagen != null)
+            {
+                var error = UploadHelper.ValidarImagen(dto.Imagen);
+                if (error != null) return BadRequest(new { error });
+            }
+
             var nuevoEvento = new Evento
             {
                 Titulo = dto.Titulo,
@@ -44,11 +55,19 @@ namespace Server.Controllers
             return Ok(nuevoEvento);
         }
 
+        // ADMIN
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Put(int id, [FromForm] CrearEventoDto dto)
         {
             var evento = await _context.Eventos.FindAsync(id);
             if (evento == null) return NotFound();
+
+            if (dto.Imagen != null)
+            {
+                var error = UploadHelper.ValidarImagen(dto.Imagen);
+                if (error != null) return BadRequest(new { error });
+            }
 
             evento.Titulo = dto.Titulo;
             evento.Descripcion = dto.Descripcion;
@@ -61,7 +80,9 @@ namespace Server.Controllers
             return Ok(evento);
         }
 
+        // ADMIN
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var evento = await _context.Eventos.FindAsync(id);
@@ -77,7 +98,7 @@ namespace Server.Controllers
             string folderPath = Path.Combine(_env.WebRootPath, "uploads");
             if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
 
-            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imagen.FileName);
+            string fileName = UploadHelper.NombreSeguro(imagen);
             string filePath = Path.Combine(folderPath, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))

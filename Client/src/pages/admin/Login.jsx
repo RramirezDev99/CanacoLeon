@@ -1,42 +1,43 @@
-// src/pages/admin/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './login.css'; // Ahorita creamos este CSS
+import './login.css';
+import { API_URL } from '../../lib/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setCargando(true);
 
     try {
-      // 1. Llamamos a TU API (el endpoint que acabamos de probar)
-      const response = await fetch('http://localhost:5286/api/auth/login', {
+      // Login es público (no necesita token). Usamos fetch directo con JSON.
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
 
-      const data = await response.json();
-
       if (response.ok) {
-    localStorage.setItem('adminToken', data.token);
-    alert("¡Login Exitoso! Token guardado.");
-    
-    // ANTES DECÍA: navigate('/');
-    // CAMBIALO A:
-    navigate('/admin'); 
-    } else {
-        // Error controlado (ej: contraseña mal)
-        setError("Credenciales incorrectas. Intenta de nuevo.");
+        const data = await response.json();
+        // Guardamos el token; el helper apiFetch lo añadirá automáticamente
+        // a las peticiones del dashboard.
+        localStorage.setItem('adminToken', data.token);
+        navigate('/admin');
+      } else {
+        // No revelamos detalles (no decimos "el correo no existe" vs "pass mala")
+        setError('Credenciales incorrectas. Intenta de nuevo.');
       }
     } catch (err) {
       console.error(err);
-      setError("Error de conexión con el servidor.");
+      setError('Error de conexión con el servidor.');
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -49,29 +50,31 @@ const Login = () => {
         <form onSubmit={handleLogin}>
           <div className="form-group">
             <label>Correo Electrónico</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               placeholder="admin@canaco.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required 
+              required
             />
           </div>
 
           <div className="form-group">
             <label>Contraseña</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required 
+              required
             />
           </div>
 
           {error && <div className="error-message">{error}</div>}
 
-          <button type="submit" className="login-btn">Entrar</button>
+          <button type="submit" className="login-btn" disabled={cargando}>
+            {cargando ? 'Entrando…' : 'Entrar'}
+          </button>
         </form>
       </div>
     </div>

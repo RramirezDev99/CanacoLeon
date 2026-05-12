@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaFacebook, FaInstagram, FaGlobe } from "react-icons/fa";
-// Crea también EmpresasGrid.css si vas a separar los estilos
-import "./EmpresasGrid.css"; 
+import "./EmpresasGrid.css";
+import { API_URL, FILES_BASE } from "../lib/api";
 
 const EmpresasGrid = () => {
   const [empresas, setEmpresas] = useState([]);
@@ -10,7 +10,7 @@ const EmpresasGrid = () => {
   useEffect(() => {
     const cargarDirectorio = async () => {
       try {
-        const respuesta = await fetch("http://localhost:5286/api/EmpresaDirectorio");
+        const respuesta = await fetch(`${API_URL}/EmpresaDirectorio`);
         
         if (!respuesta.ok) {
           throw new Error("Error al jalar los datos del servidor");
@@ -44,7 +44,7 @@ const EmpresasGrid = () => {
               <div className="empresa-logo-container">
                 <div className="empresa-logo-circle">
                   <img 
-                    src={`http://localhost:5286${empresa.rutaLogo}`} 
+                    src={`${FILES_BASE}${empresa.rutaLogo}`}
                     alt={`Logo ${empresa.nombre}`} 
                     onError={(e) => { e.target.src = "/default-new.png"; }} 
                   />
