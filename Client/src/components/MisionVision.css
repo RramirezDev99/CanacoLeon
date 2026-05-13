@@ -1,0 +1,142 @@
+/* =========================================
+   MISIÓN / VISIÓN / VALORES
+   ========================================= */
+
+.mision-vision-section {
+  width: 100%;
+  padding: 80px 20px 0;
+}
+
+.mv-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.mv-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+  padding: 40px 30px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mv-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.mv-icon-wrapper {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 1.6rem;
+  color: white;
+}
+
+.mision-icon { background: linear-gradient(135deg, #004aad, #0066cc); }
+.vision-icon { background: linear-gradient(135deg, #005b96, #0088cc); }
+.valores-icon { background: linear-gradient(135deg, #0f3057, #004aad); }
+
+.mv-card h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f3057;
+  margin-bottom: 14px;
+}
+
+.mv-card p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #555;
+}
+
+/* --- Dark Mode --- */
+body.dark-mode .mv-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+body.dark-mode .mv-card h3 { color: #e0e0e0; }
+body.dark-mode .mv-card p { color: #b0b0b0; }
+
+/* =========================================
+   HISTORIA
+   ========================================= */
+
+.historia-section {
+  margin-top: 60px;
+  padding: 60px 20px 80px;
+  background: linear-gradient(135deg, #0f3057 0%, #004aad 100%);
+  border-radius: 30px;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.historia-container {
+  max-width: 750px;
+  margin: 0 auto;
+  text-align: center;
+  color: white;
+}
+
+.historia-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.historia-section h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 24px;
+}
+
+.historia-section p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 768px) {
+  .mv-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .mv-card {
+    padding: 30px 24px;
+  }
+
+  .historia-section {
+    border-radius: 20px;
+    padding: 40px 20px 50px;
+    margin-top: 40px;
+  }
+
+  .historia-section h2 {
+    font-size: 1.6rem;
+  }
+}

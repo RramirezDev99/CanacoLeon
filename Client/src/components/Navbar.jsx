@@ -59,7 +59,7 @@ function Navbar() {
             Servicios
           </NavLink>
           <NavLink
-            to="/afiliarme-info"
+            to="/afiliarme"
             className={linkClass}
             onClick={toggleMenu}
           >

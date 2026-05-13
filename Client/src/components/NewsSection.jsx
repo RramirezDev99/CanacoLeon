@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./NewsSection.css";
 import { API_URL, FILES_BASE } from "../lib/api";
+import { useScrollReveal } from "../hooks/useScrollReveal";
 
 const NewsSection = () => {
   const [noticias, setNoticias] = useState([]);
-  const [loading, setLoading] = useState(true); // <--- Agregado para el loader
+  const [loading, setLoading] = useState(true);
+  const [sectionRef, isVisible] = useScrollReveal(0.1);
 
   useEffect(() => {
     setLoading(true);
@@ -25,7 +27,7 @@ const NewsSection = () => {
   }, []);
 
   return (
-    <section className="news-section">
+    <section ref={sectionRef} className={`news-section scroll-reveal ${isVisible ? 'revealed' : ''}`}>
       <div className="background-blobs-css">
         <div className="blob blob-blue-left"></div>
         <div className="blob blob-blue-right"></div>

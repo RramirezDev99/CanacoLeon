@@ -1,18 +1,16 @@
 // src/components/HeroCarousel.jsx
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Link } from 'react-router-dom';
 
-// Importamos los estilos necesarios de Swiper
 import 'swiper/css';
-import 'swiper/css/effect-fade'; // Para que se desvanezca suave
+import 'swiper/css/effect-fade';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-// Módulos que vamos a usar
 import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
 
 import './HeroCarousel.css';
 
-// Tus imágenes
 const images = [
   "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1600&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600&auto=format&fit=crop",
@@ -24,37 +22,38 @@ const HeroCarousel = () => {
     <section className="hero-slider-container">
       <Swiper
         modules={[Autoplay, EffectFade, Navigation, Pagination]}
-        effect="fade" // Efecto de desvanecimiento elegante
+        effect="fade"
         spaceBetween={0}
         slidesPerView={1}
-        loop={true} // Infinito
-        speed={1000} // Duración de la transición (1 seg)
+        loop={true}
+        speed={1000}
         autoplay={{
-          delay: 5000, // Cambio cada 5 seg
+          delay: 5000,
           disableOnInteraction: false,
         }}
         pagination={{ clickable: true }}
-        navigation={true} // Flechas
+        navigation={true}
         className="mySwiper"
       >
         {images.map((img, index) => (
           <SwiperSlide key={index}>
-            <div 
-              className="slide-image" 
+            <div
+              className="slide-image"
               style={{ backgroundImage: `url(${img})` }}
             >
-              {/* Overlay oscuro integrado en cada slide */}
               <div className="overlay"></div>
             </div>
           </SwiperSlide>
         ))}
 
-        {/* CONTENIDO FIJO (Encima del slider) */}
-        {/* Lo sacamos del map para que el texto NO parpadee al cambiar foto, 
-            o lo metemos dentro si quieres que el texto cambie con la foto.
-            En tu Figma parece ser un texto fijo sobre las fotos. */}
         <div className="hero-content">
-            <h1>ES UN ORGULLO SER<br/>CANACO SERVytUR LEÓN</h1>
+            <p className="hero-subtitle">Cámara Nacional de Comercio, Servicios y Turismo</p>
+            <h1>CANACO SERVyTUR<br/>LEÓN</h1>
+            <p className="hero-description">Impulsando el desarrollo empresarial de León, Guanajuato desde 1917</p>
+            <div className="hero-buttons">
+              <Link to="/afiliarme" className="hero-btn hero-btn-primary">Afíliate Ahora</Link>
+              <Link to="/servicios" className="hero-btn hero-btn-secondary">Conoce Nuestros Servicios</Link>
+            </div>
         </div>
 
       </Swiper>

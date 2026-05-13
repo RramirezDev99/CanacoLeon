@@ -142,10 +142,11 @@ if (app.Environment.IsDevelopment())
 
 // Servir la carpeta /uploads como contenido estático.
 // Así http://localhost:5286/uploads/empresas/archivo.jpg funciona.
+var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "uploads");
+Directory.CreateDirectory(uploadsPath); // Crearla si no existe (producción)
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "uploads")),
+    FileProvider = new PhysicalFileProvider(uploadsPath),
     RequestPath = "/uploads"
 });
 

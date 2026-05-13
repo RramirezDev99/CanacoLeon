@@ -18,6 +18,7 @@ import Servicios from "./pages/servicios/servicios";
 import Afiliarme from "./pages/afiliarme/Afiliarme";
 import Contacto from "./pages/contacto/Contacto";
 import DirectorioComercial from "./pages/directorio-comercial/directorio-comercial";
+import NotFound from "./pages/NotFound";
 
 // --- ESTILOS ---
 import "./App.css";
@@ -85,6 +86,9 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/admin" element={<Dashboard />} />
         </Route>
+
+        {/* 404 - Ruta catch-all */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       <Footer />

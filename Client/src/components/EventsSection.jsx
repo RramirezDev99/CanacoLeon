@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "./EventsSection.css";
 import { API_URL, FILES_BASE } from "../lib/api";
+import { useScrollReveal } from "../hooks/useScrollReveal";
 
 const EventsSection = () => {
   const [eventos, setEventos] = useState([]);
-  const [loading, setLoading] = useState(true); // <--- AGREGADO: Estado de carga
+  const [loading, setLoading] = useState(true);
   const sliderRef = useRef(null);
+  const [sectionRef, isVisible] = useScrollReveal(0.1);
 
   useEffect(() => {
     setLoading(true); // Iniciamos carga
@@ -52,7 +54,7 @@ const EventsSection = () => {
   };
 
   return (
-    <section className="events-section">
+    <section ref={sectionRef} className={`events-section scroll-reveal ${isVisible ? 'revealed' : ''}`}>
       <div className="events-vignette"></div>
 
       <div className="events-container">
