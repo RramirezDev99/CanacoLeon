@@ -86,6 +86,20 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<ApplicationDbContext>();
         context.Database.EnsureCreated();
 
+        // Crear tabla ContenidosSitio si no existe (EnsureCreated no la agrega a BD existente)
+        context.Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS ContenidosSitio (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Clave TEXT NOT NULL,
+                Valor TEXT NOT NULL DEFAULT '',
+                ImagenUrl TEXT
+            );
+        ");
+        // Índice único en Clave
+        context.Database.ExecuteSqlRaw(@"
+            CREATE UNIQUE INDEX IF NOT EXISTS IX_ContenidosSitio_Clave ON ContenidosSitio (Clave);
+        ");
+
         // Contraseña inicial del admin: la leemos de configuración para no hardcodearla.
         // Si no la pones en config, usamos un valor por defecto SOLO para arrancar local.
         var passwordInicial = builder.Configuration["Admin:PasswordInicial"] ?? "admin123";

@@ -26,6 +26,17 @@ const Dashboard = () => {
     nombre: "", giro: "", descripcion: "", telefono: "", email: "", sitioWeb: "", facebookUrl: "", instagramUrl: "", imagen: null
   });
 
+  // --- CONTENIDO DEL SITIO (misión, visión, valores, hero) ---
+  const [contenidoMap, setContenidoMap] = useState({});
+  const contenidoKeys = [
+    { clave: "mision", label: "Misión", placeholder: "Describe la misión de CANACO León...", multiline: true },
+    { clave: "vision", label: "Visión", placeholder: "Describe la visión de CANACO León...", multiline: true },
+    { clave: "valores", label: "Valores", placeholder: "Lista los valores de CANACO León...", multiline: true },
+    { clave: "hero_titulo", label: "Hero — Título", placeholder: "Ej: CANACO SERVyTUR LEÓN", multiline: false },
+    { clave: "hero_subtitulo", label: "Hero — Subtítulo", placeholder: "Ej: Cámara Nacional de Comercio, Servicios y Turismo", multiline: false },
+    { clave: "hero_descripcion", label: "Hero — Descripción", placeholder: "Ej: Impulsando el desarrollo empresarial de León", multiline: false },
+  ];
+
   // Carga las listas para todas las tabs. Los GET son públicos, así que no hace falta token.
   const cargarDatos = () => {
     fetch(`${API_URL}/noticias`).then(res => res.json()).then(data => setListaNoticias(data));
@@ -33,6 +44,11 @@ const Dashboard = () => {
     fetch(`${API_URL}/directorio`).then(res => res.json()).then(data => setListaDirectorio(data));
     fetch(`${API_URL}/EmpresaDirectorio`).then(res => res.json()).then(data => setListaComercial(data));
     fetch(`${API_URL}/presidente`).then(res => res.json()).then(data => data && setPresidentForm({ ...data, imagen: null })).catch(() => {});
+    fetch(`${API_URL}/ContenidoSitio`).then(res => res.json()).then(data => {
+      const map = {};
+      (data || []).forEach(item => { map[item.clave] = { valor: item.valor, imagenUrl: item.imagenUrl }; });
+      setContenidoMap(map);
+    }).catch(() => {});
   };
 
   useEffect(() => { cargarDatos(); }, []);
@@ -53,6 +69,30 @@ const Dashboard = () => {
     else if (type === "presidente") setPresidentForm({ ...presidentForm, imagen: file });
     else if (type === "directorio") setDirForm({ ...dirForm, imagen: file });
     else if (type === "comercial") setComercialForm({ ...comercialForm, imagen: file });
+  };
+
+  // Estado temporal para imágenes de contenido (se maneja aparte del contenidoMap)
+  const [contenidoImagenes, setContenidoImagenes] = useState({});
+
+  const submitContenido = async (clave) => {
+    const formData = new FormData();
+    formData.append("clave", clave);
+    formData.append("valor", contenidoMap[clave]?.valor || "");
+    if (contenidoImagenes[clave]) {
+      formData.append("imagen", contenidoImagenes[clave]);
+    }
+    try {
+      const response = await apiFetch(`/ContenidoSitio`, { method: "POST", body: formData });
+      if (response.ok) {
+        setMensaje({ type: "success", text: `"${clave}" actualizado` });
+        setContenidoImagenes(prev => ({ ...prev, [clave]: null }));
+        cargarDatos();
+      } else {
+        setMensaje({ type: "error", text: "Error al guardar" });
+      }
+    } catch {
+      setMensaje({ type: "error", text: "Error de conexión" });
+    }
   };
 
   const formatURL = (url) => {
@@ -167,6 +207,7 @@ const Dashboard = () => {
         <button className={`tab-btn ${activeTab === "presidente" ? "active" : ""}`} onClick={() => {setActiveTab("presidente"); resetAll();}}>Presidente</button>
         <button className={`tab-btn ${activeTab === "directorio" ? "active" : ""}`} onClick={() => {setActiveTab("directorio"); resetAll();}}>Directorio</button>
         <button className={`tab-btn ${activeTab === "comercial" ? "active" : ""}`} onClick={() => {setActiveTab("comercial"); resetAll();}}>D. Comercial</button>
+        <button className={`tab-btn ${activeTab === "contenido" ? "active" : ""}`} onClick={() => {setActiveTab("contenido"); resetAll();}}>Contenido</button>
       </div>
 
       {mensaje && <div className={`message ${mensaje.type}`}>{mensaje.text}</div>}
@@ -301,6 +342,70 @@ const Dashboard = () => {
             ))}
           </div>
         </>
+      )}
+
+      {/* --- CONTENIDO DEL SITIO (MISIÓN, VISIÓN, VALORES, HERO) --- */}
+      {activeTab === "contenido" && (
+        <div className="contenido-admin">
+          <h3>Contenido del Sitio</h3>
+          <p style={{color:'#64748b', marginBottom:'20px', fontSize:'0.9rem'}}>
+            Aquí puedes definir la misión, visión, valores y el texto del banner principal (Hero) de tu página.
+          </p>
+          {contenidoKeys.map(({ clave, label, placeholder, multiline }) => (
+            <div key={clave} className="upload-form" style={{marginBottom:'20px'}}>
+              <label style={{fontWeight:'600', marginBottom:'6px', display:'block'}}>{label}</label>
+              {multiline ? (
+                <textarea
+                  className="form-textarea"
+                  placeholder={placeholder}
+                  value={contenidoMap[clave]?.valor || ""}
+                  onChange={e => setContenidoMap(prev => ({
+                    ...prev,
+                    [clave]: { ...prev[clave], valor: e.target.value }
+                  }))}
+                  rows={4}
+                />
+              ) : (
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder={placeholder}
+                  value={contenidoMap[clave]?.valor || ""}
+                  onChange={e => setContenidoMap(prev => ({
+                    ...prev,
+                    [clave]: { ...prev[clave], valor: e.target.value }
+                  }))}
+                />
+              )}
+
+              {/* Mostrar imagen actual si existe */}
+              {contenidoMap[clave]?.imagenUrl && (
+                <div style={{margin:'8px 0'}}>
+                  <img
+                    src={`${FILES_BASE}${contenidoMap[clave].imagenUrl}`}
+                    alt={label}
+                    style={{maxWidth:'200px', maxHeight:'120px', borderRadius:'8px', objectFit:'cover'}}
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                </div>
+              )}
+
+              <input
+                type="file"
+                className="file-input"
+                onChange={e => setContenidoImagenes(prev => ({ ...prev, [clave]: e.target.files[0] }))}
+              />
+              <button
+                type="button"
+                className="submit-btn"
+                style={{marginTop:'8px'}}
+                onClick={() => submitContenido(clave)}
+              >
+                Guardar {label}
+              </button>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
