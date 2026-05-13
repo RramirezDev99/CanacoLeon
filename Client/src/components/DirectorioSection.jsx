@@ -68,8 +68,8 @@ const DirectorySection = () => {
         ) : (
           <EmptyState
             icon={<FaUsers />}
-            title="Directorio en Construcción"
-            message="Pronto podrás conocer a los miembros de nuestro consejo directivo, comité ejecutivo y vicepresidencias."
+            title="Directorio Próximamente"
+            message="Los miembros del directorio agregados desde el panel de administración aparecerán aquí."
           />
         )}
       </div>

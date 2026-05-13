@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaLinkedin, FaInstagram, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaFacebook, FaLinkedin, FaInstagram, FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import './Footer.css';
 import logo from '../assets/logo.svg';
@@ -57,10 +57,7 @@ const Footer = () => {
               <FaPhoneAlt className="footer-contact-icon" />
               <p>477 714 2800</p>
             </div>
-            <div className="footer-contact-item">
-              <FaEnvelope className="footer-contact-icon" />
-              <p>contacto@canacoleon.org</p>
-            </div>
+            {/* Email: agregar cuando se tenga el correo oficial */}
           </div>
 
           {/* Columna 4: Mapa */}

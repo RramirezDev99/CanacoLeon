@@ -4,15 +4,18 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // --- COMPONENTES GLOBALES ---
 import Navbar from "./components/Navbar";
 import HeroCarousel from "./components/HeroCarousel";
+// import StatsCounter from "./components/StatsCounter";
 import NewsSection from "./components/NewsSection";
 import EventsSection from "./components/EventsSection";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // --- PÁGINAS ---
 import Login from "./pages/admin/Login";
 import Dashboard from "./pages/dashboard/Dashboard";
 import NoticiasPage from "./pages/noticias/NoticiasPage";
+import NoticiaDetalle from "./pages/noticias/NoticiaDetalle";
 import NosotrosPage from "./pages/nosotros/NosotrosPage";
 import Servicios from "./pages/servicios/servicios";
 import Afiliarme from "./pages/afiliarme/Afiliarme";
@@ -67,11 +70,13 @@ function App() {
 
       <div className="background-arc"></div>
 
+      <ScrollToTop />
       <Navbar />
 
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/noticias" element={<NoticiasPage />} />
+        <Route path="/noticias/:id" element={<NoticiaDetalle />} />
         <Route path="/nosotros" element={<NosotrosPage />} />
         <Route path="/servicios" element={<Servicios />} />
         <Route path="/afiliarme" element={<Afiliarme />} />

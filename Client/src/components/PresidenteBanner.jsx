@@ -20,12 +20,10 @@ const PresidenteBanner = () => {
   }, []);
 
   // Combinamos los datos: Preferencia a la API, fallback a estático
-  const info = data || {
-    nombre: "Presidente CANACO León",
-    cargo: "Presidente de CANACO SERVyTUR León",
-    mensaje: "En la CANACO trabajamos todos los días para fortalecer al sector comercio, servicios y turismo de León. Nuestra misión es impulsar el desarrollo empresarial y crear oportunidades de crecimiento para todos nuestros afiliados.\n\nTe invitamos a conocer nuestros servicios y a formar parte de esta gran comunidad empresarial.",
-    imagenUrl: null,
-  };
+  const info = data || null;
+
+  // Si no hay datos del presidente, no renderizar la sección
+  if (!loading && !info) return null;
 
   const getImg = (url) => {
     if (!url) return null;

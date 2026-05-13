@@ -49,7 +49,7 @@ const HeroCarousel = () => {
         <div className="hero-content">
             <p className="hero-subtitle">Cámara Nacional de Comercio, Servicios y Turismo</p>
             <h1>CANACO SERVyTUR<br/>LEÓN</h1>
-            <p className="hero-description">Impulsando el desarrollo empresarial de León, Guanajuato desde 1917</p>
+            <p className="hero-description">Impulsando el desarrollo empresarial de León, Guanajuato</p>
             <div className="hero-buttons">
               <Link to="/afiliarme" className="hero-btn hero-btn-primary">Afíliate Ahora</Link>
               <Link to="/servicios" className="hero-btn hero-btn-secondary">Conoce Nuestros Servicios</Link>

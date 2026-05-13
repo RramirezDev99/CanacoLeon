@@ -19,3 +19,6 @@ Server/appsettings.Local.json
 Client/.env
 Client/.env.local
 Client/.env.*.local
+
+# Claude/AI workspace
+.claude/

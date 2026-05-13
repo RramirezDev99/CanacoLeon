@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { FaNewspaper } from "react-icons/fa";
 import NewsBanner from "../../components/NewsBanner";
 import EmptyState from "../../components/EmptyState";
@@ -59,18 +60,16 @@ const NoticiasPage = () => {
   const OverlayCard = ({ item, sizeClass }) => {
     if (!item) return null;
     return (
-      <div className={`overlay-card ${sizeClass}`}>
+      <Link to={`/noticias/${item.id}`} className={`overlay-card ${sizeClass}`} style={{textDecoration:'none', color:'inherit'}}>
         <img src={getImg(item)} alt={item.titulo} className="bg-image" />
         <div className="card-gradient">
-          {/* AQUÍ ESTÁ EL CAMBIO: LA FECHA EN EL TAG */}
           <span className="badge-category">
             {formatDate(item.fechaPublicacion || item.FechaPublicacion)}
           </span>
-
           <h3>{item.titulo}</h3>
           {sizeClass !== "card-small" && <p>{item.resumen}</p>}
         </div>
-      </div>
+      </Link>
     );
   };
 
@@ -95,7 +94,7 @@ const NoticiasPage = () => {
           <EmptyState
             icon={<FaNewspaper />}
             title="Noticias Próximamente"
-            message="Estamos preparando contenido relevante sobre el sector comercio, servicios y turismo de León. Las noticias aparecerán aquí pronto."
+            message="Las noticias publicadas desde el panel de administración aparecerán aquí."
           />
         )}
 

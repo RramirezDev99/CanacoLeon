@@ -50,7 +50,7 @@ const NewsSection = () => {
             ))
           ) : noticias.length > 0 ? (
             noticias.map((item, index) => (
-              <div key={item.id || index} className="glass-card">
+              <Link to={`/noticias/${item.id}`} key={item.id || index} className="glass-card" style={{textDecoration:'none', color:'inherit'}}>
                 <div className="card-image-wrapper">
                   <img
                     src={
@@ -72,13 +72,13 @@ const NewsSection = () => {
                   <h3>{item.titulo}</h3>
                   <p>{item.resumen}</p>
                 </div>
-              </div>
+              </Link>
             ))
           ) : (
             <EmptyState
               icon={<FaNewspaper />}
               title="Noticias Próximamente"
-              message="Estamos preparando contenido relevante para ti. Las últimas noticias del sector comercio y servicios de León aparecerán aquí."
+              message="Las noticias publicadas desde el panel de administración aparecerán aquí."
               compact
             />
           )}

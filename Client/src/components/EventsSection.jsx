@@ -111,7 +111,7 @@ const EventsSection = () => {
               <EmptyState
                 icon={<FaCalendarAlt />}
                 title="Eventos Próximamente"
-                message="Estamos organizando eventos, conferencias y talleres para nuestros afiliados. Mantente atento a esta sección."
+                message="Los eventos publicados desde el panel de administración aparecerán aquí."
                 compact
               />
             )}

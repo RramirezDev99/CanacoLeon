@@ -39,7 +39,7 @@ const EmpresasGrid = () => {
         <EmptyState
           icon={<FaStore />}
           title="Directorio Comercial Próximamente"
-          message="Estamos registrando a las empresas afiliadas. Pronto podrás explorar el directorio completo con información de contacto y redes sociales de cada negocio."
+          message="Las empresas registradas desde el panel de administración aparecerán aquí."
         />
       ) : (
         <div className="empresas-grid">

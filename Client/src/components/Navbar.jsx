@@ -20,13 +20,23 @@ import logoText from "../assets/textIcon.svg";
 import "./Navbar.css";
 
 function Navbar() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Leer preferencia guardada al montar
+    const saved = window.localStorage?.getItem("canaco-dark-mode");
+    if (saved === "true") {
+      document.body.classList.add("dark-mode");
+      return true;
+    }
+    return false;
+  });
   const [menuOpen, setMenuOpen] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+    const next = !isDarkMode;
+    setIsDarkMode(next);
     document.body.classList.toggle("dark-mode");
+    try { window.localStorage.setItem("canaco-dark-mode", String(next)); } catch {}
   };
 
   const toggleMenu = () => setMenuOpen(false);

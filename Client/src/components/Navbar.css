@@ -359,7 +359,11 @@ body.dark-mode .switch-circle {
     font-size: 24px;
     margin-left: 20px;
     cursor: pointer;
-    color: #ffffff; /* Hamburguesa blanca por el banner */
+    color: #334155; /* Oscura para fondo blanco en móvil */
+  }
+
+  body.dark-mode .hamburger-icon {
+    color: #e2e8f0;
   }
 
   /* Ajuste si el navbar móvil se vuelve blanco al scrollear (opcional) */
