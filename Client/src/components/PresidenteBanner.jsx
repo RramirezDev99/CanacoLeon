@@ -21,14 +21,14 @@ const PresidenteBanner = () => {
 
   // Combinamos los datos: Preferencia a la API, fallback a estático
   const info = data || {
-    nombre: "RUBÉN RAMÍREZ",
-    cargo: "Presidente de CANACO",
-    mensaje: "En la CANACO trabajamos todos los días para fortalecer al sector comercio, servicios y turismo...",
+    nombre: "Presidente CANACO León",
+    cargo: "Presidente de CANACO SERVyTUR León",
+    mensaje: "En la CANACO trabajamos todos los días para fortalecer al sector comercio, servicios y turismo de León. Nuestra misión es impulsar el desarrollo empresarial y crear oportunidades de crecimiento para todos nuestros afiliados.\n\nTe invitamos a conocer nuestros servicios y a formar parte de esta gran comunidad empresarial.",
     imagenUrl: null,
   };
 
   const getImg = (url) => {
-    if (!url) return "https://via.placeholder.com/600x600?text=Foto+Presidente";
+    if (!url) return null;
     return `${FILES_BASE}${url}`;
   };
 
@@ -40,8 +40,15 @@ const PresidenteBanner = () => {
           <div className="photo-frame">
             {loading ? (
               <div className="skeleton-shimmer full-height"></div>
-            ) : (
+            ) : getImg(info.imagenUrl) ? (
               <img src={getImg(info.imagenUrl)} alt={info.nombre} className="fadeIn" />
+            ) : (
+              <div className="photo-placeholder fadeIn">
+                <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" width="120" height="120">
+                  <circle cx="60" cy="45" r="22" fill="rgba(0,74,173,0.15)"/>
+                  <ellipse cx="60" cy="100" rx="35" ry="22" fill="rgba(0,74,173,0.1)"/>
+                </svg>
+              </div>
             )}
           </div>
         </div>

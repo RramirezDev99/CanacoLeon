@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaCalendarAlt } from "react-icons/fa";
 import "./EventsSection.css";
 import { API_URL, FILES_BASE } from "../lib/api";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import EmptyState from "./EmptyState";
 
 const EventsSection = () => {
   const [eventos, setEventos] = useState([]);
@@ -107,10 +108,12 @@ const EventsSection = () => {
                 );
               })
             ) : (
-              // Si la API no tiene nada
-              <p style={{ color: "#888", width: "100%", textAlign: "center" }}>
-                No hay eventos disponibles.
-              </p>
+              <EmptyState
+                icon={<FaCalendarAlt />}
+                title="Eventos Próximamente"
+                message="Estamos organizando eventos, conferencias y talleres para nuestros afiliados. Mantente atento a esta sección."
+                compact
+              />
             )}
           </div>
         </div>

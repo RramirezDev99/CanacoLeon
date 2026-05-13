@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { FaUsers } from "react-icons/fa";
 import "./DirectorioSection.css";
 import { API_URL, FILES_BASE } from "../lib/api";
+import EmptyState from "./EmptyState";
 
 const DirectorySection = () => {
   const [miembros, setMiembros] = useState([]);
@@ -51,13 +53,25 @@ const DirectorySection = () => {
     );
   };
 
+  const hayMiembros = miembros.length > 0;
+
   return (
     <section className="directory-section">
       <div className="directory-wrapper">
-        {renderCategoryGrid("Consejeros", "Consejeros")}
-        {renderCategoryGrid("Comité Ejecutivo", "ComiteEjecutivo")}
-        {renderCategoryGrid("Secciones Especializadas", "Secciones")}
-        {renderCategoryGrid("Vicepresidencias", "Vicepresidencias")}
+        {hayMiembros ? (
+          <>
+            {renderCategoryGrid("Consejeros", "Consejeros")}
+            {renderCategoryGrid("Comité Ejecutivo", "ComiteEjecutivo")}
+            {renderCategoryGrid("Secciones Especializadas", "Secciones")}
+            {renderCategoryGrid("Vicepresidencias", "Vicepresidencias")}
+          </>
+        ) : (
+          <EmptyState
+            icon={<FaUsers />}
+            title="Directorio en Construcción"
+            message="Pronto podrás conocer a los miembros de nuestro consejo directivo, comité ejecutivo y vicepresidencias."
+          />
+        )}
       </div>
     </section>
   );

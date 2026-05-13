@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { FaNewspaper } from "react-icons/fa";
 import "./NewsSection.css";
 import { API_URL, FILES_BASE } from "../lib/api";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import EmptyState from "./EmptyState";
 
 const NewsSection = () => {
   const [noticias, setNoticias] = useState([]);
@@ -73,9 +75,12 @@ const NewsSection = () => {
               </div>
             ))
           ) : (
-            <p style={{ gridColumn: "1/-1", textAlign: "center", color: "#888" }}>
-              No hay noticias disponibles.
-            </p>
+            <EmptyState
+              icon={<FaNewspaper />}
+              title="Noticias Próximamente"
+              message="Estamos preparando contenido relevante para ti. Las últimas noticias del sector comercio y servicios de León aparecerán aquí."
+              compact
+            />
           )}
         </div>
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { FaFacebook, FaInstagram, FaGlobe } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaGlobe, FaStore } from "react-icons/fa";
 import "./EmpresasGrid.css";
 import { API_URL, FILES_BASE } from "../lib/api";
+import EmptyState from "./EmptyState";
 
 const EmpresasGrid = () => {
   const [empresas, setEmpresas] = useState([]);
@@ -35,7 +36,11 @@ const EmpresasGrid = () => {
       {cargando ? (
         <p className="cargando-texto">Cargando directorio...</p>
       ) : empresas.length === 0 ? (
-        <p className="cargando-texto">Aún no hay empresas registradas.</p>
+        <EmptyState
+          icon={<FaStore />}
+          title="Directorio Comercial Próximamente"
+          message="Estamos registrando a las empresas afiliadas. Pronto podrás explorar el directorio completo con información de contacto y redes sociales de cada negocio."
+        />
       ) : (
         <div className="empresas-grid">
           {empresas.map((empresa) => (

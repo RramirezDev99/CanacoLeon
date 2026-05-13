@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { FaNewspaper } from "react-icons/fa";
 import NewsBanner from "../../components/NewsBanner";
+import EmptyState from "../../components/EmptyState";
 import "./NoticiasPage.css";
 import { API_URL, FILES_BASE } from "../../lib/api";
 
@@ -87,6 +89,14 @@ const NoticiasPage = () => {
           <div style={{ textAlign: "center", padding: "50px" }}>
             Cargando noticias...
           </div>
+        )}
+
+        {!cargando && noticias.length === 0 && (
+          <EmptyState
+            icon={<FaNewspaper />}
+            title="Noticias Próximamente"
+            message="Estamos preparando contenido relevante sobre el sector comercio, servicios y turismo de León. Las noticias aparecerán aquí pronto."
+          />
         )}
 
         {!cargando && noticias.length > 0 && (
