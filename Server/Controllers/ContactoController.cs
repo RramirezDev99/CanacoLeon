@@ -139,6 +139,9 @@ namespace Server.Controllers
                 using var client = new System.Net.Mail.SmtpClient(host, port);
                 client.Credentials = new System.Net.NetworkCredential(user, pass);
                 client.EnableSsl = ssl;
+                // Timeout corto para que el error sea visible antes que Railway
+                // nos corte por 502 (su proxy se aburre a los ~30s).
+                client.Timeout = 10000;
 
                 var msg = new System.Net.Mail.MailMessage
                 {
