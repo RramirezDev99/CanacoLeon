@@ -2,26 +2,36 @@
 # Seeder REMOTO — puebla la BD de producción (Railway) usando
 # los endpoints admin del API.
 #
-# Uso (desde la carpeta raíz del repo):
-#   .\Seeder\SeedRemote.ps1 -Email "admin@canaco.com" -Password "tu_pass"
+# Construye multipart UTF-8 manualmente con Invoke-WebRequest
+# (NO usa curl.exe, que en Windows manda los acentos en CP1252
+# y rompe el encoding).
 #
-# Opcional:
+# Uso:
+#   .\Seeder\SeedRemote.ps1 -Email "admin@canaco.com" -Password "pass"
+#
+# Opciones:
+#   -Reset      Borra primero todo lo seedeado anteriormente
+#               (noticias, eventos, miembros del directorio,
+#                empresas con email de seed). Sirve para limpiar
+#               datos con mojibake.
 #   -ApiUrl     URL base del API (default: producción Railway)
-#   -ImagePath  ruta a la imagen (default: Server/uploads/seed/descarga.jpg)
+#   -ImagePath  ruta a la imagen (default: Server\uploads\seed\descarga.jpg)
 #
-# NO toca banners (ContenidoSitio).
-# Es idempotente: detecta noticias/eventos/empresas existentes
-# por título / email y no duplica.
+# NO toca banners (ContenidoSitio) ni datos del usuario
+# (afiliados, contacto).
 # ============================================================
 
 param(
     [Parameter(Mandatory=$true)] [string] $Email,
     [Parameter(Mandatory=$true)] [string] $Password,
+    [switch] $Reset,
     [string] $ApiUrl = "https://canacoleon-production.up.railway.app/api",
     [string] $ImagePath = "Server\uploads\seed\descarga.jpg"
 )
 
 $ErrorActionPreference = "Stop"
+# Forzar UTF-8 en el output de la consola (para que los logs no salgan rotos)
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 if (-not (Test-Path $ImagePath)) {
     Write-Error "No se encontró la imagen en $ImagePath. Corre el script desde la raíz del repo."
@@ -31,9 +41,10 @@ if (-not (Test-Path $ImagePath)) {
 # ---------- LOGIN ----------
 Write-Host "Conectando a $ApiUrl ..." -ForegroundColor Cyan
 $loginBody = @{ email = $Email; password = $Password } | ConvertTo-Json
+$loginBodyBytes = [System.Text.Encoding]::UTF8.GetBytes($loginBody)
 try {
     $loginResp = Invoke-RestMethod -Uri "$ApiUrl/auth/login" -Method Post `
-                                   -ContentType "application/json" -Body $loginBody
+        -ContentType "application/json; charset=utf-8" -Body $loginBodyBytes
 } catch {
     Write-Error "Login falló: $($_.Exception.Message)"
     exit 1
@@ -41,38 +52,64 @@ try {
 $token = $loginResp.token
 if (-not $token) { Write-Error "No vino token en la respuesta de login."; exit 1 }
 Write-Host "Login OK." -ForegroundColor Green
-
 $authHeader = @{ Authorization = "Bearer $token" }
 
-# ---------- HELPER: POST multipart con imagen ----------
-# Usa curl.exe que ya viene en Windows 10+, mucho más simple que armar
-# multipart a mano en PowerShell.
-function Post-Multipart {
+# ---------- HELPER: construir y enviar multipart UTF-8 ----------
+function Send-Multipart {
     param(
-        [string] $Endpoint,
+        [string] $Url,
+        [string] $Method = "POST",
         [hashtable] $Fields,
-        [string] $FileField = "Imagen",
+        [string] $FileField,
         [string] $FilePath
     )
-    $args = @("-s", "-X", "POST", "-H", "Authorization: Bearer $token")
+
+    $boundary = "----PSBoundary$([System.Guid]::NewGuid().ToString('N'))"
+    $enc = [System.Text.Encoding]::UTF8
+    $ms = New-Object System.IO.MemoryStream
+
     foreach ($k in $Fields.Keys) {
-        $args += "-F"
-        $args += "$k=$($Fields[$k])"
+        $part = "--$boundary`r`nContent-Disposition: form-data; name=`"$k`"`r`n`r`n$($Fields[$k])`r`n"
+        $bytes = $enc.GetBytes($part)
+        $ms.Write($bytes, 0, $bytes.Length)
     }
+
     if ($FilePath) {
-        $args += "-F"
-        $args += "$FileField=@$FilePath"
+        $fileName = Split-Path $FilePath -Leaf
+        $header = "--$boundary`r`nContent-Disposition: form-data; name=`"$FileField`"; filename=`"$fileName`"`r`nContent-Type: image/jpeg`r`n`r`n"
+        $hb = $enc.GetBytes($header)
+        $ms.Write($hb, 0, $hb.Length)
+
+        $fileBytes = [System.IO.File]::ReadAllBytes($FilePath)
+        $ms.Write($fileBytes, 0, $fileBytes.Length)
+
+        $tail = $enc.GetBytes("`r`n")
+        $ms.Write($tail, 0, $tail.Length)
     }
-    $args += "$ApiUrl/$Endpoint"
-    $resp = & curl.exe @args
-    return $resp
+
+    $closing = $enc.GetBytes("--$boundary--`r`n")
+    $ms.Write($closing, 0, $closing.Length)
+
+    $body = $ms.ToArray()
+    $ms.Dispose()
+
+    return Invoke-WebRequest -Uri $Url -Method $Method `
+        -ContentType "multipart/form-data; boundary=$boundary" `
+        -Headers $authHeader -Body $body -UseBasicParsing
 }
 
-# ---------- NOTICIAS ----------
-Write-Host "`n--- Noticias ---" -ForegroundColor Yellow
-$noticiasExistentes = Invoke-RestMethod -Uri "$ApiUrl/noticias" -Method Get
-$titulosExistentes = @($noticiasExistentes | ForEach-Object { $_.titulo })
+# Helper para DELETE simple (sin body)
+function Send-Delete {
+    param([string] $Url)
+    try {
+        Invoke-WebRequest -Uri $Url -Method Delete -Headers $authHeader -UseBasicParsing | Out-Null
+        return $true
+    } catch {
+        return $false
+    }
+}
 
+# ---------- DATOS A SEMBRAR ----------
 $noticias = @(
     @{ Titulo="CANACO León impulsa el comercio local con nueva campaña";
        Resumen="La Cámara Nacional de Comercio en León lanza una iniciativa para fortalecer a las pequeñas y medianas empresas locales mediante capacitaciones gratuitas, asesoría fiscal y promoción digital.";
@@ -93,24 +130,6 @@ $noticias = @(
        Resumen="Más de 200 afiliados participaron en el taller para actualizarse en los requerimientos del SAT y mantener sus operaciones al día sin contratiempos.";
        Fecha="2026-03-12" }
 )
-
-foreach ($n in $noticias) {
-    if ($titulosExistentes -contains $n.Titulo) {
-        Write-Host "  ya existe: $($n.Titulo)" -ForegroundColor DarkGray
-        continue
-    }
-    Post-Multipart -Endpoint "noticias" -FilePath $ImagePath -Fields @{
-        Titulo = $n.Titulo
-        Resumen = $n.Resumen
-        FechaPublicacion = $n.Fecha
-    } | Out-Null
-    Write-Host "  + $($n.Titulo)" -ForegroundColor Green
-}
-
-# ---------- EVENTOS ----------
-Write-Host "`n--- Eventos ---" -ForegroundColor Yellow
-$eventosExistentes = Invoke-RestMethod -Uri "$ApiUrl/eventos" -Method Get
-$titulosEv = @($eventosExistentes | ForEach-Object { $_.titulo })
 
 $eventos = @(
     @{ Titulo="Expo Negocios León 2026";
@@ -133,33 +152,35 @@ $eventos = @(
        Fecha="2026-09-12"; Lugar="Hotel Hot León" }
 )
 
-foreach ($e in $eventos) {
-    if ($titulosEv -contains $e.Titulo) {
-        Write-Host "  ya existe: $($e.Titulo)" -ForegroundColor DarkGray
-        continue
-    }
-    Post-Multipart -Endpoint "eventos" -FilePath $ImagePath -Fields @{
-        Titulo = $e.Titulo
-        Descripcion = $e.Descripcion
-        Fecha = $e.Fecha
-        Lugar = $e.Lugar
-    } | Out-Null
-    Write-Host "  + $($e.Titulo)" -ForegroundColor Green
-}
-
-# ---------- PRESIDENTE ----------
-Write-Host "`n--- Presidente ---" -ForegroundColor Yellow
-Post-Multipart -Endpoint "presidente" -FilePath $ImagePath -Fields @{
-    Nombre  = "Lic. Juan Carlos Martínez Hernández"
-    Cargo   = "Presidente del Consejo Directivo 2025-2027"
-    Mensaje = "Es un honor representar a la comunidad empresarial de León como Presidente de CANACO Servytur. Trabajamos día con día para impulsar el desarrollo del comercio, los servicios y el turismo en nuestra ciudad, generando oportunidades para nuestros afiliados y fortaleciendo el tejido económico de la región. Te invitamos a ser parte de esta gran familia que durante décadas ha sido motor del crecimiento de León."
-} | Out-Null
-Write-Host "  Presidente upsert OK" -ForegroundColor Green
-
-# ---------- EMPRESAS DIRECTORIO ----------
-Write-Host "`n--- Empresas Directorio ---" -ForegroundColor Yellow
-$empresasExistentes = Invoke-RestMethod -Uri "$ApiUrl/empresadirectorio" -Method Get
-$emailsExistentes = @($empresasExistentes | ForEach-Object { $_.email })
+# IMPORTANTE: las categorías deben coincidir con las del frontend
+# (Client/src/components/DirectorioSection.jsx):
+#   "Consejeros", "ComiteEjecutivo", "Secciones", "Vicepresidencias"
+$miembros = @(
+    @{ Nombre="Lic. Juan Carlos Martínez Hernández"; Cargo="Presidente";
+       Descripcion="Empresario con más de 25 años de experiencia en el sector comercial leonés. Comprometido con el crecimiento sostenible de la Cámara.";
+       Categoria="ComiteEjecutivo" },
+    @{ Nombre="Lic. María Fernanda Soto Pérez"; Cargo="Vicepresidenta";
+       Descripcion="Especialista en desarrollo de negocios y vinculación institucional. Lidera proyectos de capacitación y fortalecimiento empresarial.";
+       Categoria="ComiteEjecutivo" },
+    @{ Nombre="C.P. Roberto Alvarado Núñez"; Cargo="Tesorero";
+       Descripcion="Contador público con amplia experiencia en finanzas corporativas. Responsable de la salud financiera de la Cámara.";
+       Categoria="ComiteEjecutivo" },
+    @{ Nombre="Lic. Ana Patricia Reyes López"; Cargo="Secretaria";
+       Descripcion="Abogada corporativa especializada en derecho mercantil. Coordina las sesiones y actas del Consejo.";
+       Categoria="ComiteEjecutivo" },
+    @{ Nombre="Ing. Eduardo Ramírez Salinas"; Cargo="Coordinador Comité de Comercio";
+       Descripcion="Promueve iniciativas para fortalecer el comercio establecido y combatir el comercio informal en la ciudad.";
+       Categoria="Secciones" },
+    @{ Nombre="Lic. Sandra Bautista Mora"; Cargo="Coordinadora Comité de Turismo";
+       Descripcion="Impulsa proyectos para posicionar a León como destino turístico de negocios y entretenimiento.";
+       Categoria="Secciones" },
+    @{ Nombre="Mtra. Verónica Gómez Torres"; Cargo="Coordinadora Comité de Mujeres Empresarias";
+       Descripcion="Lidera iniciativas para visibilizar y potenciar el liderazgo femenino dentro del sector empresarial.";
+       Categoria="Secciones" },
+    @{ Nombre="Ing. Carlos Mendoza Vargas"; Cargo="Coordinador Comité de Innovación";
+       Descripcion="Acerca tecnología y herramientas digitales a las PyMEs afiliadas para acelerar su transformación.";
+       Categoria="Secciones" }
+)
 
 $empresas = @(
     @{ Nombre="Calzado Don Pancho"; Giro="Calzado y peletería";
@@ -204,8 +225,116 @@ $empresas = @(
        SitioWeb="https://agenciapixel.mx"; Facebook="https://facebook.com/agenciapixel"; Instagram="https://instagram.com/agenciapixel.mx" }
 )
 
+# Emails que considera "del seeder" (para reset selectivo de empresas)
+$seedEmails = @($empresas | ForEach-Object { $_.Email })
+
+# ---------- RESET (opcional) ----------
+if ($Reset) {
+    Write-Host "`n=== MODO RESET: borrando datos previos del seeder ===" -ForegroundColor Magenta
+
+    Write-Host "Borrando todas las noticias..." -ForegroundColor DarkYellow
+    $existentes = Invoke-RestMethod -Uri "$ApiUrl/noticias" -Method Get
+    foreach ($n in $existentes) {
+        if (Send-Delete "$ApiUrl/noticias/$($n.id)") {
+            Write-Host "  - noticia $($n.id) borrada" -ForegroundColor DarkGray
+        }
+    }
+
+    Write-Host "Borrando todos los eventos..." -ForegroundColor DarkYellow
+    $existentes = Invoke-RestMethod -Uri "$ApiUrl/eventos" -Method Get
+    foreach ($e in $existentes) {
+        if (Send-Delete "$ApiUrl/eventos/$($e.id)") {
+            Write-Host "  - evento $($e.id) borrado" -ForegroundColor DarkGray
+        }
+    }
+
+    Write-Host "Borrando todos los miembros del directorio..." -ForegroundColor DarkYellow
+    $existentes = Invoke-RestMethod -Uri "$ApiUrl/directorio" -Method Get
+    foreach ($m in $existentes) {
+        if (Send-Delete "$ApiUrl/directorio/$($m.id)") {
+            Write-Host "  - miembro $($m.id) borrado" -ForegroundColor DarkGray
+        }
+    }
+
+    Write-Host "Borrando empresas del seeder (por email)..." -ForegroundColor DarkYellow
+    $existentes = Invoke-RestMethod -Uri "$ApiUrl/empresadirectorio" -Method Get
+    foreach ($e in $existentes) {
+        if ($seedEmails -contains $e.email) {
+            if (Send-Delete "$ApiUrl/empresadirectorio/$($e.id)") {
+                Write-Host "  - empresa $($e.id) ($($e.nombre)) borrada" -ForegroundColor DarkGray
+            }
+        }
+    }
+
+    Write-Host "Reset listo." -ForegroundColor Magenta
+}
+
+# ---------- NOTICIAS ----------
+Write-Host "`n--- Noticias ---" -ForegroundColor Yellow
+$existentes = Invoke-RestMethod -Uri "$ApiUrl/noticias" -Method Get
+$titulosEx = @($existentes | ForEach-Object { $_.titulo })
+foreach ($n in $noticias) {
+    if ($titulosEx -contains $n.Titulo) {
+        Write-Host "  ya existe: $($n.Titulo)" -ForegroundColor DarkGray
+        continue
+    }
+    Send-Multipart -Url "$ApiUrl/noticias" -FileField "Imagen" -FilePath $ImagePath -Fields @{
+        Titulo = $n.Titulo
+        Resumen = $n.Resumen
+        FechaPublicacion = $n.Fecha
+    } | Out-Null
+    Write-Host "  + $($n.Titulo)" -ForegroundColor Green
+}
+
+# ---------- EVENTOS ----------
+Write-Host "`n--- Eventos ---" -ForegroundColor Yellow
+$existentes = Invoke-RestMethod -Uri "$ApiUrl/eventos" -Method Get
+$titulosEx = @($existentes | ForEach-Object { $_.titulo })
+foreach ($e in $eventos) {
+    if ($titulosEx -contains $e.Titulo) {
+        Write-Host "  ya existe: $($e.Titulo)" -ForegroundColor DarkGray
+        continue
+    }
+    Send-Multipart -Url "$ApiUrl/eventos" -FileField "Imagen" -FilePath $ImagePath -Fields @{
+        Titulo = $e.Titulo
+        Descripcion = $e.Descripcion
+        Fecha = $e.Fecha
+        Lugar = $e.Lugar
+    } | Out-Null
+    Write-Host "  + $($e.Titulo)" -ForegroundColor Green
+}
+
+# ---------- PRESIDENTE ----------
+Write-Host "`n--- Presidente ---" -ForegroundColor Yellow
+Send-Multipart -Url "$ApiUrl/presidente" -FileField "Imagen" -FilePath $ImagePath -Fields @{
+    Nombre  = "Lic. Juan Carlos Martínez Hernández"
+    Cargo   = "Presidente del Consejo Directivo 2025-2027"
+    Mensaje = "Es un honor representar a la comunidad empresarial de León como Presidente de CANACO Servytur. Trabajamos día con día para impulsar el desarrollo del comercio, los servicios y el turismo en nuestra ciudad, generando oportunidades para nuestros afiliados y fortaleciendo el tejido económico de la región. Te invitamos a ser parte de esta gran familia que durante décadas ha sido motor del crecimiento de León."
+} | Out-Null
+Write-Host "  Presidente upsert OK" -ForegroundColor Green
+
+# ---------- DIRECTORIO ----------
+Write-Host "`n--- Directorio (miembros) ---" -ForegroundColor Yellow
+$existentes = Invoke-RestMethod -Uri "$ApiUrl/directorio" -Method Get
+$nombresEx = @($existentes | ForEach-Object { $_.nombre })
+foreach ($m in $miembros) {
+    if ($nombresEx -contains $m.Nombre) {
+        Write-Host "  ya existe: $($m.Nombre)" -ForegroundColor DarkGray
+        continue
+    }
+    Send-Multipart -Url "$ApiUrl/directorio" -FileField "Imagen" -FilePath $ImagePath -Fields @{
+        Nombre = $m.Nombre; Cargo = $m.Cargo;
+        Descripcion = $m.Descripcion; Categoria = $m.Categoria
+    } | Out-Null
+    Write-Host "  + $($m.Nombre) [$($m.Categoria)]" -ForegroundColor Green
+}
+
+# ---------- EMPRESAS DIRECTORIO ----------
+Write-Host "`n--- Empresas Directorio ---" -ForegroundColor Yellow
+$existentes = Invoke-RestMethod -Uri "$ApiUrl/empresadirectorio" -Method Get
+$emailsEx = @($existentes | ForEach-Object { $_.email })
 foreach ($e in $empresas) {
-    if ($emailsExistentes -contains $e.Email) {
+    if ($emailsEx -contains $e.Email) {
         Write-Host "  ya existe: $($e.Nombre)" -ForegroundColor DarkGray
         continue
     }
@@ -217,53 +346,9 @@ foreach ($e in $empresas) {
     if ($e.Facebook)  { $fields["FacebookUrl"] = $e.Facebook }
     if ($e.Instagram) { $fields["InstagramUrl"]= $e.Instagram }
 
-    Post-Multipart -Endpoint "empresadirectorio" -FileField "Logo" -FilePath $ImagePath -Fields $fields | Out-Null
+    Send-Multipart -Url "$ApiUrl/empresadirectorio" -FileField "Logo" -FilePath $ImagePath -Fields $fields | Out-Null
     Write-Host "  + $($e.Nombre)" -ForegroundColor Green
 }
 
-# ---------- DIRECTORIO (consejo / comités) ----------
-Write-Host "`n--- Directorio (miembros) ---" -ForegroundColor Yellow
-$miembrosExistentes = Invoke-RestMethod -Uri "$ApiUrl/directorio" -Method Get
-$nombresExistentes = @($miembrosExistentes | ForEach-Object { $_.nombre })
-
-$miembros = @(
-    @{ Nombre="Lic. Juan Carlos Martínez Hernández"; Cargo="Presidente";
-       Descripcion="Empresario con más de 25 años de experiencia en el sector comercial leonés. Comprometido con el crecimiento sostenible de la Cámara.";
-       Categoria="Consejo Directivo" },
-    @{ Nombre="Lic. María Fernanda Soto Pérez"; Cargo="Vicepresidenta";
-       Descripcion="Especialista en desarrollo de negocios y vinculación institucional. Lidera proyectos de capacitación y fortalecimiento empresarial.";
-       Categoria="Consejo Directivo" },
-    @{ Nombre="C.P. Roberto Alvarado Núñez"; Cargo="Tesorero";
-       Descripcion="Contador público con amplia experiencia en finanzas corporativas. Responsable de la salud financiera de la Cámara.";
-       Categoria="Consejo Directivo" },
-    @{ Nombre="Lic. Ana Patricia Reyes López"; Cargo="Secretaria";
-       Descripcion="Abogada corporativa especializada en derecho mercantil. Coordina las sesiones y actas del Consejo.";
-       Categoria="Consejo Directivo" },
-    @{ Nombre="Ing. Eduardo Ramírez Salinas"; Cargo="Coordinador Comité de Comercio";
-       Descripcion="Promueve iniciativas para fortalecer el comercio establecido y combatir el comercio informal en la ciudad.";
-       Categoria="Comités" },
-    @{ Nombre="Lic. Sandra Bautista Mora"; Cargo="Coordinadora Comité de Turismo";
-       Descripcion="Impulsa proyectos para posicionar a León como destino turístico de negocios y entretenimiento.";
-       Categoria="Comités" },
-    @{ Nombre="Mtra. Verónica Gómez Torres"; Cargo="Coordinadora Comité de Mujeres Empresarias";
-       Descripcion="Lidera iniciativas para visibilizar y potenciar el liderazgo femenino dentro del sector empresarial.";
-       Categoria="Comités" },
-    @{ Nombre="Ing. Carlos Mendoza Vargas"; Cargo="Coordinador Comité de Innovación";
-       Descripcion="Acerca tecnología y herramientas digitales a las PyMEs afiliadas para acelerar su transformación.";
-       Categoria="Comités" }
-)
-
-foreach ($m in $miembros) {
-    if ($nombresExistentes -contains $m.Nombre) {
-        Write-Host "  ya existe: $($m.Nombre)" -ForegroundColor DarkGray
-        continue
-    }
-    Post-Multipart -Endpoint "directorio" -FilePath $ImagePath -Fields @{
-        Nombre = $m.Nombre; Cargo = $m.Cargo;
-        Descripcion = $m.Descripcion; Categoria = $m.Categoria
-    } | Out-Null
-    Write-Host "  + $($m.Nombre)" -ForegroundColor Green
-}
-
 Write-Host "`n=== Listo ===" -ForegroundColor Cyan
-Write-Host "Verifica en https://www.canacoleon.org/noticias  y otras secciones." -ForegroundColor Cyan
+Write-Host "Verifica en https://www.canacoleon.org/" -ForegroundColor Cyan
