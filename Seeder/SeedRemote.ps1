@@ -30,6 +30,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+# Pero para los POST individuales NO queremos que un fallo aborte todo;
+# usamos try/catch local y seguimos con el siguiente.
 # Forzar UTF-8 en el output de la consola (para que los logs no salgan rotos)
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
@@ -38,72 +40,80 @@ if (-not (Test-Path $ImagePath)) {
     exit 1
 }
 
+# ---------- CLIENTE HTTP (System.Net.Http.HttpClient) ----------
+# Usamos HttpClient en vez de Invoke-WebRequest porque maneja multipart
+# UTF-8 correctamente en PowerShell 5.1, sin sorpresas de encoding.
+Add-Type -AssemblyName System.Net.Http
+$httpClient = New-Object System.Net.Http.HttpClient
+$httpClient.Timeout = [System.TimeSpan]::FromSeconds(60)
+
 # ---------- LOGIN ----------
 Write-Host "Conectando a $ApiUrl ..." -ForegroundColor Cyan
-$loginBody = @{ email = $Email; password = $Password } | ConvertTo-Json
-$loginBodyBytes = [System.Text.Encoding]::UTF8.GetBytes($loginBody)
+$loginJson = @{ email = $Email; password = $Password } | ConvertTo-Json
+$loginContent = New-Object System.Net.Http.StringContent(
+    $loginJson, [System.Text.Encoding]::UTF8, "application/json")
 try {
-    $loginResp = Invoke-RestMethod -Uri "$ApiUrl/auth/login" -Method Post `
-        -ContentType "application/json; charset=utf-8" -Body $loginBodyBytes
+    $loginResp = $httpClient.PostAsync("$ApiUrl/auth/login", $loginContent).Result
+    $loginBody = $loginResp.Content.ReadAsStringAsync().Result
+    if (-not $loginResp.IsSuccessStatusCode) {
+        Write-Error "Login falló ($($loginResp.StatusCode)): $loginBody"
+        exit 1
+    }
+    $token = ($loginBody | ConvertFrom-Json).token
 } catch {
     Write-Error "Login falló: $($_.Exception.Message)"
     exit 1
 }
-$token = $loginResp.token
 if (-not $token) { Write-Error "No vino token en la respuesta de login."; exit 1 }
 Write-Host "Login OK." -ForegroundColor Green
-$authHeader = @{ Authorization = "Bearer $token" }
+$httpClient.DefaultRequestHeaders.Authorization =
+    New-Object System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", $token)
 
-# ---------- HELPER: construir y enviar multipart UTF-8 ----------
+# ---------- HELPER: POST multipart con UTF-8 garantizado ----------
 function Send-Multipart {
     param(
         [string] $Url,
-        [string] $Method = "POST",
         [hashtable] $Fields,
         [string] $FileField,
         [string] $FilePath
     )
 
-    $boundary = "----PSBoundary$([System.Guid]::NewGuid().ToString('N'))"
-    $enc = [System.Text.Encoding]::UTF8
-    $ms = New-Object System.IO.MemoryStream
+    $content = New-Object System.Net.Http.MultipartFormDataContent
+    try {
+        foreach ($k in $Fields.Keys) {
+            $sc = New-Object System.Net.Http.StringContent(
+                [string]$Fields[$k], [System.Text.Encoding]::UTF8)
+            # Limpiar el charset del Content-Type para que ASP.NET Core no lo
+            # interprete raro; el form-data usa el charset del body
+            $sc.Headers.ContentType = $null
+            $content.Add($sc, $k)
+        }
 
-    foreach ($k in $Fields.Keys) {
-        $part = "--$boundary`r`nContent-Disposition: form-data; name=`"$k`"`r`n`r`n$($Fields[$k])`r`n"
-        $bytes = $enc.GetBytes($part)
-        $ms.Write($bytes, 0, $bytes.Length)
+        if ($FilePath) {
+            $fileBytes = [System.IO.File]::ReadAllBytes($FilePath)
+            $bc = New-Object System.Net.Http.ByteArrayContent(,$fileBytes)
+            $bc.Headers.ContentType =
+                [System.Net.Http.Headers.MediaTypeHeaderValue]::Parse("image/jpeg")
+            $content.Add($bc, $FileField, (Split-Path $FilePath -Leaf))
+        }
+
+        $resp = $httpClient.PostAsync($Url, $content).Result
+        $body = $resp.Content.ReadAsStringAsync().Result
+        if (-not $resp.IsSuccessStatusCode) {
+            throw "$($resp.StatusCode): $body"
+        }
+        return $body
+    } finally {
+        $content.Dispose()
     }
-
-    if ($FilePath) {
-        $fileName = Split-Path $FilePath -Leaf
-        $header = "--$boundary`r`nContent-Disposition: form-data; name=`"$FileField`"; filename=`"$fileName`"`r`nContent-Type: image/jpeg`r`n`r`n"
-        $hb = $enc.GetBytes($header)
-        $ms.Write($hb, 0, $hb.Length)
-
-        $fileBytes = [System.IO.File]::ReadAllBytes($FilePath)
-        $ms.Write($fileBytes, 0, $fileBytes.Length)
-
-        $tail = $enc.GetBytes("`r`n")
-        $ms.Write($tail, 0, $tail.Length)
-    }
-
-    $closing = $enc.GetBytes("--$boundary--`r`n")
-    $ms.Write($closing, 0, $closing.Length)
-
-    $body = $ms.ToArray()
-    $ms.Dispose()
-
-    return Invoke-WebRequest -Uri $Url -Method $Method `
-        -ContentType "multipart/form-data; boundary=$boundary" `
-        -Headers $authHeader -Body $body -UseBasicParsing
 }
 
-# Helper para DELETE simple (sin body)
+# Helper DELETE
 function Send-Delete {
     param([string] $Url)
     try {
-        Invoke-WebRequest -Uri $Url -Method Delete -Headers $authHeader -UseBasicParsing | Out-Null
-        return $true
+        $resp = $httpClient.DeleteAsync($Url).Result
+        return $resp.IsSuccessStatusCode
     } catch {
         return $false
     }
@@ -278,12 +288,16 @@ foreach ($n in $noticias) {
         Write-Host "  ya existe: $($n.Titulo)" -ForegroundColor DarkGray
         continue
     }
-    Send-Multipart -Url "$ApiUrl/noticias" -FileField "Imagen" -FilePath $ImagePath -Fields @{
-        Titulo = $n.Titulo
-        Resumen = $n.Resumen
-        FechaPublicacion = $n.Fecha
-    } | Out-Null
-    Write-Host "  + $($n.Titulo)" -ForegroundColor Green
+    try {
+        Send-Multipart -Url "$ApiUrl/noticias" -FileField "Imagen" -FilePath $ImagePath -Fields @{
+            Titulo = $n.Titulo
+            Resumen = $n.Resumen
+            FechaPublicacion = $n.Fecha
+        } | Out-Null
+        Write-Host "  + $($n.Titulo)" -ForegroundColor Green
+    } catch {
+        Write-Host "  X ERROR en '$($n.Titulo)': $($_.Exception.Message)" -ForegroundColor Red
+    }
 }
 
 # ---------- EVENTOS ----------
@@ -295,23 +309,31 @@ foreach ($e in $eventos) {
         Write-Host "  ya existe: $($e.Titulo)" -ForegroundColor DarkGray
         continue
     }
-    Send-Multipart -Url "$ApiUrl/eventos" -FileField "Imagen" -FilePath $ImagePath -Fields @{
-        Titulo = $e.Titulo
-        Descripcion = $e.Descripcion
-        Fecha = $e.Fecha
-        Lugar = $e.Lugar
-    } | Out-Null
-    Write-Host "  + $($e.Titulo)" -ForegroundColor Green
+    try {
+        Send-Multipart -Url "$ApiUrl/eventos" -FileField "Imagen" -FilePath $ImagePath -Fields @{
+            Titulo = $e.Titulo
+            Descripcion = $e.Descripcion
+            Fecha = $e.Fecha
+            Lugar = $e.Lugar
+        } | Out-Null
+        Write-Host "  + $($e.Titulo)" -ForegroundColor Green
+    } catch {
+        Write-Host "  X ERROR en '$($e.Titulo)': $($_.Exception.Message)" -ForegroundColor Red
+    }
 }
 
 # ---------- PRESIDENTE ----------
 Write-Host "`n--- Presidente ---" -ForegroundColor Yellow
-Send-Multipart -Url "$ApiUrl/presidente" -FileField "Imagen" -FilePath $ImagePath -Fields @{
-    Nombre  = "Lic. Juan Carlos Martínez Hernández"
-    Cargo   = "Presidente del Consejo Directivo 2025-2027"
-    Mensaje = "Es un honor representar a la comunidad empresarial de León como Presidente de CANACO Servytur. Trabajamos día con día para impulsar el desarrollo del comercio, los servicios y el turismo en nuestra ciudad, generando oportunidades para nuestros afiliados y fortaleciendo el tejido económico de la región. Te invitamos a ser parte de esta gran familia que durante décadas ha sido motor del crecimiento de León."
-} | Out-Null
-Write-Host "  Presidente upsert OK" -ForegroundColor Green
+try {
+    Send-Multipart -Url "$ApiUrl/presidente" -FileField "Imagen" -FilePath $ImagePath -Fields @{
+        Nombre  = "Lic. Juan Carlos Martínez Hernández"
+        Cargo   = "Presidente del Consejo Directivo 2025-2027"
+        Mensaje = "Es un honor representar a la comunidad empresarial de León como Presidente de CANACO Servytur. Trabajamos día con día para impulsar el desarrollo del comercio, los servicios y el turismo en nuestra ciudad, generando oportunidades para nuestros afiliados y fortaleciendo el tejido económico de la región. Te invitamos a ser parte de esta gran familia que durante décadas ha sido motor del crecimiento de León."
+    } | Out-Null
+    Write-Host "  Presidente upsert OK" -ForegroundColor Green
+} catch {
+    Write-Host "  X ERROR en Presidente: $($_.Exception.Message)" -ForegroundColor Red
+}
 
 # ---------- DIRECTORIO ----------
 Write-Host "`n--- Directorio (miembros) ---" -ForegroundColor Yellow
@@ -322,11 +344,15 @@ foreach ($m in $miembros) {
         Write-Host "  ya existe: $($m.Nombre)" -ForegroundColor DarkGray
         continue
     }
-    Send-Multipart -Url "$ApiUrl/directorio" -FileField "Imagen" -FilePath $ImagePath -Fields @{
-        Nombre = $m.Nombre; Cargo = $m.Cargo;
-        Descripcion = $m.Descripcion; Categoria = $m.Categoria
-    } | Out-Null
-    Write-Host "  + $($m.Nombre) [$($m.Categoria)]" -ForegroundColor Green
+    try {
+        Send-Multipart -Url "$ApiUrl/directorio" -FileField "Imagen" -FilePath $ImagePath -Fields @{
+            Nombre = $m.Nombre; Cargo = $m.Cargo;
+            Descripcion = $m.Descripcion; Categoria = $m.Categoria
+        } | Out-Null
+        Write-Host "  + $($m.Nombre) [$($m.Categoria)]" -ForegroundColor Green
+    } catch {
+        Write-Host "  X ERROR en '$($m.Nombre)': $($_.Exception.Message)" -ForegroundColor Red
+    }
 }
 
 # ---------- EMPRESAS DIRECTORIO ----------
@@ -346,8 +372,12 @@ foreach ($e in $empresas) {
     if ($e.Facebook)  { $fields["FacebookUrl"] = $e.Facebook }
     if ($e.Instagram) { $fields["InstagramUrl"]= $e.Instagram }
 
-    Send-Multipart -Url "$ApiUrl/empresadirectorio" -FileField "Logo" -FilePath $ImagePath -Fields $fields | Out-Null
-    Write-Host "  + $($e.Nombre)" -ForegroundColor Green
+    try {
+        Send-Multipart -Url "$ApiUrl/empresadirectorio" -FileField "Logo" -FilePath $ImagePath -Fields $fields | Out-Null
+        Write-Host "  + $($e.Nombre)" -ForegroundColor Green
+    } catch {
+        Write-Host "  X ERROR en '$($e.Nombre)': $($_.Exception.Message)" -ForegroundColor Red
+    }
 }
 
 Write-Host "`n=== Listo ===" -ForegroundColor Cyan
