@@ -99,6 +99,85 @@ namespace Server.Controllers
                                  .ToListAsync();
         }
 
+        // GET: api/contacto/diag-network
+        // ADMIN — prueba conectividad de red cruda (DNS + TCP) a varios hosts.
+        // Sirve para distinguir si Railway bloquea SMTP outbound o si solo es Gmail.
+        [HttpGet("diag-network")]
+        [Authorize]
+        public async Task<IActionResult> DiagNetwork()
+        {
+            var pruebas = new (string Host, int Port, string Descripcion)[]
+            {
+                ("smtp.gmail.com",        587, "Gmail SMTP STARTTLS"),
+                ("smtp.gmail.com",        465, "Gmail SMTP SSL"),
+                ("smtp-relay.brevo.com",  587, "Brevo SMTP (control)"),
+                ("smtp.sendgrid.net",     587, "SendGrid SMTP (control)"),
+                ("smtp.mail.yahoo.com",   587, "Yahoo SMTP (control)"),
+                ("www.google.com",        443, "HTTPS basico (control)"),
+            };
+
+            var resultados = new List<object>();
+
+            foreach (var (host, port, desc) in pruebas)
+            {
+                string dnsStatus;
+                string tcpStatus;
+                long dnsMs = 0, tcpMs = 0;
+
+                // 1) DNS
+                var swDns = System.Diagnostics.Stopwatch.StartNew();
+                System.Net.IPAddress[] ips;
+                try
+                {
+                    ips = await System.Net.Dns.GetHostAddressesAsync(host);
+                    swDns.Stop();
+                    dnsMs = swDns.ElapsedMilliseconds;
+                    dnsStatus = ips.Length > 0
+                        ? $"OK ({ips[0]})"
+                        : "OK pero sin IPs";
+                }
+                catch (Exception ex)
+                {
+                    swDns.Stop();
+                    dnsMs = swDns.ElapsedMilliseconds;
+                    dnsStatus = $"FAIL: {ex.Message}";
+                    resultados.Add(new { host, port, desc, dnsStatus, dnsMs, tcpStatus = "(skipped)", tcpMs = 0 });
+                    continue;
+                }
+
+                // 2) TCP raw (5s timeout)
+                var swTcp = System.Diagnostics.Stopwatch.StartNew();
+                try
+                {
+                    using var tcp = new System.Net.Sockets.TcpClient();
+                    var connectTask = tcp.ConnectAsync(host, port);
+                    var timeoutTask = Task.Delay(5000);
+                    var done = await Task.WhenAny(connectTask, timeoutTask);
+                    swTcp.Stop();
+                    tcpMs = swTcp.ElapsedMilliseconds;
+                    if (done == timeoutTask)
+                        tcpStatus = "TIMEOUT (5s)";
+                    else if (connectTask.IsFaulted)
+                        tcpStatus = $"FAIL: {connectTask.Exception?.InnerException?.Message ?? "?"}";
+                    else
+                        tcpStatus = "OK conectado";
+                }
+                catch (Exception ex)
+                {
+                    swTcp.Stop();
+                    tcpMs = swTcp.ElapsedMilliseconds;
+                    tcpStatus = $"FAIL: {ex.Message}";
+                }
+
+                resultados.Add(new { host, port, desc, dnsStatus, dnsMs, tcpStatus, tcpMs });
+            }
+
+            return Ok(new {
+                mensaje = "Prueba de conectividad de red desde Railway",
+                resultados
+            });
+        }
+
         // GET: api/contacto/test-smtp
         // ADMIN — manda un correo de prueba y devuelve el error EXACTO si falla.
         // Usa MailKit (no System.Net.Mail) para evitar los problemas del SmtpClient
