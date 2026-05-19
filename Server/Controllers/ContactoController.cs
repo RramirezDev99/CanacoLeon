@@ -98,5 +98,71 @@ namespace Server.Controllers
                                  .OrderByDescending(m => m.FechaEnvio)
                                  .ToListAsync();
         }
+
+        // GET: api/contacto/test-smtp
+        // ADMIN — manda un correo de prueba y devuelve el error EXACTO si falla.
+        // Sirve para diagnosticar la configuración SMTP sin tener que adivinar.
+        [HttpGet("test-smtp")]
+        [Authorize]
+        public async Task<IActionResult> TestSmtp([FromServices] IConfiguration config)
+        {
+            // Reportamos qué variables están configuradas (sin exponer el password)
+            var diag = new {
+                host       = config["Smtp:Host"],
+                port       = config["Smtp:Port"],
+                enableSsl  = config["Smtp:EnableSsl"],
+                user       = config["Smtp:User"],
+                passLength = (config["Smtp:Pass"] ?? "").Length,
+                toEmail    = config["Smtp:ToEmail"]
+            };
+
+            // Intentamos enviar SIN atrapar el error en EmailService — lo armamos
+            // a mano para ver la excepción real.
+            try
+            {
+                var host = config["Smtp:Host"];
+                var portStr = config["Smtp:Port"];
+                var user = config["Smtp:User"];
+                var pass = config["Smtp:Pass"];
+                var toEmail = config["Smtp:ToEmail"];
+                var sslStr = config["Smtp:EnableSsl"];
+
+                if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(user)
+                    || string.IsNullOrEmpty(pass) || string.IsNullOrEmpty(toEmail))
+                {
+                    return BadRequest(new { error = "Faltan variables Smtp__ en el server.", diag });
+                }
+
+                int port = int.TryParse(portStr, out var p) ? p : 587;
+                bool ssl = !bool.TryParse(sslStr, out var s) || s;
+
+                using var client = new System.Net.Mail.SmtpClient(host, port);
+                client.Credentials = new System.Net.NetworkCredential(user, pass);
+                client.EnableSsl = ssl;
+
+                var msg = new System.Net.Mail.MailMessage
+                {
+                    From = new System.Net.Mail.MailAddress(user, "Canaco León Web — Test"),
+                    Subject = "TEST SMTP CANACO — " + DateTime.Now.ToString("HH:mm:ss"),
+                    Body = "<p>Si lees esto, el SMTP funciona perfecto. ✅</p><p>Hora: "
+                           + DateTime.Now + "</p>",
+                    IsBodyHtml = true,
+                };
+                msg.To.Add(toEmail);
+
+                await client.SendMailAsync(msg);
+                return Ok(new { ok = true, message = $"Correo enviado a {toEmail}", diag });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new {
+                    ok = false,
+                    error = ex.Message,
+                    inner = ex.InnerException?.Message,
+                    type = ex.GetType().Name,
+                    diag
+                });
+            }
+        }
     }
 }
