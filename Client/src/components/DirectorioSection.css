@@ -1,178 +1,201 @@
-/* src/components/ContactoForm.css */
+/* src/components/DirectorioSection.css */
 
-.contacto-section {
-  padding: 60px 20px;
-  display: flex;
-  justify-content: center;
+/* =========================================
+   SECCIÓN PRINCIPAL
+   ========================================= */
+.directory-section {
+  padding: 60px 20px 80px;
   width: 100%;
 }
 
-.contacto-wrapper {
-  display: flex;
-  flex-direction: row;
-  gap: 40px;
+.directory-wrapper {
   max-width: 1200px;
-  width: 100%;
-
-  /* TRUCO MAESTRO: 'stretch' obliga a ambos hijos a tener la misma altura */
-  align-items: stretch;
+  margin: 0 auto;
 }
 
-/* --- TARJETA DEL FORMULARIO (GLASSMORPHISM) --- */
-.form-card {
-  flex: 1;
-  /* EFECTO GLASS */
+/* =========================================
+   CATEGORÍAS
+   ========================================= */
+.directory-category-row {
+  margin-bottom: 50px;
+}
+
+.category-title {
+  font-family: "Raleway", sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f204b;
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.category-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: #d4af37;
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+/* =========================================
+   GRID DE TARJETAS
+   ========================================= */
+.directory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+  justify-items: center;
+}
+
+/* =========================================
+   TARJETA GLASS
+   ========================================= */
+.glass-card {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-
-  padding: 40px;
-  border-radius: 24px;
-
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.12);
+  border-radius: 20px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 280px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-/* Título */
-.form-card h2 {
-  font-family: "Raleway", sans-serif;
-  font-size: 2.2rem;
-  color: #0f3460;
-  margin-bottom: 25px;
-  font-weight: 800;
   text-align: center;
-  width: 100%;
+  padding: 24px 20px;
 }
 
-/* El formulario llena la tarjeta */
-.form-card form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  /* Esto asegura que el form ocupe el espacio disponible si sobra altura */
-  flex-grow: 1;
+.glass-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(31, 38, 135, 0.2);
 }
 
-.form-group {
-  margin-bottom: 15px;
-  width: 100%;
-}
-
-.form-group label {
-  display: block;
-  font-family: "Raleway", sans-serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: #334155;
-  margin-bottom: 8px;
-  text-align: left;
-}
-
-/* Inputs */
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 12px 15px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.9);
-  font-family: "Inter", sans-serif;
-  font-size: 1rem;
-  color: #333;
-  outline: none;
-  transition: all 0.3s;
-  box-sizing: border-box;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  background: white;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-/* Botón Enviar (ahora se pega al fondo si sobra espacio) */
-.btn-enviar {
-  width: 100%;
-  padding: 15px;
-  background: #0f3460;
-  color: white;
-  font-family: "Raleway", sans-serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-top: auto; /* Empuja el botón hacia abajo si el form crece */
-  transition:
-    background 0.3s,
-    transform 0.2s;
-}
-
-.btn-enviar:hover {
-  background: #1e293b;
-  transform: translateY(-2px);
-}
-
-/* --- TARJETA DEL MAPA --- */
-.map-card {
-  flex: 1;
-  /* IMPORTANTE: Sin altura fija, llenará el padre gracias al 'stretch' */
-  height: auto;
-  min-height: 100%; /* Asegura el llenado */
-
-  border-radius: 24px;
+/* =========================================
+   AVATAR / FOTO
+   ========================================= */
+.card-avatar-container {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  background: white;
-
-  display: flex; /* Para que el iframe se comporte bien */
+  margin-bottom: 16px;
+  border: 3px solid #d4af37;
+  flex-shrink: 0;
+  background: #f0f4f8;
 }
 
-/* El iframe también debe estirarse al 100% */
-.map-card iframe {
+.card-avatar-container img {
   width: 100%;
   height: 100%;
-  min-height: 400px; /* Altura mínima por seguridad en móviles */
+  object-fit: cover;
   display: block;
 }
 
-/* --- RESPONSIVE --- */
-@media (max-width: 900px) {
-  .contacto-wrapper {
-    flex-direction: column;
-    align-items: center;
+/* =========================================
+   CONTENIDO DE TARJETA
+   ========================================= */
+.card-content {
+  width: 100%;
+}
+
+.member-name {
+  font-family: "Raleway", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f204b;
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.member-role {
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #d4af37;
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.member-desc {
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+@media (max-width: 768px) {
+  .directory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
   }
 
-  .map-card {
-    width: 100%;
-    height: 350px; /* En móvil sí le damos altura fija */
-    min-height: 350px;
+  .glass-card {
+    max-width: 100%;
+    padding: 20px 16px;
   }
 
-  .form-card {
-    width: 100%;
+  .card-avatar-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .category-title {
+    font-size: 1.6rem;
   }
 }
 
-/* --- MODO OSCURO --- */
-body.dark-mode .form-card {
+@media (max-width: 480px) {
+  .directory-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .card-avatar-container {
+    width: 80px;
+    height: 80px;
+  }
+
+  .member-name {
+    font-size: 0.95rem;
+  }
+}
+
+/* =========================================
+   MODO OSCURO
+   ========================================= */
+body.dark-mode .category-title {
+  color: #f8fafc;
+}
+
+body.dark-mode .glass-card {
   background: rgba(15, 23, 42, 0.65);
   border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
-body.dark-mode .form-card h2 {
-  color: white;
+
+body.dark-mode .member-name {
+  color: #f8fafc;
 }
-body.dark-mode .form-group label {
-  color: #cbd5e1;
+
+body.dark-mode .member-role {
+  color: #d4af37;
 }
-body.dark-mode .form-group input,
-body.dark-mode .form-group textarea {
-  background: rgba(30, 41, 59, 0.6);
-  border-color: #475569;
-  color: white;
+
+body.dark-mode .member-desc {
+  color: #94a3b8;
+}
+
+body.dark-mode .card-avatar-container {
+  border-color: #d4af37;
+  background: #1e293b;
 }

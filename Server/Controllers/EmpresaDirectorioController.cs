@@ -36,7 +36,10 @@ namespace Server.Controllers
         [Authorize]
         public async Task<ActionResult<EmpresaDirectorio>> PostEmpresa([FromForm] CrearEmpresaDto dto)
         {
-            // Validamos el logo: tipo, tamaño y que no venga vacío
+            // En creación, el logo es obligatorio
+            if (dto.Logo == null || dto.Logo.Length == 0)
+                return BadRequest(new { error = "El logo es obligatorio al crear una empresa." });
+
             var error = UploadHelper.ValidarImagen(dto.Logo);
             if (error != null) return BadRequest(new { error });
 

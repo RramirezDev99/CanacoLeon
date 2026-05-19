@@ -27,7 +27,7 @@ namespace Server.DTOs
         public string? InstagramUrl { get; set; }
         
         // --- EL ARCHIVO FÍSICO ---
-        [Required(ErrorMessage = "El logo es obligatorio")]
-        public IFormFile Logo { get; set; } 
+        // No es Required porque al editar puede no mandar logo nuevo
+        public IFormFile? Logo { get; set; }
     }
 }
