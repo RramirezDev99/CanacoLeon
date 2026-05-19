@@ -16,7 +16,6 @@ const EventsSection = () => {
     fetch(`${API_URL}/eventos`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("Eventos cargados:", data);
         setEventos(data);
         setLoading(false); // Finalizamos carga
       })

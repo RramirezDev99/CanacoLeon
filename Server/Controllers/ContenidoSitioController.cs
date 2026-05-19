@@ -59,7 +59,7 @@ public class ContenidoSitioController : ControllerBase
             existente = new ContenidoSitio
             {
                 Clave = dto.Clave,
-                Valor = dto.Valor
+                Valor = dto.Valor ?? string.Empty
             };
 
             if (dto.Imagen != null)
@@ -72,7 +72,7 @@ public class ContenidoSitioController : ControllerBase
         else
         {
             // Actualizar existente
-            existente.Valor = dto.Valor;
+            existente.Valor = dto.Valor ?? string.Empty;
 
             if (dto.Imagen != null)
             {
