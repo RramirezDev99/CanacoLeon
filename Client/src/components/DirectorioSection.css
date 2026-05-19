@@ -1,8 +1,5 @@
 /* src/components/DirectorioSection.css */
 
-/* =========================================
-   SECCIÓN PRINCIPAL
-   ========================================= */
 .directory-section {
   padding: 60px 20px 80px;
   width: 100%;
@@ -13,9 +10,7 @@
   margin: 0 auto;
 }
 
-/* =========================================
-   CATEGORÍAS
-   ========================================= */
+/* --- CATEGORÍAS --- */
 .directory-category-row {
   margin-bottom: 50px;
 }
@@ -27,7 +22,6 @@
   color: #0f204b;
   text-align: center;
   margin-bottom: 30px;
-  position: relative;
 }
 
 .category-title::after {
@@ -40,9 +34,7 @@
   border-radius: 2px;
 }
 
-/* =========================================
-   GRID DE TARJETAS — layout horizontal
-   ========================================= */
+/* --- GRID --- */
 .directory-grid {
   display: flex;
   flex-wrap: wrap;
@@ -50,38 +42,39 @@
   justify-content: center;
 }
 
-/* =========================================
-   TARJETA GLASS — HORIZONTAL
-   ========================================= */
-.glass-card {
+/* --- TARJETA HORIZONTAL (clase única, no colisiona con noticias) --- */
+.dir-card {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: 0 4px 20px rgba(31, 38, 135, 0.1);
   border-radius: 16px;
-  overflow: hidden;
-  flex: 0 0 auto;
-  width: 340px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-  /* LAYOUT HORIZONTAL: foto a la izquierda, info a la derecha */
+  /* Tamaño fijo, compacto */
+  width: 340px;
+  flex: 0 0 340px;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none;
+
+  /* Layout horizontal */
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 16px;
   gap: 16px;
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.glass-card:hover {
+.dir-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 36px rgba(31, 38, 135, 0.18);
 }
 
-/* =========================================
-   AVATAR / FOTO
-   ========================================= */
-.card-avatar-container {
+/* --- AVATAR --- */
+.dir-avatar {
   width: 70px;
   height: 70px;
   min-width: 70px;
@@ -92,22 +85,20 @@
   background: #f0f4f8;
 }
 
-.card-avatar-container img {
+.dir-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-/* =========================================
-   CONTENIDO DE TARJETA
-   ========================================= */
-.card-content {
+/* --- INFO --- */
+.dir-info {
   text-align: left;
   min-width: 0;
 }
 
-.member-name {
+.dir-name {
   font-family: "Raleway", sans-serif;
   font-size: 1rem;
   font-weight: 700;
@@ -116,89 +107,73 @@
   line-height: 1.3;
 }
 
-.member-role {
+.dir-role {
   font-family: "Inter", sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: #d4af37;
-  margin: 0 0 4px;
+  margin: 0;
   line-height: 1.3;
 }
 
-.member-desc {
+.dir-desc {
   font-family: "Inter", sans-serif;
   font-size: 0.8rem;
   color: #64748b;
-  margin: 0;
+  margin: 6px 0 0;
   line-height: 1.4;
 }
 
-/* =========================================
-   RESPONSIVE
-   ========================================= */
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-  .directory-grid {
-    gap: 12px;
-  }
-
-  .glass-card {
+  .dir-card {
     width: 100%;
+    flex: 0 0 100%;
     max-width: 400px;
-  }
-
-  .category-title {
-    font-size: 1.6rem;
   }
 }
 
 @media (max-width: 480px) {
-  .glass-card {
-    width: 100%;
+  .dir-card {
     padding: 12px;
     gap: 12px;
   }
 
-  .card-avatar-container {
+  .dir-avatar {
     width: 56px;
     height: 56px;
     min-width: 56px;
   }
 
-  .member-name {
+  .dir-name {
     font-size: 0.9rem;
   }
 
-  .member-role {
+  .dir-role {
     font-size: 0.8rem;
   }
 }
 
-/* =========================================
-   MODO OSCURO
-   ========================================= */
+/* --- MODO OSCURO --- */
 body.dark-mode .category-title {
   color: #f8fafc;
 }
 
-body.dark-mode .glass-card {
+body.dark-mode .dir-card {
   background: rgba(15, 23, 42, 0.65);
   border-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-body.dark-mode .member-name {
+body.dark-mode .dir-name {
   color: #f8fafc;
 }
 
-body.dark-mode .member-role {
-  color: #d4af37;
-}
-
-body.dark-mode .member-desc {
+body.dark-mode .dir-desc {
   color: #94a3b8;
 }
 
-body.dark-mode .card-avatar-container {
+body.dark-mode .dir-avatar {
   border-color: #d4af37;
   background: #1e293b;
 }

@@ -28,8 +28,8 @@ const DirectorySection = () => {
         {/* CAMBIO AQUÍ: Usamos Grid en lugar de Carousel */}
         <div className="directory-grid">
           {list.map((miembro) => (
-            <div key={miembro.id} className="glass-card">
-              <div className="card-avatar-container">
+            <div key={miembro.id} className="dir-card">
+              <div className="dir-avatar">
                 <img
                   src={
                     miembro.imagenUrl
@@ -40,10 +40,10 @@ const DirectorySection = () => {
                 />
               </div>
 
-              <div className="card-content">
-                <h3 className="member-name">{miembro.nombre}</h3>
-                <h4 className="member-role">{miembro.cargo}</h4>
-                <p className="member-desc">{miembro.descripcion}</p>
+              <div className="dir-info">
+                <h3 className="dir-name">{miembro.nombre}</h3>
+                <h4 className="dir-role">{miembro.cargo}</h4>
+                {miembro.descripcion && <p className="dir-desc">{miembro.descripcion}</p>}
               </div>
             </div>
           ))}
