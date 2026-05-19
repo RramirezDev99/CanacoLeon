@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { FaUserTie } from "react-icons/fa";
 import "./PresidenteBanner.css";
 import { API_URL, FILES_BASE } from "../lib/api";
+import EmptyState from "./EmptyState";
 
 const PresidenteBanner = () => {
   const [data, setData] = useState(null);
@@ -8,9 +10,17 @@ const PresidenteBanner = () => {
 
   useEffect(() => {
     fetch(`${API_URL}/presidente`)
-      .then((res) => res.json())
+      .then(async (res) => {
+        // Si el backend regresa 204 No Content (sin presidente),
+        // res.json() truena. Tratamos ese caso explícitamente para evitar
+        // el "parpadeo" donde la sección se muestra y luego desaparece.
+        if (res.status === 204 || !res.ok) return null;
+        try { return await res.json(); } catch { return null; }
+      })
       .then((result) => {
-        setData(result);
+        // Verificamos que tenga algo real (no objeto vacío ni null)
+        const tieneContenido = result && (result.nombre || result.cargo || result.mensaje);
+        setData(tieneContenido ? result : null);
         setLoading(false);
       })
       .catch((err) => {
@@ -19,11 +29,24 @@ const PresidenteBanner = () => {
       });
   }, []);
 
-  // Combinamos los datos: Preferencia a la API, fallback a estático
-  const info = data || null;
+  const info = data;
 
-  // Si no hay datos del presidente, no renderizar la sección
-  if (!loading && !info) return null;
+  // Cuando no hay presidente configurado mostramos un estado vacío
+  // limpio en lugar de un placeholder roto o de hacer disappear la sección
+  // (el "actúa extraño" que se veía antes).
+  if (!loading && !info) {
+    return (
+      <section className="president-section">
+        <div className="president-container president-empty-wrapper">
+          <EmptyState
+            icon={<FaUserTie />}
+            title="Mensaje del Presidente Próximamente"
+            message="Una vez que el panel de administración configure al Presidente, su mensaje aparecerá aquí."
+          />
+        </div>
+      </section>
+    );
+  }
 
   const getImg = (url) => {
     if (!url) return null;

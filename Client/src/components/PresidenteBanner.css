@@ -17,19 +17,28 @@
     width: 100%;
     max-width: 100%;
     margin: 0;
-    
+
     background-color: #ffffff;
     /* CAMBIO: Quitamos bordes redondeados para que sea una franja completa */
-    border-radius: 0; 
+    border-radius: 0;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* Sombra sutil abajo */
-    overflow: hidden; 
-    
+    overflow: hidden;
+
     display: flex;
-    align-items: stretch; 
-    gap: 0; 
-    
+    align-items: stretch;
+    gap: 0;
+
     /* Aseguramos una altura mínima para que imponga presencia */
-    min-height: 600px; 
+    min-height: 600px;
+}
+
+/* Cuando no hay presidente: contenedor centrado y más bajito */
+.president-container.president-empty-wrapper {
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
 }
 
 /* --- FOTO (Izquierda) --- */

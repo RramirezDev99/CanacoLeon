@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight, FaCalendarAlt } from "react-icons/fa";
 import "./EventsSection.css";
 import { API_URL, FILES_BASE } from "../lib/api";
@@ -90,10 +91,11 @@ const EventsSection = () => {
                   : "/default-event.png";
 
                 return (
-                  <div
+                  <Link
                     key={evento.id || index}
+                    to={`/eventos/${evento.id}`}
                     className="event-card"
-                    style={{ backgroundImage: `url('${bgImage}')` }}
+                    style={{ backgroundImage: `url('${bgImage}')`, textDecoration: 'none', color: 'inherit' }}
                   >
                     <div className="event-overlay">
                       <span className="event-date-badge">
@@ -103,7 +105,7 @@ const EventsSection = () => {
                         {evento.titulo || evento.Titulo}
                       </h3>
                     </div>
-                  </div>
+                  </Link>
                 );
               })
             ) : (

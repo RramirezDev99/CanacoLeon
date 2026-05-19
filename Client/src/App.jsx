@@ -16,6 +16,7 @@ import Login from "./pages/admin/Login";
 import Dashboard from "./pages/dashboard/Dashboard";
 import NoticiasPage from "./pages/noticias/NoticiasPage";
 import NoticiaDetalle from "./pages/noticias/NoticiaDetalle";
+import EventoDetalle from "./pages/eventos/EventoDetalle";
 import NosotrosPage from "./pages/nosotros/NosotrosPage";
 import Servicios from "./pages/servicios/servicios";
 import Afiliarme from "./pages/afiliarme/Afiliarme";
@@ -77,6 +78,7 @@ function App() {
         <Route path="/" element={<Inicio />} />
         <Route path="/noticias" element={<NoticiasPage />} />
         <Route path="/noticias/:id" element={<NoticiaDetalle />} />
+        <Route path="/eventos/:id" element={<EventoDetalle />} />
         <Route path="/nosotros" element={<NosotrosPage />} />
         <Route path="/servicios" element={<Servicios />} />
         <Route path="/afiliarme" element={<Afiliarme />} />

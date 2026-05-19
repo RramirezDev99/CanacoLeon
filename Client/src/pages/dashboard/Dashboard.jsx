@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [listaEventos, setListaEventos] = useState([]);
   const [listaDirectorio, setListaDirectorio] = useState([]);
   const [listaComercial, setListaComercial] = useState([]);
+  const [listaUsuarios, setListaUsuarios] = useState([]);
 
   // --- FORMULARIOS ---
   const [newsForm, setNewsForm] = useState({ titulo: "", resumen: "", fechaPublicacion: "", imagen: null });
@@ -25,6 +26,7 @@ const Dashboard = () => {
   const [comercialForm, setComercialForm] = useState({
     nombre: "", giro: "", descripcion: "", telefono: "", email: "", sitioWeb: "", facebookUrl: "", instagramUrl: "", imagen: null
   });
+  const [userForm, setUserForm] = useState({ nombre: "", email: "", password: "" });
 
   // --- CONTENIDO DEL SITIO (misión, visión, valores, hero) ---
   const [contenidoMap, setContenidoMap] = useState({});
@@ -49,6 +51,8 @@ const Dashboard = () => {
       (data || []).forEach(item => { map[item.clave] = { valor: item.valor, imagenUrl: item.imagenUrl }; });
       setContenidoMap(map);
     }).catch(() => {});
+    // Usuarios requiere token (endpoint admin)
+    apiFetch("/usuarios").then(res => res.ok ? res.json() : []).then(data => setListaUsuarios(data || [])).catch(() => {});
   };
 
   useEffect(() => { cargarDatos(); }, []);
@@ -60,6 +64,49 @@ const Dashboard = () => {
     setEventForm({ titulo: "", descripcion: "", fecha: "", lugar: "", imagen: null });
     setDirForm({ nombre: "", cargo: "", descripcion: "", categoria: "Consejeros", imagen: null });
     setComercialForm({ nombre: "", giro: "", descripcion: "", telefono: "", email: "", sitioWeb: "", facebookUrl: "", instagramUrl: "", imagen: null });
+    setUserForm({ nombre: "", email: "", password: "" });
+  };
+
+  // --- USUARIOS ADMIN ---
+  const submitUsuario = async (e) => {
+    e.preventDefault();
+    if (!userForm.password || userForm.password.length < 8) {
+      setMensaje({ type: "error", text: "La contraseña debe tener al menos 8 caracteres" });
+      return;
+    }
+    try {
+      const response = await apiFetch("/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userForm),
+      });
+      if (response.ok) {
+        setMensaje({ type: "success", text: `Usuario "${userForm.email}" creado` });
+        setUserForm({ nombre: "", email: "", password: "" });
+        cargarDatos();
+      } else {
+        const err = await response.json().catch(() => ({}));
+        setMensaje({ type: "error", text: err.error || "Error al crear usuario" });
+      }
+    } catch {
+      setMensaje({ type: "error", text: "Error de conexión" });
+    }
+  };
+
+  const handleDeleteUsuario = async (id, email) => {
+    if (!window.confirm(`¿Eliminar al administrador "${email}"?`)) return;
+    try {
+      const response = await apiFetch(`/usuarios/${id}`, { method: "DELETE" });
+      if (response.ok) {
+        setMensaje({ type: "success", text: "Administrador eliminado" });
+        cargarDatos();
+      } else {
+        const err = await response.json().catch(() => ({}));
+        setMensaje({ type: "error", text: err.error || "No se pudo eliminar" });
+      }
+    } catch {
+      setMensaje({ type: "error", text: "Error de conexión" });
+    }
   };
 
   const handleFileChange = (e, type) => {
@@ -208,6 +255,7 @@ const Dashboard = () => {
         <button className={`tab-btn ${activeTab === "directorio" ? "active" : ""}`} onClick={() => {setActiveTab("directorio"); resetAll();}}>Directorio</button>
         <button className={`tab-btn ${activeTab === "comercial" ? "active" : ""}`} onClick={() => {setActiveTab("comercial"); resetAll();}}>D. Comercial</button>
         <button className={`tab-btn ${activeTab === "contenido" ? "active" : ""}`} onClick={() => {setActiveTab("contenido"); resetAll();}}>Contenido</button>
+        <button className={`tab-btn ${activeTab === "usuarios" ? "active" : ""}`} onClick={() => {setActiveTab("usuarios"); resetAll();}}>Usuarios</button>
       </div>
 
       {mensaje && <div className={`message ${mensaje.type}`}>{mensaje.text}</div>}
@@ -436,6 +484,64 @@ const Dashboard = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* --- USUARIOS (ADMINISTRADORES) --- */}
+      {activeTab === "usuarios" && (
+        <>
+          <form className="upload-form" onSubmit={submitUsuario}>
+            <h3>Nuevo Administrador</h3>
+            <p style={{color:'#64748b', marginBottom:'12px', fontSize:'0.9rem'}}>
+              El nuevo usuario podrá entrar al panel con el email y la contraseña que pongas aquí.
+            </p>
+            <input
+              type="text"
+              placeholder="Nombre completo"
+              className="form-input"
+              value={userForm.nombre}
+              onChange={e => setUserForm({...userForm, nombre: e.target.value})}
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              className="form-input"
+              value={userForm.email}
+              onChange={e => setUserForm({...userForm, email: e.target.value})}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Contraseña (mínimo 8 caracteres)"
+              className="form-input"
+              value={userForm.password}
+              onChange={e => setUserForm({...userForm, password: e.target.value})}
+              minLength={8}
+              required
+            />
+            <button type="submit" className="submit-btn">Crear Administrador</button>
+          </form>
+          <div className="items-list">
+            {listaUsuarios.map(u => (
+              <div key={u.id} className="list-item">
+                <span><strong>{u.nombre}</strong> &lt;{u.email}&gt;</span>
+                <div className="actions">
+                  <button
+                    className="delete-action"
+                    onClick={() => handleDeleteUsuario(u.id, u.email)}
+                  >
+                    Borrar
+                  </button>
+                </div>
+              </div>
+            ))}
+            {listaUsuarios.length === 0 && (
+              <p style={{color:'#64748b', textAlign:'center', padding:'20px'}}>
+                No hay otros administradores aún.
+              </p>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
