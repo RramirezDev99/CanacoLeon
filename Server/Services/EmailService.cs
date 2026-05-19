@@ -1,11 +1,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Net;
-using System.Net.Mail;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 
 namespace Server.Services
 {
@@ -14,10 +15,15 @@ namespace Server.Services
         Task SendEmailAsync(string asunto, string cuerpo, List<string>? adjuntos = null);
     }
 
+    /// <summary>
+    /// Envío de correos usando MailKit (reemplazo moderno de System.Net.Mail.SmtpClient,
+    /// que Microsoft tiene oficialmente deprecado por no soportar bien los protocolos
+    /// TLS modernos de Gmail/Outlook).
+    /// </summary>
     public class EmailService : IEmailService
     {
         private readonly IConfiguration _config;
-        private readonly ILogger<EmailService> _logger; // Para ver los errores en tu consola
+        private readonly ILogger<EmailService> _logger;
 
         public EmailService(IConfiguration config, ILogger<EmailService> logger)
         {
@@ -36,56 +42,64 @@ namespace Server.Services
                 var toEmail = _config["Smtp:ToEmail"];
                 var enableSslStr = _config["Smtp:EnableSsl"];
 
-                // Validación de seguridad: Si faltan datos clave, no intentamos enviar para no tronar
-                if (string.IsNullOrEmpty(smtpHost) || string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(toEmail))
+                if (string.IsNullOrEmpty(smtpHost) || string.IsNullOrEmpty(smtpUser)
+                    || string.IsNullOrEmpty(toEmail) || string.IsNullOrEmpty(smtpPass))
                 {
-                    _logger.LogWarning("⚠️ Falta configuración SMTP en appsettings.json. Se guardó la solicitud pero NO se envió el correo.");
-                    return; 
+                    _logger.LogWarning("Falta configuracion SMTP. Se guardo la solicitud pero NO se envio el correo.");
+                    return;
                 }
 
-                // Parseo seguro: Si falla o es nulo, usamos valores por defecto (ej. puerto 587, SSL true)
-                int smtpPort = int.TryParse(smtpPortStr, out int port) ? port : 587;
-                bool enableSsl = bool.TryParse(enableSslStr, out bool ssl) ? ssl : true;
+                int smtpPort = int.TryParse(smtpPortStr, out var p) ? p : 587;
+                bool enableSsl = !bool.TryParse(enableSslStr, out var s) || s;
 
-                using (var client = new SmtpClient(smtpHost, smtpPort))
+                // Construir el mensaje
+                var mensaje = new MimeMessage();
+                mensaje.From.Add(new MailboxAddress("Canaco Leon Web", smtpUser));
+                mensaje.To.Add(MailboxAddress.Parse(toEmail));
+                mensaje.Subject = asunto;
+
+                var builder = new BodyBuilder { HtmlBody = cuerpo };
+
+                if (adjuntos != null)
                 {
-                    client.Credentials = new NetworkCredential(smtpUser, smtpPass);
-                    client.EnableSsl = enableSsl;
-
-                    var mailMessage = new MailMessage
+                    foreach (var ruta in adjuntos)
                     {
-                        From = new MailAddress(smtpUser, "Canaco León Web"),
-                        Subject = asunto,
-                        Body = cuerpo,
-                        IsBodyHtml = true,
-                    };
-
-                    mailMessage.To.Add(toEmail);
-
-                    // --- AGREGAMOS LOS ARCHIVOS ADJUNTOS SI EXISTEN ---
-                    if (adjuntos != null)
-                    {
-                        foreach (var ruta in adjuntos)
+                        if (File.Exists(ruta))
                         {
-                            if (File.Exists(ruta))
-                            {
-                                mailMessage.Attachments.Add(new Attachment(ruta));
-                            }
-                            else
-                            {
-                                _logger.LogWarning($"⚠️ No se encontró el archivo para adjuntar: {ruta}");
-                            }
+                            builder.Attachments.Add(ruta);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("No se encontro el archivo para adjuntar: {Ruta}", ruta);
                         }
                     }
-
-                    await client.SendMailAsync(mailMessage);
-                    _logger.LogInformation("✅ Correo enviado exitosamente a {ToEmail}", toEmail);
                 }
+
+                mensaje.Body = builder.ToMessageBody();
+
+                // Decidir tipo de conexion segun puerto:
+                //   465 → SSL implícito
+                //   587 → STARTTLS
+                //   otro → Auto (MailKit decide)
+                SecureSocketOptions sslMode;
+                if (!enableSsl) sslMode = SecureSocketOptions.None;
+                else if (smtpPort == 465) sslMode = SecureSocketOptions.SslOnConnect;
+                else if (smtpPort == 587) sslMode = SecureSocketOptions.StartTls;
+                else sslMode = SecureSocketOptions.Auto;
+
+                using var client = new SmtpClient();
+                client.Timeout = 20000; // 20s, suficiente para handshake + auth
+
+                await client.ConnectAsync(smtpHost, smtpPort, sslMode);
+                await client.AuthenticateAsync(smtpUser, smtpPass);
+                await client.SendAsync(mensaje);
+                await client.DisconnectAsync(true);
+
+                _logger.LogInformation("Correo enviado exitosamente a {ToEmail}", toEmail);
             }
             catch (Exception ex)
             {
-                // Atrapamos el error para que NO le mande 500 al usuario de React
-                _logger.LogError(ex, "❌ Error crítico al enviar el correo de la solicitud.");
+                _logger.LogError(ex, "Error al enviar el correo de la solicitud.");
             }
         }
     }

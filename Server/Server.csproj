@@ -20,6 +20,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
+    <!-- MailKit: reemplazo moderno de System.Net.Mail.SmtpClient (que está deprecado).
+         Funciona bien con Gmail/Outlook/etc. desde data centers y maneja TLS moderno. -->
+    <PackageReference Include="MailKit" Version="4.9.0" />
   </ItemGroup>
 
 </Project>

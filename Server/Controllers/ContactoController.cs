@@ -101,12 +101,12 @@ namespace Server.Controllers
 
         // GET: api/contacto/test-smtp
         // ADMIN — manda un correo de prueba y devuelve el error EXACTO si falla.
-        // Sirve para diagnosticar la configuración SMTP sin tener que adivinar.
+        // Usa MailKit (no System.Net.Mail) para evitar los problemas del SmtpClient
+        // deprecado de .NET con el TLS moderno de Gmail.
         [HttpGet("test-smtp")]
         [Authorize]
         public async Task<IActionResult> TestSmtp([FromServices] IConfiguration config)
         {
-            // Reportamos qué variables están configuradas (sin exponer el password)
             var diag = new {
                 host       = config["Smtp:Host"],
                 port       = config["Smtp:Port"],
@@ -116,8 +116,6 @@ namespace Server.Controllers
                 toEmail    = config["Smtp:ToEmail"]
             };
 
-            // Intentamos enviar SIN atrapar el error en EmailService — lo armamos
-            // a mano para ver la excepción real.
             try
             {
                 var host = config["Smtp:Host"];
@@ -136,24 +134,30 @@ namespace Server.Controllers
                 int port = int.TryParse(portStr, out var p) ? p : 587;
                 bool ssl = !bool.TryParse(sslStr, out var s) || s;
 
-                using var client = new System.Net.Mail.SmtpClient(host, port);
-                client.Credentials = new System.Net.NetworkCredential(user, pass);
-                client.EnableSsl = ssl;
-                // Timeout corto para que el error sea visible antes que Railway
-                // nos corte por 502 (su proxy se aburre a los ~30s).
-                client.Timeout = 10000;
-
-                var msg = new System.Net.Mail.MailMessage
+                var mensaje = new MimeKit.MimeMessage();
+                mensaje.From.Add(new MimeKit.MailboxAddress("Canaco Leon Web - Test", user));
+                mensaje.To.Add(MimeKit.MailboxAddress.Parse(toEmail));
+                mensaje.Subject = "TEST SMTP CANACO - " + DateTime.Now.ToString("HH:mm:ss");
+                mensaje.Body = new MimeKit.BodyBuilder
                 {
-                    From = new System.Net.Mail.MailAddress(user, "Canaco León Web — Test"),
-                    Subject = "TEST SMTP CANACO — " + DateTime.Now.ToString("HH:mm:ss"),
-                    Body = "<p>Si lees esto, el SMTP funciona perfecto. ✅</p><p>Hora: "
-                           + DateTime.Now + "</p>",
-                    IsBodyHtml = true,
-                };
-                msg.To.Add(toEmail);
+                    HtmlBody = "<p>Si lees esto, el SMTP funciona perfecto.</p>" +
+                               "<p>Hora: " + DateTime.Now + "</p>"
+                }.ToMessageBody();
 
-                await client.SendMailAsync(msg);
+                MailKit.Security.SecureSocketOptions sslMode;
+                if (!ssl) sslMode = MailKit.Security.SecureSocketOptions.None;
+                else if (port == 465) sslMode = MailKit.Security.SecureSocketOptions.SslOnConnect;
+                else if (port == 587) sslMode = MailKit.Security.SecureSocketOptions.StartTls;
+                else sslMode = MailKit.Security.SecureSocketOptions.Auto;
+
+                using var client = new MailKit.Net.Smtp.SmtpClient();
+                client.Timeout = 15000;
+
+                await client.ConnectAsync(host, port, sslMode);
+                await client.AuthenticateAsync(user, pass);
+                await client.SendAsync(mensaje);
+                await client.DisconnectAsync(true);
+
                 return Ok(new { ok = true, message = $"Correo enviado a {toEmail}", diag });
             }
             catch (Exception ex)
