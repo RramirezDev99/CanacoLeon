@@ -29,6 +29,15 @@ namespace Server.Controllers
             return await _context.Noticias.OrderByDescending(n => n.Id).ToListAsync();
         }
 
+        // PÚBLICO: obtener una noticia por ID (lo usa la página de detalle)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Noticia>> GetPorId(int id)
+        {
+            var noticia = await _context.Noticias.FindAsync(id);
+            if (noticia == null) return NotFound();
+            return Ok(noticia);
+        }
+
         // CREAR — solo admin autenticado (token JWT)
         [HttpPost]
         [Authorize]

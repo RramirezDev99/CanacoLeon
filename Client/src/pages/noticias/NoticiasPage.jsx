@@ -137,27 +137,29 @@ const NoticiasPage = () => {
               <div className="section-divider"></div>
             )}
 
-            {/* 3. LISTA FINAL */}
-            <div className="old-news-list">
-              {noticiasViejas.map((item, i) => (
-                <div key={item.id || i} className="old-news-item">
-                  <div className="old-news-text">
-                    {/* AQUÍ TAMBIÉN CAMBIAMOS EL TAG POR LA FECHA */}
-                    <span className="badge-category-dark">
-                      {formatDate(
-                        item.fechaPublicacion || item.FechaPublicacion,
-                      )}
-                    </span>
+            {/* 3. LISTA FINAL — solo si hay noticias viejas que mostrar */}
+            {noticiasViejas.length > 0 && (
+              <div className="old-news-list">
+                {noticiasViejas.map((item, i) => (
+                  <div key={item.id || i} className="old-news-item">
+                    <div className="old-news-text">
+                      {/* AQUÍ TAMBIÉN CAMBIAMOS EL TAG POR LA FECHA */}
+                      <span className="badge-category-dark">
+                        {formatDate(
+                          item.fechaPublicacion || item.FechaPublicacion,
+                        )}
+                      </span>
 
-                    <h3>{item.titulo}</h3>
-                    <p>{item.resumen}</p>
+                      <h3>{item.titulo}</h3>
+                      <p>{item.resumen}</p>
+                    </div>
+                    <div className="old-news-img-wrapper">
+                      <img src={getImg(item)} alt={item.titulo} />
+                    </div>
                   </div>
-                  <div className="old-news-img-wrapper">
-                    <img src={getImg(item)} alt={item.titulo} />
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>

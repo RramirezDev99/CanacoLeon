@@ -28,6 +28,15 @@ namespace Server.Controllers
             return await _context.Eventos.OrderByDescending(e => e.Id).ToListAsync();
         }
 
+        // PÚBLICO: obtener un evento por ID (lo usa la página de detalle)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Evento>> GetPorId(int id)
+        {
+            var evento = await _context.Eventos.FindAsync(id);
+            if (evento == null) return NotFound();
+            return Ok(evento);
+        }
+
         // ADMIN
         [HttpPost]
         [Authorize]
