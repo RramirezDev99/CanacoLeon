@@ -29,9 +29,9 @@ const Dashboard = () => {
   // --- CONTENIDO DEL SITIO (misión, visión, valores, hero) ---
   const [contenidoMap, setContenidoMap] = useState({});
   const contenidoKeys = [
-    { clave: "mision", label: "Misión", placeholder: "Describe la misión de CANACO León...", multiline: true },
-    { clave: "vision", label: "Visión", placeholder: "Describe la visión de CANACO León...", multiline: true },
-    { clave: "valores", label: "Valores", placeholder: "Lista los valores de CANACO León...", multiline: true },
+    { clave: "mision", label: "Misión", placeholder: "Describe la misión de CANACO León...", multiline: true, noImage: true },
+    { clave: "vision", label: "Visión", placeholder: "Describe la visión de CANACO León...", multiline: true, noImage: true },
+    { clave: "valores", label: "Valores", placeholder: "Lista los valores de CANACO León...", multiline: true, noImage: true },
     { clave: "hero_titulo", label: "Hero — Título", placeholder: "Ej: CANACO SERVyTUR LEÓN", multiline: false },
     { clave: "hero_subtitulo", label: "Hero — Subtítulo", placeholder: "Ej: Cámara Nacional de Comercio, Servicios y Turismo", multiline: false },
     { clave: "hero_descripcion", label: "Hero — Descripción", placeholder: "Ej: Impulsando el desarrollo empresarial de León", multiline: false },
@@ -351,7 +351,7 @@ const Dashboard = () => {
           <p style={{color:'#64748b', marginBottom:'20px', fontSize:'0.9rem'}}>
             Aquí puedes definir la misión, visión, valores y el texto del banner principal (Hero) de tu página.
           </p>
-          {contenidoKeys.map(({ clave, label, placeholder, multiline }) => (
+          {contenidoKeys.map(({ clave, label, placeholder, multiline, noImage }) => (
             <div key={clave} className="upload-form" style={{marginBottom:'20px'}}>
               <label style={{fontWeight:'600', marginBottom:'6px', display:'block'}}>{label}</label>
               {multiline ? (
@@ -378,8 +378,8 @@ const Dashboard = () => {
                 />
               )}
 
-              {/* Mostrar imagen actual si existe */}
-              {contenidoMap[clave]?.imagenUrl && (
+              {/* Mostrar imagen actual si existe (solo si el campo admite imagen) */}
+              {!noImage && contenidoMap[clave]?.imagenUrl && (
                 <div style={{margin:'8px 0'}}>
                   <img
                     src={`${FILES_BASE}${contenidoMap[clave].imagenUrl}`}
@@ -390,11 +390,13 @@ const Dashboard = () => {
                 </div>
               )}
 
-              <input
-                type="file"
-                className="file-input"
-                onChange={e => setContenidoImagenes(prev => ({ ...prev, [clave]: e.target.files[0] }))}
-              />
+              {!noImage && (
+                <input
+                  type="file"
+                  className="file-input"
+                  onChange={e => setContenidoImagenes(prev => ({ ...prev, [clave]: e.target.files[0] }))}
+                />
+              )}
               <div style={{display:'flex', gap:'10px', marginTop:'8px'}}>
                 <button
                   type="button"
