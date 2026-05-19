@@ -395,14 +395,42 @@ const Dashboard = () => {
                 className="file-input"
                 onChange={e => setContenidoImagenes(prev => ({ ...prev, [clave]: e.target.files[0] }))}
               />
-              <button
-                type="button"
-                className="submit-btn"
-                style={{marginTop:'8px'}}
-                onClick={() => submitContenido(clave)}
-              >
-                Guardar {label}
-              </button>
+              <div style={{display:'flex', gap:'10px', marginTop:'8px'}}>
+                <button
+                  type="button"
+                  className="submit-btn"
+                  style={{flex:1}}
+                  onClick={() => submitContenido(clave)}
+                >
+                  Guardar {label}
+                </button>
+                {contenidoMap[clave]?.valor && (
+                  <button
+                    type="button"
+                    className="submit-btn"
+                    style={{flex:'0 0 auto', background:'#ef4444', padding:'16px 24px'}}
+                    onClick={() => {
+                      if (!window.confirm(`¿Eliminar el contenido de "${label}"?`)) return;
+                      setContenidoMap(prev => ({
+                        ...prev,
+                        [clave]: { ...prev[clave], valor: "" }
+                      }));
+                      // Guardar vacío en el servidor
+                      const fd = new FormData();
+                      fd.append("clave", clave);
+                      fd.append("valor", "");
+                      apiFetch("/ContenidoSitio", { method: "POST", body: fd }).then(res => {
+                        if (res.ok) {
+                          setMensaje({ type: "success", text: `"${label}" eliminado` });
+                          cargarDatos();
+                        }
+                      });
+                    }}
+                  >
+                    Limpiar
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
