@@ -30,18 +30,18 @@ body.dark-mode .navbar-container {
 /* --- 2. GRID LAYOUT --- */
 .navbar-content {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  width: 90%;
+  width: 100%;
   max-width: 1746px;
   height: 100%;
   margin: 0 auto;
+  padding: 0 48px; /* Espacio de seguridad en los bordes para que nada se corte */
 }
 
 /* --- 3. LOGO --- */
 .logo-container {
   justify-self: start;
-  padding-left: 40px;
 }
 
 .logo-area {
@@ -317,6 +317,7 @@ body.dark-mode .switch-circle {
   .navbar-content {
     grid-template-columns: 1fr auto;
     width: 100%;
+    padding: 0; /* En móvil el padding lo pone .navbar-container */
   }
   .logo-container {
     padding-left: 0;
