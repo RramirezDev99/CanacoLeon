@@ -178,6 +178,63 @@ namespace Server.Controllers
             });
         }
 
+        // GET: api/contacto/test-resend
+        // ADMIN — manda un correo de prueba por el API de Resend y devuelve
+        // la respuesta cruda del API (status + body) para diagnosticar.
+        [HttpGet("test-resend")]
+        [Authorize]
+        public async Task<IActionResult> TestResend([FromServices] IConfiguration config)
+        {
+            var apiKey = config["Resend:ApiKey"];
+            var from = config["Resend:From"] ?? "CANACO Leon <onboarding@resend.dev>";
+            var to = config["Resend:To"] ?? config["Smtp:ToEmail"];
+
+            var diag = new {
+                apiKeyConfigured = !string.IsNullOrEmpty(apiKey),
+                apiKeyPrefix = string.IsNullOrEmpty(apiKey) ? "" : apiKey.Substring(0, Math.Min(5, apiKey.Length)) + "...",
+                from,
+                to
+            };
+
+            if (string.IsNullOrEmpty(apiKey))
+                return BadRequest(new { ok = false, error = "Falta Resend__ApiKey en el server.", diag });
+            if (string.IsNullOrEmpty(to))
+                return BadRequest(new { ok = false, error = "Falta Resend__To / Smtp__ToEmail.", diag });
+
+            try
+            {
+                var payload = new
+                {
+                    from,
+                    to = new[] { to },
+                    subject = "TEST Resend CANACO - " + DateTime.Now.ToString("HH:mm:ss"),
+                    html = "<p>Si lees esto, Resend funciona perfecto desde Railway.</p><p>Hora: " + DateTime.Now + "</p>"
+                };
+
+                using var http = new System.Net.Http.HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+                using var req = new System.Net.Http.HttpRequestMessage(
+                    System.Net.Http.HttpMethod.Post, "https://api.resend.com/emails");
+                req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+                req.Content = new System.Net.Http.StringContent(
+                    System.Text.Json.JsonSerializer.Serialize(payload),
+                    System.Text.Encoding.UTF8, "application/json");
+
+                var resp = await http.SendAsync(req);
+                var body = await resp.Content.ReadAsStringAsync();
+
+                return Ok(new {
+                    ok = resp.IsSuccessStatusCode,
+                    status = (int)resp.StatusCode,
+                    resendResponse = body,
+                    diag
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ok = false, error = ex.Message, inner = ex.InnerException?.Message, diag });
+            }
+        }
+
         // GET: api/contacto/test-smtp
         // ADMIN — manda un correo de prueba y devuelve el error EXACTO si falla.
         // Usa MailKit (no System.Net.Mail) para evitar los problemas del SmtpClient
